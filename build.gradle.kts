@@ -9,6 +9,4 @@ val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
     implementation("org.openrewrite:rewrite-core:$rewriteVersion")
-
-    testImplementation("org.assertj:assertj-core:latest.release")
 }
