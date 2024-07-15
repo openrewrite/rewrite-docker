@@ -21,7 +21,6 @@ import org.openrewrite.TreeVisitor;
 import org.openrewrite.docker.DockerImageVersion;
 import org.openrewrite.docker.table.DockerBaseImages;
 import org.openrewrite.marker.SearchResult;
-import org.openrewrite.maven.table.DependenciesInUse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,12 +29,6 @@ import static org.openrewrite.docker.trait.Traits.dockerfile;
 
 public class FindDockerImageUses extends Recipe {
     transient DockerBaseImages dockerBaseImages = new DockerBaseImages(this);
-
-    /**
-     * This is a bit of a stretch, but helps us to use pre-existing visualizations for
-     * categorizing dependency use.
-     */
-    transient DependenciesInUse dependenciesInUse = new DependenciesInUse(this);
 
     @Override
     public String getDisplayName() {
@@ -53,14 +46,9 @@ public class FindDockerImageUses extends Recipe {
             List<DockerImageVersion> froms = docker.getFroms();
             if (!froms.isEmpty()) {
                 for (DockerImageVersion from : froms) {
-                    String version = from.getVersion() == null ? "" : from.getVersion();
                     dockerBaseImages.insertRow(ctx, new DockerBaseImages.Row(
                             from.getImageName(),
-                            version
-                    ));
-                    dependenciesInUse.insertRow(ctx, new DependenciesInUse.Row(
-                            "", "docker", "", from.getImageName(),
-                            version, null, "", 0
+                            from.getVersion() == null ? "" : from.getVersion()
                     ));
                 }
                 return SearchResult.found(docker.getTree(),
