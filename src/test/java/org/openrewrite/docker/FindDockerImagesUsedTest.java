@@ -18,9 +18,11 @@ package org.openrewrite.docker;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.docker.search.FindDockerImageUses;
+import org.openrewrite.docker.table.DockerBaseImages;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.test.SourceSpecs.text;
 
 class FindDockerImagesUsedTest implements RewriteTest {
@@ -44,6 +46,30 @@ class FindDockerImagesUsedTest implements RewriteTest {
               """,
             """
               ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            spec -> spec.path("Dockerfile")
+          )
+        );
+    }
+
+    @Test
+    void multistageDockerfile() {
+        rewriteRun(
+          spec -> spec.dataTable(DockerBaseImages.Row.class, rows -> assertThat(rows)
+            .containsOnly(new DockerBaseImages.Row("nvidia/cuda", "11.8.0-cudnn8-devel-ubuntu20.04"))),
+          text(
+            //language=Dockerfile
+            """
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            """
+              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
               LABEL maintainer="Hugging Face"
               ARG DEBIAN_FRONTEND=noninteractive
               SHELL ["sh", "-lc"]
