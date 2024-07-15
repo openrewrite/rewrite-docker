@@ -25,6 +25,7 @@ public class DockerImageVersion {
     @Nullable
     String version;
 
+    @Override
     public String toString() {
         return imageName + (version != null ? ":" + version : "");
     }

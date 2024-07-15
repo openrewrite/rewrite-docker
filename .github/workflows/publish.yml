@@ -1,26 +1,19 @@
 ---
-name: ci
+name: publish
 
 on:
   push:
-    branches:
-      - main
-    tags-ignore:
-      - "*"
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch: {}
-  schedule:
-    - cron: 0 17 * * *
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
-    uses: openrewrite/gh-automation/.github/workflows/ci-gradle.yml@main
+  release:
+    uses: openrewrite/gh-automation/.github/workflows/publish-gradle.yml@main
     secrets:
       gradle_enterprise_access_key: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
       ossrh_username: ${{ secrets.OSSRH_USERNAME }}
