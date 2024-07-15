@@ -8,5 +8,6 @@ description = "Rewrite Docker recipes."
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
-    implementation("org.openrewrite:rewrite-core:$rewriteVersion")
+    implementation("org.openrewrite:rewrite-core")
+    implementation("org.openrewrite:rewrite-maven")
 }
