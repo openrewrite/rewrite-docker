@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 the original author or authors.
+ * Copyright 2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yourorg;
+@NonNullApi
+@NonNullFields
+package org.openrewrite.docker.trait;
 
-// TODO - This is a placeholder for a Refaster recipe. Implement the recipe by adding before and after annotated methods.
-// The rule should replace calls to `String.length() == 0` with `String.isEmpty()`, as well as similar variants.
-// You're done when all the tests in `StringIsEmptyTest` passes.
-public class StringIsEmpty {
-}
+import org.openrewrite.internal.lang.NonNullApi;
+import org.openrewrite.internal.lang.NonNullFields;

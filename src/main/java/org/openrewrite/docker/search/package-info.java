@@ -15,8 +15,7 @@
  */
 @NonNullApi
 @NonNullFields
-package com.yourorg;
+package org.openrewrite.docker.search;
 
-// We annotate the package to indicate that fields and methods in this package are non-null by default.
 import org.openrewrite.internal.lang.NonNullApi;
 import org.openrewrite.internal.lang.NonNullFields;

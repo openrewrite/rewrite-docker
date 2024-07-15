@@ -13,54 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yourorg;
+package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
-import org.openrewrite.DocumentExample;
+import org.openrewrite.docker.search.FindDockerImageUses;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
-import java.nio.file.Paths;
-
 import static org.openrewrite.test.SourceSpecs.text;
 
-class AppendToReleaseNotesTest implements RewriteTest {
+public class FindDockerImagesUsedTest implements RewriteTest {
+
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new AppendToReleaseNotes("Hello world"));
+        spec.recipe(new FindDockerImageUses());
     }
 
     @Test
-    void createNewReleaseNotes() {
-        // Notice how the before text is null, indicating that the file does not exist yet.
-        // The after text is the content of the file after the recipe is applied.
-        rewriteRun(
-          text(
-            null,
-            """
-              Hello world
-              """,
-            spec -> spec.path(Paths.get("RELEASE.md")
-            )
-          )
-        );
-    }
-
-    @DocumentExample
-    @Test
-    void editExistingReleaseNotes() {
-        // When the file does already exist, we assert the content is modified as expected.
+    void dockerfile() {
         rewriteRun(
           text(
             """
-              You say goodbye, I say
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
               """,
             """
-              You say goodbye, I say
-              Hello world
+              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
               """,
-            spec -> spec.path(Paths.get("RELEASE.md")
-            )
+            spec -> spec.path("Dockerfile")
           )
         );
     }
