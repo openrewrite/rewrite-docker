@@ -16,13 +16,14 @@
 package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.docker.search.FindDockerImageUses;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.test.SourceSpecs.text;
 
-public class FindDockerImagesUsedTest implements RewriteTest {
+class FindDockerImagesUsedTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
@@ -30,9 +31,11 @@ public class FindDockerImagesUsedTest implements RewriteTest {
     }
 
     @Test
+    @DocumentExample
     void dockerfile() {
         rewriteRun(
           text(
+            //language=Dockerfile
             """
               FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
               LABEL maintainer="Hugging Face"
