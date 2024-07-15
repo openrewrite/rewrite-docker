@@ -37,7 +37,7 @@ public class Dockerfile implements Trait<PlainText> {
                 String[] imageVersionStr = line.substring("FROM".length()).trim().split(":");
                 froms.add(new DockerImageVersion(
                         imageVersionStr[0],
-                        imageVersionStr.length > 1 ? imageVersionStr[1] : null
+                        imageVersionStr.length > 1 ? imageVersionStr[1].split(" ")[0] : null
                 ));
             }
         }
