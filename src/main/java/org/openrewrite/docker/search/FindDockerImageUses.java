@@ -60,7 +60,7 @@ public class FindDockerImageUses extends Recipe {
                     ));
                     dependenciesInUse.insertRow(ctx, new DependenciesInUse.Row(
                             "", "docker", "", from.getImageName(),
-                            version, null, "", 0
+                            version.isEmpty() ? "unversioned" : version, null, "", 0
                     ));
                 }
                 return SearchResult.found(docker.getTree(),
