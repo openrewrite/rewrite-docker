@@ -78,4 +78,52 @@ class FindDockerImagesUsedTest implements RewriteTest {
           )
         );
     }
+
+    @Test
+    void multistageContainerfile() {
+        rewriteRun(
+          spec -> spec.dataTable(DockerBaseImages.Row.class, rows -> assertThat(rows)
+            .containsOnly(new DockerBaseImages.Row("nvidia/cuda", "11.8.0-cudnn8-devel-ubuntu20.04"))),
+          text(
+            //language=Containerfile
+            """
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            """
+              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            spec -> spec.path("Containerfile")
+          )
+        );
+    }
+
+    @Test    
+    @DocumentExample
+    void containerfile() {
+        rewriteRun(
+          text(
+            //language=Containerfile
+            """
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            """
+              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            spec -> spec.path("Containerfile")
+          )
+        );
+    }
+
 }

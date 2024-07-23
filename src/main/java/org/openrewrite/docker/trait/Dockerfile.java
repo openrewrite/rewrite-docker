@@ -51,7 +51,8 @@ public class Dockerfile implements Trait<PlainText> {
             Object value = cursor.getValue();
             if (value instanceof PlainText) {
                 PlainText text = (PlainText) value;
-                if (text.getSourcePath().toFile().getName().equals("Dockerfile")) {
+                String fileName=text.getSourcePath().toFile().getName();
+                if (fileName.equals("Dockerfile") || fileName.equals("Containerfile")) {
                     return new Dockerfile(cursor);
                 }
             }
