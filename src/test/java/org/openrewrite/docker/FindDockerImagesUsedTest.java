@@ -16,6 +16,8 @@
 package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.docker.search.FindDockerImageUses;
 import org.openrewrite.docker.table.DockerBaseImages;
@@ -32,9 +34,10 @@ class FindDockerImagesUsedTest implements RewriteTest {
         spec.recipe(new FindDockerImageUses());
     }
 
-    @Test
     @DocumentExample
-    void dockerfile() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Dockerfile", "Containerfile"})
+    void dockerfile(String path) {
         rewriteRun(
           text(
             //language=Dockerfile
@@ -50,7 +53,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
               ARG DEBIAN_FRONTEND=noninteractive
               SHELL ["sh", "-lc"]
               """,
-            spec -> spec.path("Dockerfile")
+            spec -> spec.path(path)
           )
         );
     }
@@ -78,52 +81,4 @@ class FindDockerImagesUsedTest implements RewriteTest {
           )
         );
     }
-
-    @Test
-    void multistageContainerfile() {
-        rewriteRun(
-          spec -> spec.dataTable(DockerBaseImages.Row.class, rows -> assertThat(rows)
-            .containsOnly(new DockerBaseImages.Row("nvidia/cuda", "11.8.0-cudnn8-devel-ubuntu20.04"))),
-          text(
-            //language=Containerfile
-            """
-              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            """
-              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04 AS base
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            spec -> spec.path("Containerfile")
-          )
-        );
-    }
-
-    @Test    
-    @DocumentExample
-    void containerfile() {
-        rewriteRun(
-          text(
-            //language=Containerfile
-            """
-              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            """
-              ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            spec -> spec.path("Containerfile")
-          )
-        );
-    }
-
 }
