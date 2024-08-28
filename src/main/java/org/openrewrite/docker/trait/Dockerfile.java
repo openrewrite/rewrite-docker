@@ -16,9 +16,9 @@
 package org.openrewrite.docker.trait;
 
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.docker.DockerImageVersion;
-import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.text.PlainText;
 import org.openrewrite.trait.SimpleTraitMatcher;
 import org.openrewrite.trait.Trait;

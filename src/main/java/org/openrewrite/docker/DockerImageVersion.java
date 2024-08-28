@@ -16,7 +16,7 @@
 package org.openrewrite.docker;
 
 import lombok.Value;
-import org.openrewrite.internal.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Value
 public class DockerImageVersion {
