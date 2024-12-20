@@ -16,11 +16,10 @@
 package org.openrewrite.docker.trait;
 
 import lombok.Value;
-import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.docker.DockerImageVersion;
 import org.openrewrite.text.PlainText;
-import org.openrewrite.trait.SimpleTraitMatcher;
+import org.openrewrite.trait.Reference;
 import org.openrewrite.trait.Trait;
 
 import java.util.ArrayList;
@@ -44,19 +43,16 @@ public class Dockerfile implements Trait<PlainText> {
         return froms;
     }
 
-    public static class Matcher extends SimpleTraitMatcher<Dockerfile> {
+    public static class Matcher implements Reference.Matcher {
 
         @Override
-        protected @Nullable Dockerfile test(Cursor cursor) {
-            Object value = cursor.getValue();
-            if (value instanceof PlainText) {
-                PlainText text = (PlainText) value;
-                String fileName = text.getSourcePath().toFile().getName();
-                if (fileName.equals("Dockerfile") || fileName.equals("Containerfile")) {
-                    return new Dockerfile(cursor);
-                }
-            }
-            return null;
+        public boolean matchesReference(Reference reference) {
+            return reference.getKind().equals(Reference.Kind.IMAGE);
+        }
+
+        @Override
+        public Reference.Renamer createRenamer(String newName) {
+            return reference -> newName;
         }
     }
 }

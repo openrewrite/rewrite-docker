@@ -15,17 +15,22 @@
  */
 package org.openrewrite.docker.search;
 
-import org.openrewrite.ExecutionContext;
-import org.openrewrite.Recipe;
-import org.openrewrite.TreeVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import org.jspecify.annotations.Nullable;
+import org.openrewrite.*;
 import org.openrewrite.docker.DockerImageVersion;
 import org.openrewrite.docker.table.DockerBaseImages;
+import org.openrewrite.docker.trait.ImageMatcher;
 import org.openrewrite.marker.SearchResult;
+import org.openrewrite.text.Find;
+import org.openrewrite.text.PlainText;
+import org.openrewrite.trait.Reference;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.nio.file.Path;
+import java.util.*;
 
-import static org.openrewrite.docker.trait.Traits.dockerfile;
+import static java.util.stream.Collectors.joining;
 
 public class FindDockerImageUses extends Recipe {
     transient DockerBaseImages dockerBaseImages = new DockerBaseImages(this);
@@ -37,10 +42,58 @@ public class FindDockerImageUses extends Recipe {
 
     @Override
     public String getDescription() {
-        return "Produce an impact analysis of base images used in Dockerfiles.";
+        return "Produce an impact analysis of base images used in Dockerfiles, .gitlab-ci files, etc.";
     }
 
     @Override
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
+        return new TreeVisitor<Tree, ExecutionContext>() {
+
+            @Override
+            public @Nullable Tree visit(@Nullable Tree tree, ExecutionContext ctx) {
+                if (tree instanceof SourceFileWithReferences) {
+                    SourceFileWithReferences sourceFile = (SourceFileWithReferences) tree;
+                    Path sourcePath = sourceFile.getSourcePath();
+                    Collection<Reference> references = sourceFile.getReferences().findMatches(new ImageMatcher());
+                    Map<Tree, List<Reference>> matches = new HashMap<>();
+                    for (Reference ref : references) {
+                        DockerImageVersion from = DockerImageVersion.of(ref.getValue());
+                        dockerBaseImages.insertRow(ctx,
+                                new DockerBaseImages.Row(sourcePath.toString(), tree.getClass().getSimpleName(), from.getImageName(), from.getVersion())
+                        );
+                        matches.computeIfAbsent(ref.getTree(), t -> new ArrayList<>()).add(ref);
+                    }
+                    return new ReferenceFindSearchResultVisitor(matches).visit(tree, ctx, getCursor());
+                }
+                return tree;
+            }
+        };
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = false)
+    private static class ReferenceFindSearchResultVisitor extends TreeVisitor<Tree, ExecutionContext> {
+        Map<Tree, List<Reference>> matches;
+
+        @Override
+        public Tree postVisit(Tree tree, ExecutionContext ctx) {
+            List<Reference> references = matches.get(tree);
+            if (references != null) {
+                if (tree instanceof PlainText) {
+                    String find = references.stream().map(Reference::getValue).sorted().collect(joining("|"));
+                    return new Find(find, true, null, null, null, null, true)
+                            .getVisitor()
+                            .visitNonNull(tree, ctx);
+                }
+                return SearchResult.found(tree, references.get(0).getValue());
+            }
+            return tree;
+        }
+    }
+
+    ;
+
+    /*@Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return dockerfile().asVisitor((docker, ctx) -> {
             List<DockerImageVersion> froms = docker.getFroms();
@@ -57,5 +110,5 @@ public class FindDockerImageUses extends Recipe {
             }
             return docker.getTree();
         });
-    }
+    }*/
 }
