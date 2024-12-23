@@ -271,12 +271,81 @@ class FindDockerImagesUsedTest implements RewriteTest {
         );
     }
 
+    @Test
+    void gitlabCIFile() {
+        rewriteRun(
+          assertImages("maven:latest"),
+          //language=yaml
+          yaml(
+            """
+              image: maven:latest
+
+              variables:
+                MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+                MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+              cache:
+                paths:
+                  - .m2/repository/
+                  - target/
+
+              build:
+                stage: build
+                script:
+                  - mvn $MAVEN_CLI_OPTS compile
+
+              test:
+                stage: test
+                script:
+                  - mvn $MAVEN_CLI_OPTS test
+
+              deploy:
+                stage: deploy
+                script:
+                  - mvn $MAVEN_CLI_OPTS deploy
+                only:
+                  - master
+              """,
+            """
+              image: ~~(maven:latest)~~>maven:latest
+
+              variables:
+                MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+                MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+              cache:
+                paths:
+                  - .m2/repository/
+                  - target/
+
+              build:
+                stage: build
+                script:
+                  - mvn $MAVEN_CLI_OPTS compile
+
+              test:
+                stage: test
+                script:
+                  - mvn $MAVEN_CLI_OPTS test
+
+              deploy:
+                stage: deploy
+                script:
+                  - mvn $MAVEN_CLI_OPTS deploy
+                only:
+                  - master
+              """,
+            spec -> spec.path(".gitlab-ci")
+          )
+        );
+    }
+
     private static Consumer<RecipeSpec> assertImages(String... expected) {
         return spec -> spec.recipe(new FindDockerImageUses())
           .dataTable(DockerBaseImages.Row.class,rows ->
             assertThat(rows)
               .hasSize(expected.length)
-              .extracting(it -> it.getImageName() + ":" + it.getTag())
+              .extracting(it -> it.getImageName() + (it.getTag().isEmpty() ? "" : ":" + it.getTag()))
               .containsExactlyInAnyOrder(expected)
           );
     }

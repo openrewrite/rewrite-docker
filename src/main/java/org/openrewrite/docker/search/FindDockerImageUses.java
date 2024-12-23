@@ -90,25 +90,4 @@ public class FindDockerImageUses extends Recipe {
             return tree;
         }
     }
-
-    ;
-
-    /*@Override
-    public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return dockerfile().asVisitor((docker, ctx) -> {
-            List<DockerImageVersion> froms = docker.getFroms();
-            if (!froms.isEmpty()) {
-                for (DockerImageVersion from : froms) {
-                    dockerBaseImages.insertRow(ctx, new DockerBaseImages.Row(
-                            from.getImageName(),
-                            from.getVersion() == null ? "" : from.getVersion()
-                    ));
-                }
-                return SearchResult.found(docker.getTree(),
-                        froms.stream().map(DockerImageVersion::toString)
-                                .collect(Collectors.joining(", ")));
-            }
-            return docker.getTree();
-        });
-    }*/
 }

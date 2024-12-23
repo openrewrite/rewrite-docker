@@ -46,13 +46,13 @@ public class DockerfileImageReference implements Reference {
             for (int i = 0, wordsLength = words.length; i < wordsLength; i++) {
                 if ("from".equalsIgnoreCase(words[i])) {
                     String image = words[i + 1].startsWith("--platform") ? words[i + 2] : words[i + 1];
-                    references.add(new org.openrewrite.text.DockerImageReference(c, image));
+                    references.add(new DockerfileImageReference(c, image));
                 } else if ("as".equalsIgnoreCase(words[i])) {
                     imageVariables.add(words[i + 1]);
                 } else if (words[i].startsWith("--from") && words[i].split("=").length == 2) {
                     String image = words[i].split("=")[1];
                     if (!imageVariables.contains(image) && !StringUtils.isNumeric(image)) {
-                        references.add(new org.openrewrite.text.DockerImageReference(c, image));
+                        references.add(new DockerfileImageReference(c, image));
                     }
                 }
             }
