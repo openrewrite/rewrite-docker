@@ -42,7 +42,7 @@ public class FindDockerImageUses extends Recipe {
 
     @Override
     public String getDescription() {
-        return "Produce an impact analysis of base images used in Dockerfiles, .gitlab-ci files, etc.";
+        return "Produce an impact analysis of base images used in Dockerfiles, .gitlab-ci files, Kubernetes Deployment file, etc.";
     }
 
     @Override
