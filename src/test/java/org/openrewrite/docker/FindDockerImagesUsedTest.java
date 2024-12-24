@@ -340,6 +340,59 @@ class FindDockerImagesUsedTest implements RewriteTest {
         );
     }
 
+    @Test
+    void kubernetesFile() {
+        rewriteRun(
+          assertImages("image", "app:v1.2.3", "account/image:latest", "repo.id/account/bucket/image:v1.2.3@digest"),
+          //language=yaml
+          yaml(
+            """
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: image
+              ---
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: app:v1.2.3
+                initContainers:
+                  - image: account/image:latest
+              ---
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: repo.id/account/bucket/image:v1.2.3@digest
+              """,
+            """
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: ~~(image)~~>image
+              ---
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: ~~(app:v1.2.3)~~>app:v1.2.3
+                initContainers:
+                  - image: ~~(account/image:latest)~~>account/image:latest
+              ---
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                  - image: ~~(repo.id/account/bucket/image:v1.2.3@digest)~~>repo.id/account/bucket/image:v1.2.3@digest
+              """,
+            spec -> spec.path(".gitlab-ci")
+          )
+        );
+    }
+
     private static Consumer<RecipeSpec> assertImages(String... expected) {
         return spec -> spec.recipe(new FindDockerImageUses())
           .dataTable(DockerBaseImages.Row.class,rows ->

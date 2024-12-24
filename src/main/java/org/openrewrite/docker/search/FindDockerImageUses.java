@@ -76,7 +76,7 @@ public class FindDockerImageUses extends Recipe {
         Map<Tree, List<Reference>> matches;
 
         @Override
-        public Tree postVisit(Tree tree, ExecutionContext ctx) {
+        public @Nullable Tree postVisit(Tree tree, ExecutionContext ctx) {
             List<Reference> references = matches.get(tree);
             if (references != null) {
                 if (tree instanceof PlainText) {

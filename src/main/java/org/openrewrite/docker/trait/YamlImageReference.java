@@ -27,18 +27,17 @@ public class YamlImageReference extends YamlReference {
         @Override
         public SimpleTraitMatcher<YamlReference> getMatcher() {
             return new SimpleTraitMatcher<YamlReference>() {
-                private final Predicate<String> image = Pattern.compile("image").asPredicate();
                 private final AtomicBoolean found = new AtomicBoolean(false);
 
                 @Override
                 protected @Nullable YamlReference test(Cursor cursor) {
                     Object value = cursor.getValue();
                     if (value instanceof Yaml.Scalar) {
-                        if (image.test(((Yaml.Scalar) value).getValue())) {
-                            found.set(true);
-                        } else if (found.get()) {
+                        if (found.get()) {
                             found.set(false);
                             return new YamlImageReference(cursor);
+                        } else if ("image".equals(((Yaml.Scalar) value).getValue())) {
+                            found.set(true);
                         }
                     }
                     return null;
