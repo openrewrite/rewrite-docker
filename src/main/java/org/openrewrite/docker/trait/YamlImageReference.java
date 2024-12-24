@@ -10,8 +10,6 @@ import org.openrewrite.yaml.trait.YamlReference;
 import org.openrewrite.yaml.tree.Yaml;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
