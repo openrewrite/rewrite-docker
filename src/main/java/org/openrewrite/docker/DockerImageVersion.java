@@ -22,11 +22,10 @@ import org.jspecify.annotations.Nullable;
 public class DockerImageVersion {
     String imageName;
 
-    @Nullable
     String version;
 
-    @Override
-    public String toString() {
-        return imageName + (version != null ? ":" + version : "");
+    public static DockerImageVersion of(String value) {
+        String[] imageVersionStr = value.split(":");
+        return new DockerImageVersion(imageVersionStr[0], imageVersionStr.length > 1 ? imageVersionStr[1].split(" ")[0] : "");
     }
 }

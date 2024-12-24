@@ -30,6 +30,14 @@ public class DockerBaseImages extends DataTable<DockerBaseImages.Row> {
 
     @Value
     public static class Row {
+        @Column(displayName = "Source path before the run",
+                description = "The source path of the file before the run.")
+        String sourcePath;
+
+        @Column(displayName = "LST type",
+                description = "The LST model type that the file is parsed as.")
+        String type;
+
         @Column(displayName = "Image name",
                 description = "The full name of the image.")
         String imageName;

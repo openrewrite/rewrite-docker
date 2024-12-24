@@ -1,0 +1,2 @@
+org.openrewrite.docker.trait.YamlImageReference$Provider
+org.openrewrite.docker.trait.DockerfileImageReference$Provider
