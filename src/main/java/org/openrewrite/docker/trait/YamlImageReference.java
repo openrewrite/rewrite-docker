@@ -22,25 +22,27 @@ public class YamlImageReference extends YamlReference {
     }
 
     public static class Provider extends YamlProvider {
+        private static final SimpleTraitMatcher<YamlReference> matcher = new SimpleTraitMatcher<YamlReference>() {
+            private final AtomicBoolean found = new AtomicBoolean(false);
+
+            @Override
+            protected @Nullable YamlReference test(Cursor cursor) {
+                Object value = cursor.getValue();
+                if (value instanceof Yaml.Scalar) {
+                    if (found.get()) {
+                        found.set(false);
+                        return new YamlImageReference(cursor);
+                    } else if ("image".equals(((Yaml.Scalar) value).getValue())) {
+                        found.set(true);
+                    }
+                }
+                return null;
+            }
+        };
+
         @Override
         public SimpleTraitMatcher<YamlReference> getMatcher() {
-            return new SimpleTraitMatcher<YamlReference>() {
-                private final AtomicBoolean found = new AtomicBoolean(false);
-
-                @Override
-                protected @Nullable YamlReference test(Cursor cursor) {
-                    Object value = cursor.getValue();
-                    if (value instanceof Yaml.Scalar) {
-                        if (found.get()) {
-                            found.set(false);
-                            return new YamlImageReference(cursor);
-                        } else if ("image".equals(((Yaml.Scalar) value).getValue())) {
-                            found.set(true);
-                        }
-                    }
-                    return null;
-                }
-            };
+            return matcher;
         }
     }
 }

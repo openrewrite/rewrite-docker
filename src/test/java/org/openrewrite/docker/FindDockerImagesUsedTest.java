@@ -352,20 +352,24 @@ class FindDockerImagesUsedTest implements RewriteTest {
               spec:
                 containers:
                   - image: image
+                    name: image-container
               ---
               apiVersion: v1
               kind: Pod
               spec:
                 containers:
-                  - image: app:v1.2.3
+                  - name: my-container
+                    image: app:v1.2.3
                 initContainers:
                   - image: account/image:latest
+                    name: my-init-container
               ---
               apiVersion: v1
               kind: Pod
               spec:
                 containers:
                   - image: repo.id/account/bucket/image:v1.2.3@digest
+                    name: my-container
               """,
             """
               apiVersion: v1
@@ -373,20 +377,24 @@ class FindDockerImagesUsedTest implements RewriteTest {
               spec:
                 containers:
                   - image: ~~(image)~~>image
+                    name: image-container
               ---
               apiVersion: v1
               kind: Pod
               spec:
                 containers:
-                  - image: ~~(app:v1.2.3)~~>app:v1.2.3
+                  - name: my-container
+                    image: ~~(app:v1.2.3)~~>app:v1.2.3
                 initContainers:
                   - image: ~~(account/image:latest)~~>account/image:latest
+                    name: my-init-container
               ---
               apiVersion: v1
               kind: Pod
               spec:
                 containers:
                   - image: ~~(repo.id/account/bucket/image:v1.2.3@digest)~~>repo.id/account/bucket/image:v1.2.3@digest
+                    name: my-container
               """,
             spec -> spec.path(".gitlab-ci")
           )
