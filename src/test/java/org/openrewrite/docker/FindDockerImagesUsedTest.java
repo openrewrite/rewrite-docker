@@ -341,6 +341,25 @@ class FindDockerImagesUsedTest implements RewriteTest {
     }
 
     @Test
+    void githubActions() {
+        rewriteRun(
+          assertImages("ghcr.io/owner/image"),
+          //language=yaml
+          yaml(
+            """
+              container:
+                image: ghcr.io/owner/image
+              """,
+            """
+              container:
+                image: ~~(ghcr.io/owner/image)~~>ghcr.io/owner/image
+              """,
+            spec -> spec.path(".github/workflows/ci.yml")
+          )
+        );
+    }
+
+    @Test
     void kubernetesFile() {
         rewriteRun(
           assertImages("image", "app:v1.2.3", "account/image:latest", "repo.id/account/bucket/image:v1.2.3@digest"),
@@ -403,7 +422,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
 
     private static Consumer<RecipeSpec> assertImages(String... expected) {
         return spec -> spec.recipe(new FindDockerImageUses())
-          .dataTable(DockerBaseImages.Row.class,rows ->
+          .dataTable(DockerBaseImages.Row.class, rows ->
             assertThat(rows)
               .hasSize(expected.length)
               .extracting(it -> it.getImageName() + (it.getTag().isEmpty() ? "" : ":" + it.getTag()))
