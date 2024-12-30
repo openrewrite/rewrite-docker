@@ -59,7 +59,7 @@ public class FindDockerImageUses extends Recipe {
                     for (Reference ref : references) {
                         DockerImageVersion from = DockerImageVersion.of(ref.getValue());
                         dockerBaseImages.insertRow(ctx,
-                                new DockerBaseImages.Row(sourcePath.toString(), tree.getClass().getSimpleName(), from.getImageName(), from.getVersion())
+                                new DockerBaseImages.Row(sourcePath.toString(), from.getImageName(), from.getVersion())
                         );
                         matches.computeIfAbsent(ref.getTree(), t -> new ArrayList<>()).add(ref);
                     }

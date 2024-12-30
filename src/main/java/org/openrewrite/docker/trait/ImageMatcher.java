@@ -21,7 +21,7 @@ public class ImageMatcher implements Reference.Matcher {
 
     @Override
     public boolean matchesReference(Reference reference) {
-        return reference.getKind().equals(Reference.Kind.IMAGE);
+        return reference.getKind() == Reference.Kind.IMAGE;
     }
 
     @Override

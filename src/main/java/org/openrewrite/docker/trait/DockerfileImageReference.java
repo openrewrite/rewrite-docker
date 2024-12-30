@@ -42,8 +42,8 @@ public class DockerfileImageReference implements Reference {
             if (sourceFile instanceof PlainText) {
                 PlainText text = (PlainText) sourceFile;
                 String fileName = text.getSourcePath().toFile().getName();
-                return (fileName.endsWith("Dockerfile") || fileName.equals("Containerfile"))
-                        && (text.getText().contains("FROM") || text.getText().contains("from"));
+                return (fileName.endsWith("Dockerfile") || fileName.equals("Containerfile")) &&
+                        (text.getText().contains("FROM") || text.getText().contains("from"));
             }
             return false;
         }
