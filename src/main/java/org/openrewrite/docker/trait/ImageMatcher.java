@@ -15,12 +15,17 @@
  */
 package org.openrewrite.docker.trait;
 
-public class Traits {
+import org.openrewrite.trait.Reference;
 
-    private Traits() {
+public class ImageMatcher implements Reference.Matcher {
+
+    @Override
+    public boolean matchesReference(Reference reference) {
+        return reference.getKind() == Reference.Kind.IMAGE;
     }
 
-    public static Dockerfile.Matcher dockerfile() {
-        return new Dockerfile.Matcher();
+    @Override
+    public Reference.Renamer createRenamer(String newName) {
+        return reference -> newName;
     }
 }
