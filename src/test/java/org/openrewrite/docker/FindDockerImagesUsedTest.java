@@ -425,7 +425,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
           .dataTable(DockerBaseImages.Row.class, rows ->
             assertThat(rows)
               .hasSize(expected.length)
-              .extracting(it -> it.getImageName() + (it.getTag().isEmpty() ? "" : ":" + it.getTag()))
+              .extracting(it -> it.getImageName() + (it.getTag() == null ? "" : ":" + it.getTag()))
               .containsExactlyInAnyOrder(expected)
           );
     }

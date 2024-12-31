@@ -16,6 +16,7 @@
 package org.openrewrite.docker.table;
 
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.Column;
 import org.openrewrite.DataTable;
 import org.openrewrite.Recipe;
@@ -40,6 +41,7 @@ public class DockerBaseImages extends DataTable<DockerBaseImages.Row> {
 
         @Column(displayName = "Tag",
                 description = "The tag, if any. If no tag is specified, this will be empty.")
+        @Nullable
         String tag;
     }
 }
