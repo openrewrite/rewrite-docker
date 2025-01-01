@@ -9,7 +9,18 @@ Docker recipes for studying and transforming Docker usage.
 
 ### What is this?
 
-This project implements a [Rewrite module](https://github.com/openrewrite/rewrite) that performs common tasks for Docker.
+This project is an OpenRewrite module providing recipes for analyzing and modifying Docker configurations.  It allows developers to automate tasks related to Docker image management and improve consistency across projects.
+
+
+### Capabilities
+
+This module offers recipes to perform several key functions:
+
+* **Docker Image Usage Analysis:** Identify all locations where specific Docker images are used across your project's codebase. This includes Dockerfiles, Kubernetes manifests, and other configuration files. This capability is crucial for understanding the impact of changes to base images or identifying potential vulnerabilities.
+
+* **Automated Docker Image Updates:** Streamline the process of updating Docker images to newer versions, ensuring your applications utilize the latest security patches and features.
+
+* **Improved Consistency and Maintainability:** This module helps enforce consistent Docker image usage across your projects, reducing the likelihood of discrepancies and promoting maintainability.
 
 Browse [a selection of recipes available through this module in the recipe catalog](https://docs.openrewrite.org/recipes/docker).
 
