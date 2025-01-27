@@ -97,18 +97,18 @@ class FindDockerImagesUsedTest implements RewriteTest {
           text(
             //language=Dockerfile
             """
-              FROM golang:1.7.3 as builder
-              # another from to prove aliases can be used
-              FROM builder
+              FROM golang:1.7.3 AS builder
+              # another FROM to prove aliases can be used
+              FROM builder AS stage1
               WORKDIR /go/src/github.com/alexellis/href-counter/
               RUN go get -d -v golang.org/x/net/html
               COPY app.go .
               RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
               """,
             """
-              FROM ~~(golang:1.7.3)~~>golang:1.7.3 as builder
-              # another from to prove aliases can be used
-              FROM builder
+              FROM ~~(golang:1.7.3)~~>golang:1.7.3 AS builder
+              # another FROM to prove aliases can be used
+              FROM builder AS stage1
               WORKDIR /go/src/github.com/alexellis/href-counter/
               RUN go get -d -v golang.org/x/net/html
               COPY app.go .
