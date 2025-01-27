@@ -279,6 +279,32 @@ class FindDockerImagesUsedTest implements RewriteTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"aarch64-dockerfile", "Dockerfile.aarch64"})
+    void dockerFileWithSuffixOrPrefix(String fileName) {
+        rewriteRun(
+          assertImages("ghcr.io/cross-rs/aarch64-unknown-linux-gnu:main"),
+          text(
+            //language=Dockerfile
+            """
+              FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu:main
+
+              RUN apt-get update && apt-get install --assume-yes clang zlib1g-dev libelf-dev
+              RUN dpkg --add-architecture arm64
+              RUN apt-get update && apt-get install --assume-yes zlib1g-dev:arm64 libelf-dev:arm64
+              """,
+            """
+              FROM ~~(ghcr.io/cross-rs/aarch64-unknown-linux-gnu:main)~~>ghcr.io/cross-rs/aarch64-unknown-linux-gnu:main
+
+              RUN apt-get update && apt-get install --assume-yes clang zlib1g-dev libelf-dev
+              RUN dpkg --add-architecture arm64
+              RUN apt-get update && apt-get install --assume-yes zlib1g-dev:arm64 libelf-dev:arm64
+              """,
+            spec -> spec.path(fileName)
+          )
+        );
+    }
+
     @Test
     void gitlabCIFile() {
         rewriteRun(
