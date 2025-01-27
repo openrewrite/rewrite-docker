@@ -25,6 +25,9 @@ import org.openrewrite.trait.Reference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 @Value
 public class DockerfileImageReference implements Reference {
@@ -37,13 +40,17 @@ public class DockerfileImageReference implements Reference {
     }
 
     public static class Provider implements Reference.Provider {
+        public static final Pattern DOCKER = Pattern.compile("dockerfile", CASE_INSENSITIVE);
+        public static final Pattern CONTAINER = Pattern.compile("containerfile", CASE_INSENSITIVE);
+        public static final Pattern FROM = Pattern.compile("from", CASE_INSENSITIVE);
+
         @Override
         public boolean isAcceptable(SourceFile sourceFile) {
             if (sourceFile instanceof PlainText) {
                 PlainText text = (PlainText) sourceFile;
                 String fileName = text.getSourcePath().toFile().getName();
-                return (fileName.endsWith("Dockerfile") || fileName.equals("Containerfile")) &&
-                        (text.getText().contains("FROM") || text.getText().contains("from"));
+                ;
+                return (DOCKER.matcher(fileName).find() || CONTAINER.matcher(fileName).find()) && FROM.matcher(text.getText()).find();
             }
             return false;
         }
