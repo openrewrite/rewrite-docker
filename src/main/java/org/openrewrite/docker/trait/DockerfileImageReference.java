@@ -52,21 +52,23 @@ public class DockerfileImageReference implements Reference {
         public Set<Reference> getReferences(SourceFile sourceFile) {
             Cursor c = new Cursor(new Cursor(null, Cursor.ROOT_VALUE), sourceFile);
             String[] words = ((PlainText) sourceFile).getText()
-                    .replaceAll("\\s*#.*?\\n", "") // remove comments
-                    .replaceAll("\".*?\"", "") // remove string literals
+                    .replaceAll("\\s*#.*?\\n", " ") // remove comments
+                    .replaceAll("\".*?\"", " ") // remove string literals
                     .split("\\s+");
 
             Set<Reference> references = new HashSet<>();
-            ArrayList<String> imageVariables = new ArrayList<>();
+            ArrayList<String> aliases = new ArrayList<>();
             for (int i = 0, wordsLength = words.length; i < wordsLength; i++) {
                 if ("from".equalsIgnoreCase(words[i])) {
                     String image = words[i + 1].startsWith("--platform") ? words[i + 2] : words[i + 1];
-                    references.add(new DockerfileImageReference(c, image));
+                    if (!aliases.contains(image)) {
+                        references.add(new DockerfileImageReference(c, image));
+                    }
                 } else if ("as".equalsIgnoreCase(words[i])) {
-                    imageVariables.add(words[i + 1]);
+                    aliases.add(words[i + 1]);
                 } else if (words[i].startsWith("--from") && words[i].split("=").length == 2) {
                     String image = words[i].split("=")[1];
-                    if (!imageVariables.contains(image) && !StringUtils.isNumeric(image)) {
+                    if (!aliases.contains(image) && !StringUtils.isNumeric(image)) {
                         references.add(new DockerfileImageReference(c, image));
                     }
                 }
