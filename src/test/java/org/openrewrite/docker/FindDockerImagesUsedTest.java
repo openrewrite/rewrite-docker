@@ -98,6 +98,8 @@ class FindDockerImagesUsedTest implements RewriteTest {
             //language=Dockerfile
             """
               FROM golang:1.7.3 as builder
+              # another from to prove aliases can be used
+              FROM builder
               WORKDIR /go/src/github.com/alexellis/href-counter/
               RUN go get -d -v golang.org/x/net/html
               COPY app.go .
@@ -105,6 +107,8 @@ class FindDockerImagesUsedTest implements RewriteTest {
               """,
             """
               FROM ~~(golang:1.7.3)~~>golang:1.7.3 as builder
+              # another from to prove aliases can be used
+              FROM builder
               WORKDIR /go/src/github.com/alexellis/href-counter/
               RUN go get -d -v golang.org/x/net/html
               COPY app.go .
@@ -255,16 +259,20 @@ class FindDockerImagesUsedTest implements RewriteTest {
     @Test
     void dockerFileIgnoreComment() {
         rewriteRun(
-          assertImages("alpine:latest"),
+          assertImages("alpine:latest", "eclipse-temurin:17-jammy"),
           text(
             //language=Dockerfile
             """
               # FROM alpine
               FROM alpine:latest
+              # more comments
+              FROM eclipse-temurin:17-jammy
               """,
             """
               # FROM alpine
               FROM ~~(alpine:latest)~~>alpine:latest
+              # more comments
+              FROM ~~(eclipse-temurin:17-jammy)~~>eclipse-temurin:17-jammy
               """,
             spec -> spec.path("Dockerfile")
           )
