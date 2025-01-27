@@ -57,18 +57,18 @@ public class DockerfileImageReference implements Reference {
                     .split("\\s+");
 
             Set<Reference> references = new HashSet<>();
-            ArrayList<String> imageVariables = new ArrayList<>();
+            ArrayList<String> aliases = new ArrayList<>();
             for (int i = 0, wordsLength = words.length; i < wordsLength; i++) {
                 if ("from".equalsIgnoreCase(words[i])) {
                     String image = words[i + 1].startsWith("--platform") ? words[i + 2] : words[i + 1];
-                    if (!imageVariables.contains(image)) {
+                    if (!aliases.contains(image)) {
                         references.add(new DockerfileImageReference(c, image));
                     }
                 } else if ("as".equalsIgnoreCase(words[i])) {
-                    imageVariables.add(words[i + 1]);
+                    aliases.add(words[i + 1]);
                 } else if (words[i].startsWith("--from") && words[i].split("=").length == 2) {
                     String image = words[i].split("=")[1];
-                    if (!imageVariables.contains(image) && !StringUtils.isNumeric(image)) {
+                    if (!aliases.contains(image) && !StringUtils.isNumeric(image)) {
                         references.add(new DockerfileImageReference(c, image));
                     }
                 }
