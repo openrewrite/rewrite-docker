@@ -81,7 +81,7 @@ public class FindDockerImageUses extends Recipe {
             if (references != null) {
                 if (tree instanceof PlainText) {
                     String find = references.stream().map(Reference::getValue).sorted().collect(joining("|"));
-                    return new Find(find, true, null, null, null, null, true)
+                    return new Find(find, true, null, null, null, null, true, null)
                             .getVisitor()
                             .visitNonNull(tree, ctx);
                 }
