@@ -70,8 +70,8 @@ public class FindDockerImageUses extends Recipe {
         };
     }
 
-    @Value
     @EqualsAndHashCode(callSuper = false)
+    @Value
     private static class ReferenceFindSearchResultVisitor extends TreeVisitor<Tree, ExecutionContext> {
         Map<Tree, List<Reference>> matches;
 

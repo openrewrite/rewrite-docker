@@ -26,8 +26,8 @@ import org.openrewrite.yaml.tree.Yaml;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class YamlImageReference extends YamlReference {
     Cursor cursor;
 
