@@ -14,13 +14,13 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.internal.DockerfileParser;
-import org.openrewrite.docker.tree.Docker;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Parser;
 import org.openrewrite.SourceFile;
+import org.openrewrite.docker.internal.DockerfileParser;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.internal.EncodingDetectingInputStream;
-import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.tree.ParseError;
 import org.openrewrite.tree.ParsingEventListener;
 import org.openrewrite.tree.ParsingExecutionContextView;

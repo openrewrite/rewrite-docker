@@ -14,7 +14,6 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import lombok.Value;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.quark.Quark;
 import org.openrewrite.text.PlainText;
 import org.openrewrite.text.PlainTextVisitor;
@@ -42,6 +42,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class AsDockerfile extends Recipe {
+    @Nullable
     @Option(displayName = "File pattern",
             description = "A file path glob expression to match from the project root. Blank/null matches all." +
                           "Supports multiple patterns separated by a semicolon `;`.",
@@ -61,7 +62,7 @@ public class AsDockerfile extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        PlainTextVisitor<ExecutionContext> visitor = new PlainTextVisitor<>() {
+        PlainTextVisitor<ExecutionContext> visitor = new PlainTextVisitor<ExecutionContext>() {
             @Override
             public @Nullable Tree visit(@Nullable Tree tree, @NonNull ExecutionContext executionContext) {
                 Optional<SourceFile> maybeDockerfile = Optional.empty();

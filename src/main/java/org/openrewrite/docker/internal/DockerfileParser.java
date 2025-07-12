@@ -14,17 +14,15 @@
  */
 package org.openrewrite.docker.internal;
 
+import org.openrewrite.Tree;
 import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.docker.tree.InstructionName;
 import org.openrewrite.docker.tree.Space;
-import org.openrewrite.Tree;
 import org.openrewrite.marker.Markers;
 
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,11 +38,11 @@ public class DockerfileParser {
     @SuppressWarnings({"RegExpSimplifiable", "RegExpRedundantEscape"})
     static final Pattern heredocPattern = Pattern.compile("<<[-]?(?<heredoc>[A-Z0-9]{3})([ \\t]*(?<redirect>[>]{0,2})[ \\t]*(?<target>[a-zA-Z0-9_.\\-\\/]*))?");
     private final ParserState state = new ParserState();
-    private static final Set<String> instructions = Set.of(
+    private static final Set<String> instructions = new HashSet<>(Arrays.asList(
             "ADD", "ARG", "CMD", "COPY", "ENTRYPOINT", "ENV", "EXPOSE", "FROM", "HEALTHCHECK",
             "LABEL", "MAINTAINER", "ONBUILD", "RUN", "SHELL", "STOPSIGNAL", "USER", "VOLUME",
             "WORKDIR", "#"
-    );
+    ));
 
     private final InstructionParserRegistry registry = new InstructionParserRegistry();
     private final StringBuilder instruction = new StringBuilder();

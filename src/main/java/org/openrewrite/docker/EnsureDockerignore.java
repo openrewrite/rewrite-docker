@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 public class EnsureDockerignore extends ScanningRecipe<EnsureDockerignore.Scanned> {
     private static final String DEFAULT_EXCLUDES = ".env,.log,.tmp,.bak,.swp,.DS_Store,.class,.md,.txt,.adoc,.git,.idea,.vscode,.gradle,.mvn";
 
+    @Nullable
     @Option(
             displayName = "Excludes",
             description = "A comma-separated list of patterns to exclude from the .dockerignore file.",
@@ -63,7 +64,7 @@ public class EnsureDockerignore extends ScanningRecipe<EnsureDockerignore.Scanne
 
     @Override
     public TreeVisitor<?, ExecutionContext> getScanner(Scanned acc) {
-        return new TreeVisitor<>() {
+        return new TreeVisitor<Tree, ExecutionContext>() {
             @Override
             public @Nullable Tree visit(@Nullable Tree tree, ExecutionContext executionContext, Cursor parent) {
                 if (tree == null) {
@@ -99,7 +100,7 @@ public class EnsureDockerignore extends ScanningRecipe<EnsureDockerignore.Scanne
                     return Collections.emptyList();
                 }
 
-                return Collections.singletonList(PlainText.builder()
+                return Arrays.asList(PlainText.builder()
                         .text(toAppend)
                         .sourcePath(target)
                         .build());
@@ -111,7 +112,7 @@ public class EnsureDockerignore extends ScanningRecipe<EnsureDockerignore.Scanne
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor(Scanned acc) {
-        return Preconditions.check(acc.found, new TreeVisitor<>() {
+        return Preconditions.check(acc.found, new TreeVisitor<Tree, ExecutionContext>() {
             @Override
             public @Nullable Tree visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree != null) {
@@ -142,7 +143,7 @@ public class EnsureDockerignore extends ScanningRecipe<EnsureDockerignore.Scanne
         if (excludes == null || excludes.isEmpty()) {
             return "";
         }
-        Set<String> toBeExcluded = new HashSet<>(List.of(excludes.split(",")));
+        Set<String> toBeExcluded = new HashSet<>(Arrays.asList(excludes.split(",")));
         toBeExcluded.removeAll(existingExcludes);
         return toBeExcluded.stream()
                 .map(String::trim)

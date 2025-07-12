@@ -14,10 +14,10 @@
  */
 package org.openrewrite.docker.internal;
 
-import org.openrewrite.docker.tree.Space;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.openrewrite.docker.tree.Space;
 
 @Getter
 @Setter

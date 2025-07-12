@@ -14,11 +14,11 @@
  */
 package org.openrewrite.docker.internal.parsers;
 
+import org.openrewrite.Tree;
 import org.openrewrite.docker.internal.ParserState;
 import org.openrewrite.docker.internal.ParserUtils;
 import org.openrewrite.docker.internal.StringWithPadding;
 import org.openrewrite.docker.tree.*;
-import org.openrewrite.Tree;
 import org.openrewrite.marker.Markers;
 
 import java.util.ArrayList;

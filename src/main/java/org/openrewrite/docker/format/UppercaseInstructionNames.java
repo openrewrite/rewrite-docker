@@ -14,9 +14,6 @@
  */
 package org.openrewrite.docker.format;
 
-import org.openrewrite.docker.DockerIsoVisitor;
-import org.openrewrite.docker.tree.Docker;
-import org.openrewrite.docker.tree.InstructionName;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -24,6 +21,9 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.NlsRewrite;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.DockerIsoVisitor;
+import org.openrewrite.docker.tree.Docker;
+import org.openrewrite.docker.tree.InstructionName;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -41,7 +41,7 @@ public class UppercaseInstructionNames extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.From visitFrom(Docker.From from, ExecutionContext executionContext) {
                 return super.visitFrom(from.withMarkers(from.getMarkers().removeByType(InstructionName.class)), executionContext);

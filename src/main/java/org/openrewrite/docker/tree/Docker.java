@@ -14,18 +14,20 @@
  */
 package org.openrewrite.docker.tree;
 
-import org.openrewrite.docker.DockerVisitor;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
+import org.openrewrite.docker.DockerVisitor;
+import org.openrewrite.internal.StringUtils;
 import org.openrewrite.marker.Markers;
 
 import java.lang.ref.SoftReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -244,12 +246,12 @@ public interface Docker extends Tree {
 
         public static Document build(Instruction... instructions) {
             Stage stage = new Stage(Tree.randomId(), Arrays.stream(instructions).collect(Collectors.toCollection(ArrayList::new)), Markers.EMPTY);
-            return new Document(Tree.randomId(), Path.of("Dockerfile"), null, StandardCharsets.UTF_8.name(), false, null,
-                    List.of(stage), Space.EMPTY, Markers.EMPTY);
+            return new Document(Tree.randomId(), Paths.get("Dockerfile"), null, StandardCharsets.UTF_8.name(), false, null,
+                    Collections.singletonList(stage), Space.EMPTY, Markers.EMPTY);
         }
 
         public static Document build(List<Stage> stages) {
-            return new Document(Tree.randomId(), Path.of("Dockerfile"), null, StandardCharsets.UTF_8.name(), false, null,
+            return new Document(Tree.randomId(), Paths.get("Dockerfile"), null, StandardCharsets.UTF_8.name(), false, null,
                     stages, Space.EMPTY, Markers.EMPTY);
         }
 
@@ -331,7 +333,7 @@ public interface Docker extends Tree {
         }
 
         public static Arg build(String key, String value) {
-            return new Arg(Tree.randomId(), Space.EMPTY, List.of(
+            return new Arg(Tree.randomId(), Space.EMPTY, Collections.singletonList(
                     DockerRightPadded.build(new KeyArgs(Space.build(" "), Literal.build(key), Literal.build(value), true, Quoting.UNQUOTED))
             ), Markers.EMPTY, Space.NEWLINE);
         }
@@ -617,7 +619,7 @@ public interface Docker extends Tree {
         public static Env build(String key, String value) {
             return new Env(Tree.randomId(),
                     Space.EMPTY,
-                    List.of(
+                    Collections.singletonList(
                             DockerRightPadded.build(
                                     new KeyArgs(Space.build(" "), Literal.build(key), Literal.build(value), true, Quoting.UNQUOTED)
                             )
@@ -791,7 +793,7 @@ public interface Docker extends Tree {
 
         public From alias(String alias) {
             From result = this;
-            if (this.as.getText() == null || this.as.getText().isBlank()) {
+            if (this.as.getText() == null || StringUtils.isBlank(this.as.getText())) {
                 result = result.withAs(Literal.build("AS").withPrefix(this.as.getPrefix().map(p -> p == null || p.isEmpty() ? " " : p)));
             }
             return result.withAlias(this.alias.withText(alias).withPrefix(this.alias.getPrefix().map(p -> p == null || p.isEmpty() ? " " : p)));
@@ -815,7 +817,7 @@ public interface Docker extends Tree {
                     Literal.build(null).withPrefix(Space.build(" ")),
                     Literal.build(null).withPrefix(Space.build(" ")),
                     Literal.build(null).withPrefix(Space.build(" ")),
-                    alias != null && !alias.isBlank() ? Literal.build("AS").withPrefix(Space.build(" ")) : null,
+                    alias != null && !StringUtils.isBlank(alias) ? Literal.build("AS").withPrefix(Space.build(" ")) : null,
                     Literal.build(alias).withPrefix(Space.build(" ")),
                     Space.EMPTY,
                     Markers.EMPTY,
@@ -901,7 +903,7 @@ public interface Docker extends Tree {
         }
 
         public static Label build(String key, String value) {
-            return new Label(Tree.randomId(), Space.EMPTY, List.of(
+            return new Label(Tree.randomId(), Space.EMPTY, Collections.singletonList(
                     DockerRightPadded.build(new KeyArgs(Space.build(" "), Literal.build(key), Literal.build(value), true, Quoting.UNQUOTED))
             ), Markers.EMPTY, Space.NEWLINE);
         }

@@ -14,12 +14,12 @@
  */
 package org.openrewrite.docker.internal.parsers;
 
+import lombok.Getter;
+import lombok.Value;
 import org.openrewrite.docker.internal.ParserState;
 import org.openrewrite.docker.internal.StringWithPadding;
 import org.openrewrite.docker.tree.Form;
 import org.openrewrite.docker.tree.Space;
-import lombok.Getter;
-import lombok.Value;
 
 abstract class CommandLikeInstructionParser implements InstructionParser {
     @Value

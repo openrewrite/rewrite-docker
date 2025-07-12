@@ -16,6 +16,7 @@ package org.openrewrite.docker.internal;
 
 import org.openrewrite.docker.internal.parsers.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class InstructionParserRegistry implements ParserRegistry {
 
-    private final List<InstructionParser> parsers = List.of(
+    private final List<InstructionParser> parsers = Arrays.asList(
             new FromInstructionParser(),
             new RunInstructionParser(),
             new OnBuildInstructionParser(this),

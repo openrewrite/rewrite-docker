@@ -14,12 +14,12 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.openrewrite.*;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.marker.SearchResult;
 
@@ -72,7 +72,7 @@ public class AddOrUpdateDirective extends ScanningRecipe<AddOrUpdateDirective.Sc
         acc.targetKey = key;
         acc.targetValue = value;
 
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Document visitDocument(Docker.Document dockerfile, ExecutionContext ctx) {
                 dockerfile = super.visitDocument(dockerfile, ctx);
@@ -103,7 +103,7 @@ public class AddOrUpdateDirective extends ScanningRecipe<AddOrUpdateDirective.Sc
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor(Scanned acc) {
-        return Preconditions.check(acc.requiresUpdate, new DockerIsoVisitor<>() {
+        return Preconditions.check(acc.requiresUpdate, new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Document visitDocument(Docker.Document dockerfile, ExecutionContext ctx) {
                 dockerfile = super.visitDocument(dockerfile, ctx); // visit to hit the directive case

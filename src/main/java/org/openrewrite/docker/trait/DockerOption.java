@@ -14,12 +14,12 @@
  */
 package org.openrewrite.docker.trait;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.trait.SimpleTraitMatcher;
 import org.openrewrite.trait.Trait;
 

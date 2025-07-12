@@ -14,7 +14,6 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +23,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.tree.Docker;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,7 +75,7 @@ public class ChangeImage extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.From visitFrom(Docker.From from, ExecutionContext executionContext) {
                 if (matchImage == null || newImage == null) {

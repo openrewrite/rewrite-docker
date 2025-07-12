@@ -14,14 +14,14 @@
  */
 package org.openrewrite.docker.analysis;
 
-import org.openrewrite.docker.DockerIsoVisitor;
-import org.openrewrite.docker.table.ImageUseReport;
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.ScanningRecipe;
 import org.openrewrite.SourceFile;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.DockerIsoVisitor;
+import org.openrewrite.docker.table.ImageUseReport;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.marker.SearchResult;
 
 import java.nio.file.Path;
@@ -51,7 +51,7 @@ public class ListImages extends ScanningRecipe<List<ImageUseReport.Row>> {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getScanner(List<ImageUseReport.Row> acc) {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Document visitDocument(Docker.Document dockerfile, ExecutionContext ctx) {
                 Path file = dockerfile.getSourcePath();

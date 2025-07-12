@@ -14,12 +14,13 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
+import org.openrewrite.docker.tree.Docker;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +35,7 @@ public class SetImagePlatform extends Recipe {
             example = "linux/amd64")
     String platform;
 
+    @Nullable
     @Option(displayName = "A regular expression to locate an image entry.",
             description = "A regular expression to locate an image entry, defaults to `.+` (all images).",
             example = ".*",
@@ -52,7 +54,7 @@ public class SetImagePlatform extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.From visitFrom(Docker.From from, ExecutionContext executionContext) {
                 from = super.visitFrom(from, executionContext);

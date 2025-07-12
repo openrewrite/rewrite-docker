@@ -30,7 +30,7 @@ class ListRemoteFilesTest implements RewriteTest {
                         .typeValidationOptions(TypeValidation.builder().immutableScanning(false).build())
                         .dataTableAsCsv(RemoteFileReport.class,
                                 """
-                                path,url
+                                sourcePath,url
                                 Dockerfile,"https://example.com/file.txt"
                                 old.containerfile,"https://example.com/file2.txt"
                                 """),

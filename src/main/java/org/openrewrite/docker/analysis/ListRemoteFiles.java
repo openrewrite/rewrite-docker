@@ -14,14 +14,14 @@
  */
 package org.openrewrite.docker.analysis;
 
-import org.openrewrite.docker.DockerIsoVisitor;
-import org.openrewrite.docker.table.RemoteFileReport;
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.ScanningRecipe;
 import org.openrewrite.SourceFile;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.DockerIsoVisitor;
+import org.openrewrite.docker.table.RemoteFileReport;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.marker.SearchResult;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class ListRemoteFiles extends ScanningRecipe<List<RemoteFileReport.Row>> 
 
     @Override
     public TreeVisitor<?, ExecutionContext> getScanner(List<RemoteFileReport.Row> acc) {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Document visitDocument(Docker.Document dockerfile, ExecutionContext ctx) {
                 if (dockerfile.getStages() != null) {

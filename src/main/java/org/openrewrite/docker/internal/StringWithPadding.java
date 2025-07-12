@@ -14,12 +14,12 @@
  */
 package org.openrewrite.docker.internal;
 
-import org.openrewrite.docker.tree.Space;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.Accessors;
+import org.openrewrite.docker.tree.Space;
 
 @Value
 @EqualsAndHashCode(callSuper = false)

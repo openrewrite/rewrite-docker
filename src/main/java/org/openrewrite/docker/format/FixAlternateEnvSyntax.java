@@ -14,10 +14,6 @@
  */
 package org.openrewrite.docker.format;
 
-import org.openrewrite.docker.DockerIsoVisitor;
-import org.openrewrite.docker.tree.Docker;
-import org.openrewrite.docker.tree.DockerRightPadded;
-import org.openrewrite.docker.tree.Quoting;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -25,6 +21,10 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.NlsRewrite;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.DockerIsoVisitor;
+import org.openrewrite.docker.tree.Docker;
+import org.openrewrite.docker.tree.DockerRightPadded;
+import org.openrewrite.docker.tree.Quoting;
 import org.openrewrite.internal.ListUtils;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class FixAlternateEnvSyntax extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Env visitEnv(Docker.Env env, ExecutionContext executionContext) {
                 // note that we will not "undo" Docker's documented caveat.

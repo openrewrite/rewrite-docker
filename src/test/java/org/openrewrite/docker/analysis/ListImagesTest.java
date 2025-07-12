@@ -30,7 +30,7 @@ class ListImagesTest implements RewriteTest {
                         .typeValidationOptions(TypeValidation.builder().immutableScanning(false).build())
                         .dataTableAsCsv(ImageUseReport.class,
                         """
-                        path,image,tag,digest,platform,alias,stageNumber
+                        sourcePath,image,tag,digest,platform,alias,stageNumber
                         Dockerfile,alpine,latest,,,,0
                         old.dockerfile,alpine,latest,,,build,0
                         nested/Dockerfile,alpine,latest,,linux/amd64,build,0

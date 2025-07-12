@@ -14,10 +14,10 @@
  */
 package org.openrewrite.docker.internal.parsers;
 
+import org.openrewrite.Tree;
 import org.openrewrite.docker.internal.ParserState;
 import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.docker.tree.Space;
-import org.openrewrite.Tree;
 import org.openrewrite.marker.Markers;
 
 public class AddInstructionParser extends AddLikeInstructionParser {

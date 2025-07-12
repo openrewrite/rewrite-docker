@@ -14,15 +14,16 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.tree.Docker;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class RemoveImagePlatform extends Recipe {
+    @Nullable
     @Option(displayName = "A regular expression to locate an image entry.",
             description = "A regular expression to locate an image entry, defaults to `.+` (all images).",
             example = ".*",
@@ -50,7 +52,7 @@ public class RemoveImagePlatform extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.From visitFrom(Docker.From from, ExecutionContext executionContext) {
                 String emptyPlatform = "";

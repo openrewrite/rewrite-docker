@@ -14,9 +14,9 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.trait.DockerLiteral;
 import lombok.*;
 import org.openrewrite.*;
+import org.openrewrite.docker.trait.DockerLiteral;
 import org.openrewrite.marker.Marker;
 
 import java.util.UUID;

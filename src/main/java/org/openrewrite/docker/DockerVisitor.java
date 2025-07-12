@@ -14,12 +14,12 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
-import org.openrewrite.docker.tree.DockerRightPadded;
-import org.openrewrite.docker.tree.Space;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.tree.Docker;
+import org.openrewrite.docker.tree.DockerRightPadded;
+import org.openrewrite.docker.tree.Space;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.marker.Markers;
 

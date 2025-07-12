@@ -14,7 +14,6 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -23,6 +22,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.NlsRewrite;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.docker.tree.Docker;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.marker.Marker;
 
@@ -45,7 +45,7 @@ public class NameAllStages extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new DockerIsoVisitor<>() {
+        return new DockerIsoVisitor<ExecutionContext>() {
             @Override
             public Docker.Document visitDocument(Docker.Document dockerfile, ExecutionContext ctx) {
                 for (int i = dockerfile.getStages().size() - 1; i >= 0; i--) {

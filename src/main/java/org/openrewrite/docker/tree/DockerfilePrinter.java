@@ -14,11 +14,11 @@
  */
 package org.openrewrite.docker.tree;
 
-import org.openrewrite.docker.DockerVisitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.Cursor;
 import org.openrewrite.PrintOutputCapture;
+import org.openrewrite.docker.DockerVisitor;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.marker.Marker;
 import org.openrewrite.marker.Markers;

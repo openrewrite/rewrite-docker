@@ -14,13 +14,14 @@
  */
 package org.openrewrite.docker;
 
-import org.openrewrite.docker.trait.Traits;
-import org.openrewrite.docker.tree.Docker;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
+import org.openrewrite.docker.trait.Traits;
+import org.openrewrite.docker.tree.Docker;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -32,6 +33,7 @@ public class ModifyOptionValue extends Recipe {
             example = ".*/mount/.*")
     String matchKey;
 
+    @Nullable
     @Option(displayName = "Match value regex",
             description = "A regular expression to match against text of the value.",
             example = ".*/var/lib/apt.*",
@@ -43,6 +45,7 @@ public class ModifyOptionValue extends Recipe {
             example = "java-21")
     String replacementText;
 
+    @Nullable
     @Option(displayName = "The parent instruction",
             description = "An uppercase Docker instruction to match against exactly. " +
                           "This is not a regex match, but a case-sensitive exact match. " +
@@ -52,6 +55,7 @@ public class ModifyOptionValue extends Recipe {
             required = false)
     String parent;
 
+    @Nullable
     @Option(displayName = "Match instruction regex",
             description = "A regular expression to match against the full instruction text.",
             example = ".*https://.+",
