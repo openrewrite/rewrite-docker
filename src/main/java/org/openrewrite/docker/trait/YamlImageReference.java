@@ -47,7 +47,8 @@ public class YamlImageReference extends YamlReference {
                     if (found.get()) {
                         found.set(false);
                         return new YamlImageReference(cursor);
-                    } else if ("image".equals(((Yaml.Scalar) value).getValue())) {
+                    }
+                    if ("image".equals(((Yaml.Scalar) value).getValue())) {
                         found.set(true);
                     }
                 }
