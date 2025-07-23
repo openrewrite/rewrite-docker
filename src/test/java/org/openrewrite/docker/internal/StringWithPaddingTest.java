@@ -27,13 +27,13 @@ class StringWithPaddingTest {
 
     static Stream<TestCase> provideTestCases() {
         return Stream.of(
-                new TestCase("  content  ", "content", "  ", "  "),
-                new TestCase("\tcontent\t", "content", "\t", "\t"),
-                new TestCase("content", "content", "", ""),
-                new TestCase("  content", "content", "  ", ""),
-                new TestCase("content  ", "content", "", "  "),
-                new TestCase("", "", "", ""),
-                new TestCase("  ", "", "  ", "")
+          new TestCase("  content  ", "content", "  ", "  "),
+          new TestCase("\tcontent\t", "content", "\t", "\t"),
+          new TestCase("content", "content", "", ""),
+          new TestCase("  content", "content", "  ", ""),
+          new TestCase("content  ", "content", "", "  "),
+          new TestCase("", "", "", ""),
+          new TestCase("  ", "", "  ", "")
         );
     }
 

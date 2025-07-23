@@ -53,7 +53,7 @@ public class EnvInstructionParser implements InstructionParser {
             // The rest of the args (if any) should be combined as the value for the first key
             if (args.size() > 1) {
                 StringBuilder combinedValue = getCombinedValue(args);
-                Docker.KeyArgs updatedFirstKey = Docker.KeyArgs.build(firstKey.key(),combinedValue.toString()).withHasEquals(false);
+                Docker.KeyArgs updatedFirstKey = Docker.KeyArgs.build(firstKey.key(), combinedValue.toString()).withHasEquals(false);
                 processedArgs.add(args.get(0).withElement(updatedFirstKey));
             } else {
                 // If there are no other args, keep the first one as is

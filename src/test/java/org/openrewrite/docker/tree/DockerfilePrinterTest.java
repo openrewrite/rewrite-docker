@@ -28,7 +28,7 @@ class DockerfilePrinterTest {
     @Test
     void visitFrom() {
         Docker.Document doc = Docker.Document.build(
-                Docker.From.build("alpine:latest").withEol(Space.EMPTY)
+          Docker.From.build("alpine:latest").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "FROM alpine:latest";
@@ -38,9 +38,9 @@ class DockerfilePrinterTest {
     @Test
     void visitFromLowercased() {
         Docker.Document doc = Docker.Document.build(
-                Docker.From.build("alpine:latest")
-                        .withEol(Space.EMPTY)
-                        .withMarkers(Markers.build(List.of(new InstructionName(Tree.randomId(), "from"))))
+          Docker.From.build("alpine:latest")
+            .withEol(Space.EMPTY)
+            .withMarkers(Markers.build(List.of(new InstructionName(Tree.randomId(), "from"))))
         ).withEof(Space.EMPTY);
 
         String expected = "from alpine:latest";
@@ -50,9 +50,9 @@ class DockerfilePrinterTest {
     @Test
     void visitFromIgnoreInvalidInstructionName() {
         Docker.Document doc = Docker.Document.build(
-                Docker.From.build("alpine:latest")
-                        .withEol(Space.EMPTY)
-                        .withMarkers(Markers.build(List.of(new InstructionName(Tree.randomId(), "apples"))))
+          Docker.From.build("alpine:latest")
+            .withEol(Space.EMPTY)
+            .withMarkers(Markers.build(List.of(new InstructionName(Tree.randomId(), "apples"))))
         ).withEof(Space.EMPTY);
 
         String expected = "FROM alpine:latest";
@@ -62,9 +62,9 @@ class DockerfilePrinterTest {
     @Test
     void visitFromFull() {
         Docker.Document doc = Docker.Document.build(
-                Docker.From.build("alpine:latest")
-                        .alias("build")
-                        .platform("linux/amd64").withEol(Space.EMPTY)
+          Docker.From.build("alpine:latest")
+            .alias("build")
+            .platform("linux/amd64").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "FROM --platform=linux/amd64 alpine:latest AS build";
@@ -74,7 +74,7 @@ class DockerfilePrinterTest {
     @Test
     void visitComment() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Comment.build("This is a comment").withEol(Space.EMPTY)
+          Docker.Comment.build("This is a comment").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "# This is a comment";
@@ -84,7 +84,7 @@ class DockerfilePrinterTest {
     @Test
     void visitMultilineComment() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Comment.build("This is a comment\nwith multiple lines").withEol(Space.EMPTY)
+          Docker.Comment.build("This is a comment\nwith multiple lines").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "# This is a comment\n# with multiple lines";
@@ -94,7 +94,7 @@ class DockerfilePrinterTest {
     @Test
     void visitDirective() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Directive.build("escape", "'").withEol(Space.EMPTY)
+          Docker.Directive.build("escape", "'").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "# escape='";
@@ -104,8 +104,8 @@ class DockerfilePrinterTest {
     @Test
     void visitRun() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Run.build("echo Hello World").withEol(Space.NEWLINE),
-                Docker.Run.build("echo Goodbye World").withEol(Space.EMPTY)
+          Docker.Run.build("echo Hello World").withEol(Space.NEWLINE),
+          Docker.Run.build("echo Goodbye World").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "RUN echo Hello World\nRUN echo Goodbye World";
@@ -115,13 +115,13 @@ class DockerfilePrinterTest {
     @Test
     void visitRunWithLeftAlignedHeredoc() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Run.build("""
-                                 <<EOF
-                                 apt-get update
-                                 apt-get upgrade -y
-                                 apt-get install -y ...
-                                 EOF
-                                 """).withEol(Space.EMPTY)
+          Docker.Run.build("""
+                           <<EOF
+                           apt-get update
+                           apt-get upgrade -y
+                           apt-get install -y ...
+                           EOF
+                           """).withEol(Space.EMPTY)
         );
 
         String expected = """
@@ -137,13 +137,13 @@ class DockerfilePrinterTest {
     @Test
     void visitRunWithIndentedHeredoc() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Run.build("""
-                                 python3 <<EOF
-                                 with open("/hello", "w") as f:
-                                     print("Hello", file=f)
-                                     print("World", file=f)
-                                 EOF
-                                 """).withEol(Space.EMPTY)
+          Docker.Run.build("""
+                           python3 <<EOF
+                           with open("/hello", "w") as f:
+                               print("Hello", file=f)
+                               print("World", file=f)
+                           EOF
+                           """).withEol(Space.EMPTY)
         );
 
         String expected = """
@@ -159,7 +159,7 @@ class DockerfilePrinterTest {
     @Test
     void visitLabelUnquoted() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Label.build("version", "1.0").withEol(Space.EMPTY)
+          Docker.Label.build("version", "1.0").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "LABEL version=1.0";
@@ -169,7 +169,7 @@ class DockerfilePrinterTest {
     @Test
     void visitLabelQuoted() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Label.build("version", "\"1.0\"").withEol(Space.EMPTY)
+          Docker.Label.build("version", "\"1.0\"").withEol(Space.EMPTY)
         ).withEof(Space.EMPTY);
 
         String expected = "LABEL version=\"1.0\"";
@@ -179,9 +179,9 @@ class DockerfilePrinterTest {
     @Test
     void visitLabelMixedQuotes() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Label.build("version", "1.0"),
-                Docker.Label.build("author", "\"Jim\""),
-                Docker.Label.build("description", "'A simple Dockerfile'")
+          Docker.Label.build("version", "1.0"),
+          Docker.Label.build("author", "\"Jim\""),
+          Docker.Label.build("description", "'A simple Dockerfile'")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -195,11 +195,11 @@ class DockerfilePrinterTest {
     @Test
     void visitLabelMultiplePerLine() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Label.build(
-                        Docker.KeyArgs.build("version", "1.0"),
-                        Docker.KeyArgs.build("author", "\"Jim\""),
-                        Docker.KeyArgs.build("description", "'A simple Dockerfile'")
-                )
+          Docker.Label.build(
+            Docker.KeyArgs.build("version", "1.0"),
+            Docker.KeyArgs.build("author", "\"Jim\""),
+            Docker.KeyArgs.build("description", "'A simple Dockerfile'")
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -211,7 +211,7 @@ class DockerfilePrinterTest {
     @Test
     void visitMaintainer() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Maintainer.build("Jim S <jim@example.com>")
+          Docker.Maintainer.build("Jim S <jim@example.com>")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -223,7 +223,7 @@ class DockerfilePrinterTest {
     @Test
     void visitExpose() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Expose.build("8080", "8081")
+          Docker.Expose.build("8080", "8081")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -235,7 +235,7 @@ class DockerfilePrinterTest {
     @Test
     void visitExposeWithMixedPortsProvided() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Expose.build("8080", "8081/udp", "8082/tcp")
+          Docker.Expose.build("8080", "8081/udp", "8082/tcp")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -247,8 +247,8 @@ class DockerfilePrinterTest {
     @Test
     void visitEnvMultiline() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Env.build("ENV1", "value1"),
-                Docker.Env.build("ENV2", "value2")
+          Docker.Env.build("ENV1", "value1"),
+          Docker.Env.build("ENV2", "value2")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -261,10 +261,10 @@ class DockerfilePrinterTest {
     @Test
     void visitEnvSingleLine() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Env.build(
-                        Docker.KeyArgs.build("ENV1", "value1"),
-                        Docker.KeyArgs.build("ENV2", "value2")
-                )
+          Docker.Env.build(
+            Docker.KeyArgs.build("ENV1", "value1"),
+            Docker.KeyArgs.build("ENV2", "value2")
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -276,12 +276,12 @@ class DockerfilePrinterTest {
     @Test
     void visitEnvSingleLineDeprecatedSyntaxMixed() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Env.build(
-                        Docker.KeyArgs.build("ENV1", "value1"),
-                        Docker.KeyArgs.build("ENV2", "\"value2\"").withHasEquals(false),
-                        Docker.KeyArgs.build("ENV3", "${ENV1}"),
-                        Docker.KeyArgs.build("ENV4", "${ENV2}").withHasEquals(false)
-                )
+          Docker.Env.build(
+            Docker.KeyArgs.build("ENV1", "value1"),
+            Docker.KeyArgs.build("ENV2", "\"value2\"").withHasEquals(false),
+            Docker.KeyArgs.build("ENV3", "${ENV1}"),
+            Docker.KeyArgs.build("ENV4", "${ENV2}").withHasEquals(false)
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -293,20 +293,20 @@ class DockerfilePrinterTest {
     @Test
     void visitAddComplex() {
         Docker.Document doc = Docker.Document.build(
-                new Docker.Add(
-                        Tree.randomId(),
-                        Space.EMPTY,
-                        List.of(
-                            Docker.Option.build("--keep-git-dir", "false")
-                        ),
-                        List.of(
-                            Docker.Literal.build("https://example.com/archive.zip").withPrefix(Space.build(" "))
-                        ),
-                            Docker.Literal.build("/usr/src/things/").withPrefix(Space.build(" ")
-                        ),
-                        Markers.EMPTY,
-                        Space.NEWLINE
-                )
+          new Docker.Add(
+            Tree.randomId(),
+            Space.EMPTY,
+            List.of(
+              Docker.Option.build("--keep-git-dir", "false")
+            ),
+            List.of(
+              Docker.Literal.build("https://example.com/archive.zip").withPrefix(Space.build(" "))
+            ),
+            Docker.Literal.build("/usr/src/things/").withPrefix(Space.build(" ")
+            ),
+            Markers.EMPTY,
+            Space.NEWLINE
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -318,19 +318,19 @@ class DockerfilePrinterTest {
     @Test
     void visitCopy() {
         Docker.Document doc = Docker.Document.build(
-                new Docker.Copy(
-                        Tree.randomId(),
-                        Space.EMPTY,
-                        List.of(
-                            Docker.Option.build("--chown", "user:group")
-                        ),
-                        List.of(
-                            Docker.Literal.build("src").withPrefix(Space.build(" "))
-                        ),
-                        Docker.Literal.build("/dest").withPrefix(Space.build(" ")),
-                        Markers.EMPTY,
-                        Space.NEWLINE
-                )
+          new Docker.Copy(
+            Tree.randomId(),
+            Space.EMPTY,
+            List.of(
+              Docker.Option.build("--chown", "user:group")
+            ),
+            List.of(
+              Docker.Literal.build("src").withPrefix(Space.build(" "))
+            ),
+            Docker.Literal.build("/dest").withPrefix(Space.build(" ")),
+            Markers.EMPTY,
+            Space.NEWLINE
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -342,7 +342,7 @@ class DockerfilePrinterTest {
     @Test
     void visitEntrypointExecForm() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Entrypoint.build("python3", "app.py")
+          Docker.Entrypoint.build("python3", "app.py")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -354,7 +354,7 @@ class DockerfilePrinterTest {
     @Test
     void visitEntrypointShellForm() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Entrypoint.build(Form.SHELL,"exec", "top", "-b")
+          Docker.Entrypoint.build(Form.SHELL, "exec", "top", "-b")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -366,7 +366,7 @@ class DockerfilePrinterTest {
     @Test
     void visitVolumeExec() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Volume.build("/data")
+          Docker.Volume.build("/data")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -378,7 +378,7 @@ class DockerfilePrinterTest {
     @Test
     void visitVolumeShell() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Volume.build(Form.SHELL, "/data")
+          Docker.Volume.build(Form.SHELL, "/data")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -390,7 +390,7 @@ class DockerfilePrinterTest {
     @Test
     void visitUserSimple() {
         Docker.Document doc = Docker.Document.build(
-                Docker.User.build("user")
+          Docker.User.build("user")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -402,7 +402,7 @@ class DockerfilePrinterTest {
     @Test
     void visitWorkDir() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Workdir.build("/app")
+          Docker.Workdir.build("/app")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -414,9 +414,9 @@ class DockerfilePrinterTest {
     @Test
     void visitOnBuild() {
         Docker.Document doc = Docker.Document.build(
-                Docker.OnBuild.build(
-                        Docker.Run.build("echo Hello World").withEol(Space.EMPTY)
-                )
+          Docker.OnBuild.build(
+            Docker.Run.build("echo Hello World").withEol(Space.EMPTY)
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -428,7 +428,7 @@ class DockerfilePrinterTest {
     @Test
     void visitStopSignal() {
         Docker.Document doc = Docker.Document.build(
-                Docker.StopSignal.build("SIGTERM")
+          Docker.StopSignal.build("SIGTERM")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -440,7 +440,7 @@ class DockerfilePrinterTest {
     @Test
     void visitStopSignalNumerical() {
         Docker.Document doc = Docker.Document.build(
-                Docker.StopSignal.build("15")
+          Docker.StopSignal.build("15")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -453,27 +453,27 @@ class DockerfilePrinterTest {
     void visitHealthCheck() {
         Docker.Document doc = Docker.Document.build(
 
-                new Docker.Healthcheck(
-                        Tree.randomId(),
-                        Space.EMPTY,
-                        Docker.Healthcheck.Type.CMD,
-                        List.of(
-                                DockerRightPadded.build(
-                                    Docker.KeyArgs.build("--interval", "30s")
-                                ),
-                                DockerRightPadded.build(
-                                    Docker.KeyArgs.build("--timeout", "10s")
-                                ),
-                                DockerRightPadded.build(
-                                    Docker.KeyArgs.build("--retries", "3")
-                                )
-                        ),
-                        List.of(
-                            Docker.Literal.build("curl -f http://localhost/ || exit 1").withPrefix(Space.build(" "))
-                        ),
-                        Markers.EMPTY,
-                        Space.NEWLINE
-                )
+          new Docker.Healthcheck(
+            Tree.randomId(),
+            Space.EMPTY,
+            Docker.Healthcheck.Type.CMD,
+            List.of(
+              DockerRightPadded.build(
+                Docker.KeyArgs.build("--interval", "30s")
+              ),
+              DockerRightPadded.build(
+                Docker.KeyArgs.build("--timeout", "10s")
+              ),
+              DockerRightPadded.build(
+                Docker.KeyArgs.build("--retries", "3")
+              )
+            ),
+            List.of(
+              Docker.Literal.build("curl -f http://localhost/ || exit 1").withPrefix(Space.build(" "))
+            ),
+            Markers.EMPTY,
+            Space.NEWLINE
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -485,15 +485,15 @@ class DockerfilePrinterTest {
     @Test
     void visitHealthCheckNone() {
         Docker.Document doc = Docker.Document.build(
-                new Docker.Healthcheck(
-                        Tree.randomId(),
-                        Space.EMPTY,
-                        Docker.Healthcheck.Type.NONE,
-                        List.of(),
-                        List.of(),
-                        Markers.EMPTY,
-                        Space.NEWLINE
-                )
+          new Docker.Healthcheck(
+            Tree.randomId(),
+            Space.EMPTY,
+            Docker.Healthcheck.Type.NONE,
+            List.of(),
+            List.of(),
+            Markers.EMPTY,
+            Space.NEWLINE
+          )
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -505,7 +505,7 @@ class DockerfilePrinterTest {
     @Test
     void visitShell() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Shell.build("sh", "-c").withEol(Space.NEWLINE)
+          Docker.Shell.build("sh", "-c").withEol(Space.NEWLINE)
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -517,7 +517,7 @@ class DockerfilePrinterTest {
     @Test
     void visitCmdShellForm() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Cmd.build(Form.SHELL, "echo Hello World")
+          Docker.Cmd.build(Form.SHELL, "echo Hello World")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -529,7 +529,7 @@ class DockerfilePrinterTest {
     @Test
     void visitCmdExecForm() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Cmd.build(Form.EXEC, "echo", "Hello World")
+          Docker.Cmd.build(Form.EXEC, "echo", "Hello World")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -541,7 +541,7 @@ class DockerfilePrinterTest {
     @Test
     void visitArg() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Arg.build("MY_ARG", "default_value")
+          Docker.Arg.build("MY_ARG", "default_value")
         ).withEof(Space.EMPTY);
 
         String expected = """
@@ -553,7 +553,7 @@ class DockerfilePrinterTest {
     @Test
     void visitArgNoValue() {
         Docker.Document doc = Docker.Document.build(
-                Docker.Arg.build("MY_ARG", null)
+          Docker.Arg.build("MY_ARG", null)
         ).withEof(Space.EMPTY);
 
         String expected = """

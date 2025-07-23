@@ -108,10 +108,10 @@ public class DockerfilePrinter<P> extends DockerVisitor<PrintOutputCapture<P>> {
     private void instructionName(Docker.Instruction instruction, PrintOutputCapture<P> p) {
         String defaultName = instruction.getClass().getSimpleName();
         p.append(
-            instruction.getMarkers().findFirst(InstructionName.class)
-                    .filter(f -> f.getName().equalsIgnoreCase(defaultName))
-                    .map(InstructionName::getName)
-                    .orElseGet(defaultName::toUpperCase)
+                instruction.getMarkers().findFirst(InstructionName.class)
+                        .filter(f -> f.getName().equalsIgnoreCase(defaultName))
+                        .map(InstructionName::getName)
+                        .orElseGet(defaultName::toUpperCase)
         );
     }
 

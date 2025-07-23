@@ -40,15 +40,15 @@ class DockerfileParserTest {
     void testHeaderStyleComments() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                #
-                # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
-                #
-                # PLEASE DO NOT EDIT IT DIRECTLY.
-                #
+          """
+          #
+          # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+          #
+          # PLEASE DO NOT EDIT IT DIRECTLY.
+          #
 
-                FROM alpine:3.21
-                """.getBytes(StandardCharsets.UTF_8)));
+          FROM alpine:3.21
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 6);
         assertComment((Docker.Comment) stage.getChildren().get(0), "", "", "");
@@ -69,13 +69,13 @@ class DockerfileParserTest {
     void testFlowerboxStyleComments() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                ################################################
-                # ####
-                # This is a comment
-                #####
-                ################################################
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          ################################################
+          # ####
+          # This is a comment
+          #####
+          ################################################
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 5);
         // note that this is one character less than the first line, because the first # is the "instruction"
@@ -818,11 +818,11 @@ class DockerfileParserTest {
     void testCopyWithHeredoc() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                COPY <<EOF /usr/share/nginx/html/index.html
-                (your index page goes here)
-                EOF
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          COPY <<EOF /usr/share/nginx/html/index.html
+          (your index page goes here)
+          EOF
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -860,11 +860,11 @@ class DockerfileParserTest {
     void testRunMultiline() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \\
-                  --mount=type=cache,target=/var/lib/apt,sharing=locked \\
-                  apt update && apt-get --no-install-recommends install -y gcc
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \\
+            --mount=type=cache,target=/var/lib/apt,sharing=locked \\
+            apt update && apt-get --no-install-recommends install -y gcc
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -897,12 +897,12 @@ class DockerfileParserTest {
     void testRunMultilineClearsContinuation() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN echo Hello \\
-                    World
-                # This is a comment
-                # This is another comment
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN echo Hello \\
+              World
+          # This is a comment
+          # This is another comment
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 3);
 
@@ -933,12 +933,12 @@ class DockerfileParserTest {
     void testRunWithHeredoc() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN <<EOF
-                apt-get update
-                apt-get install -y curl
-                EOF
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN <<EOF
+          apt-get update
+          apt-get install -y curl
+          EOF
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -970,13 +970,13 @@ class DockerfileParserTest {
     void testRunWithHereDocPythonExample() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN python3 <<EOF
-                with open("/hello", "w") as f:
-                    print("Hello", file=f)
-                    print("World", file=f)
-                EOF
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN python3 <<EOF
+          with open("/hello", "w") as f:
+              print("Hello", file=f)
+              print("World", file=f)
+          EOF
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -1009,12 +1009,12 @@ class DockerfileParserTest {
     void testRunWithHeredocRedirection() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN python3 <<EOF > /hello
-                print("Hello")
-                print("World")
-                EOF
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN python3 <<EOF > /hello
+          print("Hello")
+          print("World")
+          EOF
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -1037,12 +1037,12 @@ class DockerfileParserTest {
     void testRunWithHeredocAfterOtherCommands() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN echo Hello World <<EOF
-                apt-get update
-                apt-get install -y curl
-                EOF
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN echo Hello World <<EOF
+          apt-get update
+          apt-get install -y curl
+          EOF
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -1069,20 +1069,20 @@ class DockerfileParserTest {
     void testFullDockerfile() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                FROM alpine:latest
-                RUN echo Hello World
-                CMD echo Goodbye World
-                ENTRYPOINT [ "echo", "Hello" ]
-                EXPOSE 8080 8081 \\\n\t\t9999/udp
-                SHELL [ "powershell", "-Command" ]
-                USER root:admin
-                VOLUME [ "/var/log", "/var/log2" ]
-                WORKDIR /var/log
-                LABEL foo=bar baz=qux
-                STOPSIGNAL SIGKILL
-                HEALTHCHECK NONE
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          FROM alpine:latest
+          RUN echo Hello World
+          CMD echo Goodbye World
+          ENTRYPOINT [ "echo", "Hello" ]
+          EXPOSE 8080 8081 \\\n\t\t9999/udp
+          SHELL [ "powershell", "-Command" ]
+          USER root:admin
+          VOLUME [ "/var/log", "/var/log2" ]
+          WORKDIR /var/log
+          LABEL foo=bar baz=qux
+          STOPSIGNAL SIGKILL
+          HEALTHCHECK NONE
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 12);
 
@@ -1181,12 +1181,12 @@ class DockerfileParserTest {
     void handleMultipleNewlinesEOF() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN echo Hello World
+          """
+          RUN echo Hello World
 
 
 
-                """.getBytes(StandardCharsets.UTF_8)));
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
         Docker.Run cmd = (Docker.Run) stage.getChildren().get(0);
@@ -1204,12 +1204,12 @@ class DockerfileParserTest {
     void handleMultipleCRLFinEOF() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN echo Hello World
-                \r
-                \r
-                \r
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN echo Hello World
+          \r
+          \r
+          \r
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
         Docker.Run cmd = (Docker.Run) stage.getChildren().get(0);
@@ -1227,40 +1227,40 @@ class DockerfileParserTest {
         DockerfileParser parser = new DockerfileParser();
 
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                FROM ubuntu:20.04
-                RUN apt-get update && apt-get install -y build-essential
-                RUN echo "Stage 1 complete" > /stage1.txt
+          """
+          FROM ubuntu:20.04
+          RUN apt-get update && apt-get install -y build-essential
+          RUN echo "Stage 1 complete" > /stage1.txt
 
-                FROM ubuntu:20.04
-                COPY --from=0 /stage1.txt /stage2.txt
-                RUN echo "Stage 2 complete" > /stage2_complete.txt
+          FROM ubuntu:20.04
+          COPY --from=0 /stage1.txt /stage2.txt
+          RUN echo "Stage 2 complete" > /stage2_complete.txt
 
-                FROM ubuntu:20.04
-                COPY --from=1 /stage2_complete.txt /stage3.txt
-                RUN echo "Stage 3 complete" > /stage3_complete.txt
+          FROM ubuntu:20.04
+          COPY --from=1 /stage2_complete.txt /stage3.txt
+          RUN echo "Stage 3 complete" > /stage3_complete.txt
 
-                FROM ubuntu:20.04
-                COPY --from=2 /stage3_complete.txt /final_stage.txt
-                CMD ["cat", "/final_stage.txt"]
-                """.getBytes(StandardCharsets.UTF_8)));
+          FROM ubuntu:20.04
+          COPY --from=2 /stage3_complete.txt /final_stage.txt
+          CMD ["cat", "/final_stage.txt"]
+          """.getBytes(StandardCharsets.UTF_8)));
 
 
         assertNotNull(doc, "Expected document to be non-null but was null");
         assertNotNull(doc.getStages(),
-                "Expected document to have stages but was null");
+          "Expected document to have stages but was null");
         assertEquals(4, doc.getStages().size(),
-                "Expected document to have " + 4 + " stage but was " + doc.getStages().size());
+          "Expected document to have " + 4 + " stage but was " + doc.getStages().size());
 
         Docker.Stage stage = doc.getStages().get(0);
         assertNotNull(stage.getChildren(),
-                "Expected stage to have children but was null");
+          "Expected stage to have children but was null");
 
         for (Docker.Stage docStage : doc.getStages()) {
             assertNotNull(docStage.getChildren(),
-                    "Expected stage to have children but was null");
+              "Expected stage to have children but was null");
             assertEquals(3, docStage.getChildren().size(),
-                    "Expected every stage to have only 3 children but was " + stage.getChildren().size());
+              "Expected every stage to have only 3 children but was " + stage.getChildren().size());
         }
 
         Docker.Stage stage0 = doc.getStages().get(0);
@@ -1385,11 +1385,11 @@ class DockerfileParserTest {
     void testDockerfileWithCommentBetweenContinuationLines() {
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(
-                """
-                RUN echo Hello World \\
-                # This is a comment
-                && echo Goodbye World
-                """.getBytes(StandardCharsets.UTF_8)));
+          """
+          RUN echo Hello World \\
+          # This is a comment
+          && echo Goodbye World
+          """.getBytes(StandardCharsets.UTF_8)));
 
         Docker.Stage stage = assertSingleStageWithChildCount(doc, 1);
 
@@ -1418,12 +1418,12 @@ class DockerfileParserTest {
     @Test
     void testInstructionPrefixWithContinuationCommands() {
         String monster = """
-        ENV LAST_COMMIT=e2db71ff940a8b8c08c4ae894b952bfe7f0cf309
+                         ENV LAST_COMMIT=e2db71ff940a8b8c08c4ae894b952bfe7f0cf309
 
-        RUN set -eux; \\
-        	\\
-        	apk add --no-cache --virtual .build-deps
-        """;
+                         RUN set -eux; \\
+                         	\\
+                         	apk add --no-cache --virtual .build-deps
+                         """;
 
         DockerfileParser parser = new DockerfileParser();
         Docker.Document doc = parser.parse(new ByteArrayInputStream(monster.getBytes(StandardCharsets.UTF_8)));

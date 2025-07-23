@@ -26,27 +26,27 @@ class ListImagesTest implements RewriteTest {
     @Test
     void listImages() {
         rewriteRun(
-                spec -> spec.recipe(new ListImages())
-                        .typeValidationOptions(TypeValidation.builder().immutableScanning(false).build())
-                        .dataTableAsCsv(ImageUseReport.class,
-                        """
-                        sourcePath,image,tag,digest,platform,alias,stageNumber
-                        Dockerfile,alpine,latest,,,,0
-                        old.dockerfile,alpine,latest,,,build,0
-                        nested/Dockerfile,alpine,latest,,linux/amd64,build,0
-                        nested/Dockerfile,debian,latest,,,,1
-                        """),
-                dockerfile(
-                        "FROM alpine:latest",
-                        spec -> spec.path("Dockerfile")),
-                dockerfile(
-                        "FROM alpine:latest AS build",
-                        spec -> spec.path("old.dockerfile")),
-                dockerfile(
-                        """
-                        FROM --platform=linux/amd64 alpine:latest AS build
-                        FROM debian:latest
-                        """, spec -> spec.path("nested/Dockerfile"))
+          spec -> spec.recipe(new ListImages())
+            .typeValidationOptions(TypeValidation.builder().immutableScanning(false).build())
+            .dataTableAsCsv(ImageUseReport.class,
+              """
+              sourcePath,image,tag,digest,platform,alias,stageNumber
+              Dockerfile,alpine,latest,,,,0
+              old.dockerfile,alpine,latest,,,build,0
+              nested/Dockerfile,alpine,latest,,linux/amd64,build,0
+              nested/Dockerfile,debian,latest,,,,1
+              """),
+          dockerfile(
+            "FROM alpine:latest",
+            spec -> spec.path("Dockerfile")),
+          dockerfile(
+            "FROM alpine:latest AS build",
+            spec -> spec.path("old.dockerfile")),
+          dockerfile(
+            """
+            FROM --platform=linux/amd64 alpine:latest AS build
+            FROM debian:latest
+            """, spec -> spec.path("nested/Dockerfile"))
         );
     }
 

@@ -77,7 +77,7 @@ public class AsDockerfile extends Recipe {
                 // this instanceof is required because rewrite may expose an error as a
                 // org.openrewrite.tree.ParseError which extends SourceFile.
                 if (maybeDockerfile.isPresent() && maybeDockerfile.get() instanceof Docker.Document) {
-                    SourceFile input = (SourceFile)tree;
+                    SourceFile input = (SourceFile) tree;
                     Docker.Document dockerfile = (Docker.Document) maybeDockerfile.get();
                     return dockerfile
                             .withId(input.getId())

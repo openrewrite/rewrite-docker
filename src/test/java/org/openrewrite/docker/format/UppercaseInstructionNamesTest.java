@@ -29,80 +29,80 @@ class UppercaseInstructionNamesTest implements RewriteTest {
     @Test
     void uppercaseFrom() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile("from ubuntu:latest", "FROM ubuntu:latest")
+          //language=dockerfile
+          dockerfile("from ubuntu:latest", "FROM ubuntu:latest")
         );
     }
 
     @Test
     void uppercaseRun() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile("run echo hello world", "RUN echo hello world")
+          //language=dockerfile
+          dockerfile("run echo hello world", "RUN echo hello world")
         );
     }
 
     @Test
     void uppercaseCmd() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile("cmd echo hello world", "CMD echo hello world")
+          //language=dockerfile
+          dockerfile("cmd echo hello world", "CMD echo hello world")
         );
     }
 
     @Test
     void uppercaseLabel() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile("label version=1.0", "LABEL version=1.0")
+          //language=dockerfile
+          dockerfile("label version=1.0", "LABEL version=1.0")
         );
     }
 
     @Test
     void uppercaseWorkdir() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("workdir /app", "WORKDIR /app")
+          //language=dockerfile
+          dockerfile("workdir /app", "WORKDIR /app")
         );
     }
 
     @Test
     void uppercaseExpose() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("expose 8080", "EXPOSE 8080")
+          //language=dockerfile
+          dockerfile("expose 8080", "EXPOSE 8080")
         );
     }
 
     @Test
     void uppercaseEnv() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("env KEY=value", "ENV KEY=value")
+          //language=dockerfile
+          dockerfile("env KEY=value", "ENV KEY=value")
         );
     }
 
     @Test
     void uppercaseCopy() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("copy src dest", "COPY src dest")
+          //language=dockerfile
+          dockerfile("copy src dest", "COPY src dest")
         );
     }
 
     @Test
     void uppercaseAdd() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("add src dest", "ADD src dest")
+          //language=dockerfile
+          dockerfile("add src dest", "ADD src dest")
         );
     }
 
     @Test
     void uppercaseEntrypoint() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("entrypoint echo hello", "ENTRYPOINT echo hello")
+          //language=dockerfile
+          dockerfile("entrypoint echo hello", "ENTRYPOINT echo hello")
         );
     }
 
@@ -110,48 +110,48 @@ class UppercaseInstructionNamesTest implements RewriteTest {
     @Test
     void uppercaseVolume() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("volume /data", "VOLUME /data")
+          //language=dockerfile
+          dockerfile("volume /data", "VOLUME /data")
         );
     }
 
     @Test
     void uppercaseStopsignal() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("stopsignal SIGTERM", "STOPSIGNAL SIGTERM")
+          //language=dockerfile
+          dockerfile("stopsignal SIGTERM", "STOPSIGNAL SIGTERM")
         );
     }
 
     @Test
     void uppercaseShell() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("shell [\"/bin/bash\"]", "SHELL [\"/bin/bash\"]")
+          //language=dockerfile
+          dockerfile("shell [\"/bin/bash\"]", "SHELL [\"/bin/bash\"]")
         );
     }
 
     @Test
     void uppercaseHealthcheck() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("healthcheck CMD curl -f http://localhost/", "HEALTHCHECK CMD curl -f http://localhost/")
+          //language=dockerfile
+          dockerfile("healthcheck CMD curl -f http://localhost/", "HEALTHCHECK CMD curl -f http://localhost/")
         );
     }
 
     @Test
     void uppercaseArg() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("arg VERSION=latest", "ARG VERSION=latest")
+          //language=dockerfile
+          dockerfile("arg VERSION=latest", "ARG VERSION=latest")
         );
     }
 
     @Test
     void uppercaseOnbuild() {
         rewriteRun(
-                //language=dockerfile
-                dockerfile("onbuild RUN echo hello", "ONBUILD RUN echo hello")
+          //language=dockerfile
+          dockerfile("onbuild RUN echo hello", "ONBUILD RUN echo hello")
         );
     }
 

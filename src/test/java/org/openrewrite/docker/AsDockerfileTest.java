@@ -27,21 +27,21 @@ import static org.openrewrite.test.SourceSpecs.text;
 class AsDockerfileTest implements RewriteTest {
     /**
      * Assert that the recipe run results in a single Dockerfile with a single FROM statement:
-     *    FROM alpine:latest
+     * FROM alpine:latest
      *
      * @param after The recipe run status
      */
     private static void assertSimpleFrom(RecipeRun after) {
         assertThat(after.getChangeset().getAllResults()).hasSize(1);
         assertThat(Objects.requireNonNull(after.getChangeset().getAllResults().get(0).getAfter()))
-                .isInstanceOf(Docker.Document.class);
+          .isInstanceOf(Docker.Document.class);
 
         Docker.Document doc = (Docker.Document) after.getChangeset().getAllResults().get(0).getAfter();
         assertThat(doc).isNotNull();
         assertThat(doc.getStages()).hasSize(1);
         assertThat(doc.getStages().get(0)).isNotNull();
 
-        Docker.From from =(Docker.From)doc.getStages().get(0).getChildren().get(0);
+        Docker.From from = (Docker.From) doc.getStages().get(0).getChildren().get(0);
         assertThat(from.getImage().getText()).isEqualTo("alpine");
         assertThat(from.getVersion().getText()).isEqualTo(":latest");
     }
@@ -50,16 +50,16 @@ class AsDockerfileTest implements RewriteTest {
     void loadPlainTextAsDockerDocument() {
         rewriteRun(
           spec -> spec.recipe(new AsDockerfile("**/*.build"))
-                  .afterRecipe(AsDockerfileTest::assertSimpleFrom),
-                text(
-                        """
-                        FROM alpine:latest
-                        """,
-                        """
-                        FROM alpine:latest
-                        """,
-                        spec -> spec.path("build/Dockerfile.build")
-                )
+            .afterRecipe(AsDockerfileTest::assertSimpleFrom),
+          text(
+            """
+            FROM alpine:latest
+            """,
+            """
+            FROM alpine:latest
+            """,
+            spec -> spec.path("build/Dockerfile.build")
+          )
         );
     }
 
@@ -67,46 +67,46 @@ class AsDockerfileTest implements RewriteTest {
     void loadPlainTextAllowsMultiplePatterns() {
         rewriteRun(
           spec -> spec.recipe(new AsDockerfile("**/*.build;**/*.docker"))
-                  .afterRecipe(AsDockerfileTest::assertSimpleFrom),
-                text(
-                        """
-                        FROM alpine:latest
-                        """,
-                        """
-                        FROM alpine:latest
-                        """,
-                        spec -> spec.path("build/build.docker")
-                )
+            .afterRecipe(AsDockerfileTest::assertSimpleFrom),
+          text(
+            """
+            FROM alpine:latest
+            """,
+            """
+            FROM alpine:latest
+            """,
+            spec -> spec.path("build/build.docker")
+          )
         );
     }
 
     @Test
     void loadPlainTextWithinDeclarativeRecipe() {
         rewriteRun(
-                  spec -> spec.recipeFromYaml(
-                          //language=yaml
-                          """
-                          type: specs.openrewrite.org/v1beta/recipe
-                          name: org.openrewrite.docker.AsDockerfileTest
-                          displayName: AsDockerfileTest
-                          description: Load plain text as Docker document.
-                          recipeList:
-                            - org.openrewrite.docker.AsDockerfile:
-                                pattern: "**/*.build"
-                            - org.openrewrite.docker.ModifyLiteral:
-                                matchText: "alpine"
-                                replacementText: "myimage"
-                          """,
-                          "org.openrewrite.docker.AsDockerfileTest"),
-                text(
-                        """
-                        FROM alpine:latest
-                        """,
-                        """
-                        FROM myimage:latest
-                        """,
-                        spec -> spec.path("build/build.docker")
-                )
+          spec -> spec.recipeFromYaml(
+            //language=yaml
+            """
+            type: specs.openrewrite.org/v1beta/recipe
+            name: org.openrewrite.docker.AsDockerfileTest
+            displayName: AsDockerfileTest
+            description: Load plain text as Docker document.
+            recipeList:
+              - org.openrewrite.docker.AsDockerfile:
+                  pattern: "**/*.build"
+              - org.openrewrite.docker.ModifyLiteral:
+                  matchText: "alpine"
+                  replacementText: "myimage"
+            """,
+            "org.openrewrite.docker.AsDockerfileTest"),
+          text(
+            """
+            FROM alpine:latest
+            """,
+            """
+            FROM myimage:latest
+            """,
+            spec -> spec.path("build/build.docker")
+          )
         );
     }
 }

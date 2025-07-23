@@ -23,10 +23,10 @@ import lombok.experimental.Accessors;
 /**
  * Represents a Heredoc structure in the context of defining content using
  * a unique indicator, name, and optional redirection target.
- *
+ * <p>
  * The Heredoc class provides a representation of a heredoc-style block with
  * key attributes common in configuration or scripting contexts.
- *
+ * <p>
  * This class is immutable and uses fluent accessors for its properties.
  */
 @Value

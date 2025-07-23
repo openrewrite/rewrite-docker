@@ -28,22 +28,22 @@ class FixAlternateEnvSyntaxTest implements RewriteTest {
     @Test
     void fixEnvSyntax() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile(
-                "ENV key value",
-                "ENV key=value"
-            )
+          //language=dockerfile
+          dockerfile(
+            "ENV key value",
+            "ENV key=value"
+          )
         );
     }
 
     @Test
     void fixEnvAlternateSyntaxExample() {
         rewriteRun(
-            //language=dockerfile
-            dockerfile(
-                "ENV ONE TWO= THREE=world",
-                "ENV ONE=\"TWO= THREE=world\""
-            )
+          //language=dockerfile
+          dockerfile(
+            "ENV ONE TWO= THREE=world",
+            "ENV ONE=\"TWO= THREE=world\""
+          )
         );
     }
 }

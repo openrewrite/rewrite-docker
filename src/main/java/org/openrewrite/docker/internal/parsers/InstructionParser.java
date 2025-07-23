@@ -38,7 +38,9 @@ public interface InstructionParser {
      */
     default boolean supports(String keyword) {
         return keyword.equalsIgnoreCase(instructionName());
-    };
+    }
+
+    ;
 
     /**
      * Parses a line of a Dockerfile and transforms it into a Docker instruction object.

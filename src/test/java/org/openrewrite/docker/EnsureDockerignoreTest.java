@@ -32,74 +32,74 @@ class EnsureDockerignoreTest implements RewriteTest {
     @Test
     void dockerfileExistsDockerignoreDoesNot() throws IOException {
         rewriteRun(
-                spec -> spec.recipe(new EnsureDockerignore("*.md,*.test")),
-                text(
-                        //language=dockerignore
-                        null,
-                        """
-                        *.md
-                        *.test
-                        """,
-                        spec -> spec.path(Paths.get(".dockerignore"))
-                )
+          spec -> spec.recipe(new EnsureDockerignore("*.md,*.test")),
+          text(
+            //language=dockerignore
+            null,
+            """
+            *.md
+            *.test
+            """,
+            spec -> spec.path(Paths.get(".dockerignore"))
+          )
         );
     }
 
     @Test
     void dockerignoreAlreadyIncludesSomePatterns() throws IOException {
         rewriteRun(
-                spec -> spec.recipe(new EnsureDockerignore("*.md,*.test,*.log,*.tmp,*.bak,*.swp,*.DS_Store"))
-                        .expectedCyclesThatMakeChanges(1),
-                dockerfile(
-                        //language=dockerfile
-                        """
-                        FROM alpine:latest
-                        """,
-                        spec -> spec.path(Paths.get("Dockerfile"))
-                ),
-                text(
-                        //language=dockerignore
-                        """
-                        # This is a comment
-                        *.test
-                        *.DS_Store
-                        *.swp
-                        """,
-                        //language=dockerignore
-                        """
-                        # This is a comment
-                        *.test
-                        *.DS_Store
-                        *.swp
-                        *.bak
-                        *.log
-                        *.md
-                        *.tmp
-                        """,
-                        spec -> spec.path(Paths.get(".dockerignore"))
-                )
+          spec -> spec.recipe(new EnsureDockerignore("*.md,*.test,*.log,*.tmp,*.bak,*.swp,*.DS_Store"))
+            .expectedCyclesThatMakeChanges(1),
+          dockerfile(
+            //language=dockerfile
+            """
+            FROM alpine:latest
+            """,
+            spec -> spec.path(Paths.get("Dockerfile"))
+          ),
+          text(
+            //language=dockerignore
+            """
+            # This is a comment
+            *.test
+            *.DS_Store
+            *.swp
+            """,
+            //language=dockerignore
+            """
+            # This is a comment
+            *.test
+            *.DS_Store
+            *.swp
+            *.bak
+            *.log
+            *.md
+            *.tmp
+            """,
+            spec -> spec.path(Paths.get(".dockerignore"))
+          )
         );
     }
 
     @Test
     void dockerignoreAlreadyIncludesAllPatterns() throws IOException {
         rewriteRun(
-                spec -> spec.recipe(new EnsureDockerignore("*.md,*.test,*.log,*.tmp,*.bak,*.swp,*.DS_Store"))
-                        .expectedCyclesThatMakeChanges(0),
-                text(
-                        //language=dockerignore
-                        """
-                        # This is a comment
-                        *.test
-                        *.DS_Store
-                        *.swp
-                        *.bak
-                        *.log
-                        *.md
-                        *.tmp
-                        """,
-                        spec -> spec.path(Paths.get(".dockerignore"))
-                )
+          spec -> spec.recipe(new EnsureDockerignore("*.md,*.test,*.log,*.tmp,*.bak,*.swp,*.DS_Store"))
+            .expectedCyclesThatMakeChanges(0),
+          text(
+            //language=dockerignore
+            """
+            # This is a comment
+            *.test
+            *.DS_Store
+            *.swp
+            *.bak
+            *.log
+            *.md
+            *.tmp
+            """,
+            spec -> spec.path(Paths.get(".dockerignore"))
+          )
         );
     }
 }
