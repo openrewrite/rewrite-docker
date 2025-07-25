@@ -52,17 +52,23 @@ public class AddOrUpdateDirective extends ScanningRecipe<AddOrUpdateDirective.Sc
     }
 
     @Override
+    public Validated<Object> validate(ExecutionContext ctx) {
+        Validated<Object> validated = super.validate();
+
+        if (!directive.matches("^(?i)(syntax|escape|check)\\s*=.+$")) {
+            return validated
+                    .and(Validated.invalid("directive", directive,
+                            "Directive key must be one of: syntax, escape, check."));
+        }
+
+        return validated;
+    }
+
+    @Override
     public TreeVisitor<?, ExecutionContext> getScanner(Scanned acc) {
         String[] parts = directive.split("=", 2);
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Directive must be in the format key=value");
-        }
 
         String key = parts[0];
-        if (!key.matches("^(?i)(syntax|escape|check)$")) {
-            throw new IllegalArgumentException("Directive must be one of: syntax, escape, check");
-        }
-
         String value = parts[1];
 
         acc.targetKey = key;
