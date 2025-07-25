@@ -53,10 +53,6 @@ public class AddOrUpdateDirective extends ScanningRecipe<AddOrUpdateDirective.Sc
 
     @Override
     public TreeVisitor<?, ExecutionContext> getScanner(Scanned acc) {
-        if (directive == null) {
-            throw new IllegalArgumentException("Directive is required");
-        }
-
         String[] parts = directive.split("=", 2);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Directive must be in the format key=value");
