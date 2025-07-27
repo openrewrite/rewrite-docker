@@ -41,7 +41,7 @@ public class ListRemoteFiles extends ScanningRecipe<List<RemoteFileReport.Row>> 
 
     @Override
     public String getDescription() {
-        return "A recipe which outputs a data table describing the remote files referenced in the Dockerfile.";
+        return "Outputs a data table describing the remote files referenced in the Dockerfile.";
     }
 
     @Override

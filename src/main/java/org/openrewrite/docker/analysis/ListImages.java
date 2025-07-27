@@ -41,7 +41,7 @@ public class ListImages extends ScanningRecipe<List<ImageUseReport.Row>> {
 
     @Override
     public String getDescription() {
-        return "A recipe which outputs a data table describing the images referenced in the Dockerfile.";
+        return "Outputs a data table describing the images referenced in the Dockerfile.";
     }
 
     @Override
