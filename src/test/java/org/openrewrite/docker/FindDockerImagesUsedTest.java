@@ -18,6 +18,7 @@ package org.openrewrite.docker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.docker.search.FindDockerImageUses;
 import org.openrewrite.docker.table.DockerBaseImages;
 import org.openrewrite.test.RecipeSpec;
@@ -36,29 +37,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
         spec.recipe(new FindDockerImageUses());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Dockerfile", "Containerfile"})
-    void dockerfile(String path) {
-        rewriteRun(
-          text(
-            //language=Dockerfile
-            """
-              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            """
-              FROM ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-              LABEL maintainer="Hugging Face"
-              ARG DEBIAN_FRONTEND=noninteractive
-              SHELL ["sh", "-lc"]
-              """,
-            spec -> spec.path(path)
-          )
-        );
-    }
-
+    @DocumentExample
     @Test
     void yamlFileWithMultipleImages() {
         rewriteRun(
@@ -84,6 +63,29 @@ class FindDockerImagesUsedTest implements RewriteTest {
               prod:
                 image: ~~(golang:1.7.0)~~>golang:1.7.0
               """
+          )
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Dockerfile", "Containerfile"})
+    void dockerfile(String path) {
+        rewriteRun(
+          text(
+            //language=Dockerfile
+            """
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            """
+              FROM ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            spec -> spec.path(path)
           )
         );
     }
