@@ -458,7 +458,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
         return spec -> spec.recipe(new FindDockerImageUses())
           .dataTable(DockerBaseImages.Row.class, rows ->
             assertThat(rows)
-              .hasSize(expected.length)
+              .hasSameSizeAs(expected)
               .extracting(it -> it.getImageName() + (it.getTag() == null ? "" : ":" + it.getTag()))
               .containsExactlyInAnyOrder(expected)
           );
