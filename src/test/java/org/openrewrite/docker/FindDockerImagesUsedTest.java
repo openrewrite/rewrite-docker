@@ -38,29 +38,6 @@ class FindDockerImagesUsedTest implements RewriteTest {
     }
 
     @DocumentExample
-    @ParameterizedTest
-    @ValueSource(strings = {"Dockerfile", "Containerfile"})
-    void dockerfile(String path) {
-        rewriteRun(
-          text(
-            //language=Dockerfile
-            """
-            FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-            LABEL maintainer="Hugging Face"
-            ARG DEBIAN_FRONTEND=noninteractive
-            SHELL ["sh", "-lc"]
-            """,
-            """
-            FROM ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
-            LABEL maintainer="Hugging Face"
-            ARG DEBIAN_FRONTEND=noninteractive
-            SHELL ["sh", "-lc"]
-            """,
-            spec -> spec.path(path)
-          )
-        );
-    }
-
     @Test
     void yamlFileWithMultipleImages() {
         rewriteRun(
@@ -86,6 +63,29 @@ class FindDockerImagesUsedTest implements RewriteTest {
             prod:
               image: ~~(golang:1.7.0)~~>golang:1.7.0
             """
+          )
+        );
+    }
+
+  @ParameterizedTest
+    @ValueSource(strings = {"Dockerfile", "Containerfile"})
+    void dockerfile(String path) {
+        rewriteRun(
+          text(
+            //language=Dockerfile
+            """
+              FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            """
+              FROM ~~(nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04)~~>nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+              LABEL maintainer="Hugging Face"
+              ARG DEBIAN_FRONTEND=noninteractive
+              SHELL ["sh", "-lc"]
+              """,
+            spec -> spec.path(path)
           )
         );
     }
@@ -458,7 +458,7 @@ class FindDockerImagesUsedTest implements RewriteTest {
         return spec -> spec.recipe(new FindDockerImageUses())
           .dataTable(DockerBaseImages.Row.class, rows ->
             assertThat(rows)
-              .hasSize(expected.length)
+              .hasSameSizeAs(expected)
               .extracting(it -> it.getImageName() + (it.getTag() == null ? "" : ":" + it.getTag()))
               .containsExactlyInAnyOrder(expected)
           );
