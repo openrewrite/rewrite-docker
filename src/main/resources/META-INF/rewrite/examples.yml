@@ -15,7 +15,7 @@
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.docker.search.FindDockerImageUses
 examples:
-- description: ''
+- description: '`FindDockerImagesUsedTest#yamlFileWithMultipleImages`'
   sources:
   - before: |
       test:
