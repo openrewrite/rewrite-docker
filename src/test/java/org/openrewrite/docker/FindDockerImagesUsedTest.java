@@ -454,6 +454,39 @@ class FindDockerImagesUsedTest implements RewriteTest {
         );
     }
 
+    @Test
+    void dockerFileIgnoreDescription() {
+        rewriteRun(
+          assertImages("docker.io/python:3.13-bookworm"),
+          text(
+            //language=Dockerfile
+            """
+              FROM docker.io/python:3.13-bookworm
+              LABEL authors='Richard Hendricks [rich@piedpiper.io]'
+              LABEL description='Parse and process data from UAT access logs.'
+
+              WORKDIR /app
+              COPY requirements.txt
+              RUN pip install -r requirements.txt
+              COPY . .
+              CMD ["python", "app.py"]
+              """,
+            """
+              FROM ~~(docker.io/python:3.13-bookworm)~~>docker.io/python:3.13-bookworm
+              LABEL authors='Richard Hendricks [rich@piedpiper.io]'
+              LABEL description='Parse and process data from UAT access logs.'
+
+              WORKDIR /app
+              COPY requirements.txt
+              RUN pip install -r requirements.txt
+              COPY . .
+              CMD ["python", "app.py"]
+              """,
+            spec -> spec.path("Dockerfile")
+          )
+        );
+    }
+
     private static Consumer<RecipeSpec> assertImages(String... expected) {
         return spec -> spec.recipe(new FindDockerImageUses())
           .dataTable(DockerBaseImages.Row.class, rows ->
