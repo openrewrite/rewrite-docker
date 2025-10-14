@@ -60,7 +60,7 @@ public class DockerfileImageReference implements Reference {
             Cursor c = new Cursor(new Cursor(null, Cursor.ROOT_VALUE), sourceFile);
             String[] words = ((PlainText) sourceFile).getText()
                     .replaceAll("\\s*#.*?\\n", " ") // remove comments
-                    .replaceAll("\".*?\"", " ") // remove string literals
+                    .replaceAll("[\"'].*?[\"']", " ") // remove string literals
                     .split("\\s+");
 
             Set<Reference> references = new HashSet<>();
