@@ -263,6 +263,7 @@ textElement
     | DOUBLE_QUOTED_STRING
     | SINGLE_QUOTED_STRING
     | ENV_VAR
+    | EQUALS  // Allow = in shell form text (e.g., ENV_VAR=value in RUN commands)
     | WS
     ;
 

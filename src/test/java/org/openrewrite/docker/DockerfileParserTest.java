@@ -34,7 +34,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet implemented")
     @Test
     void fromWithPlatform() {
         rewriteRun(
@@ -76,6 +75,18 @@ class DockerfileParserTest implements RewriteTest {
                 """
                 FROM ubuntu:20.04
                 RUN ["apt-get", "update"]
+                """
+            )
+        );
+    }
+
+    @Test
+    void runWithEnvironmentVariable() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN CGO_ENABLED=0 go build -o app
                 """
             )
         );
@@ -569,7 +580,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Flags not yet working")
     @Test
     void copyInstructions() {
         rewriteRun(
@@ -583,7 +593,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Multiple instructions not yet implemented")
     @Test
     void comprehensiveDockerfile() {
         rewriteRun(
