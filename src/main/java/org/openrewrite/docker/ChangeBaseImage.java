@@ -226,22 +226,21 @@ public class ChangeBaseImage extends Recipe {
     }
 
     private Dockerfile.ArgumentContent createContent(String text, boolean quoted, Dockerfile.@Nullable Argument original) {
-        if (quoted) {
-            // Preserve the quote style from the original
-            Dockerfile.QuotedString.QuoteStyle quoteStyle = Dockerfile.QuotedString.QuoteStyle.DOUBLE;
-            if (original != null) {
-                for (Dockerfile.ArgumentContent content : original.getContents()) {
-                    if (content instanceof Dockerfile.QuotedString) {
-                        quoteStyle = ((Dockerfile.QuotedString) content).getQuoteStyle();
-                        break;
-                    }
-                }
-            }
-            return new Dockerfile.QuotedString(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text, quoteStyle);
-        } else {
-            return new Dockerfile.PlainText(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text);
-        }
-    }
+		if (quoted) {
+			// Preserve the quote style from the original
+			Dockerfile.QuotedString.QuoteStyle quoteStyle = Dockerfile.QuotedString.QuoteStyle.DOUBLE;
+			if (original != null) {
+				for (Dockerfile.ArgumentContent content : original.getContents()) {
+					if (content instanceof Dockerfile.QuotedString) {
+						quoteStyle = ((Dockerfile.QuotedString)content).getQuoteStyle();
+						break;
+					}
+				}
+			}
+			return new Dockerfile.QuotedString(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text, quoteStyle);
+		}
+		return new Dockerfile.PlainText(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text);
+	}
 
     private @Nullable String getPlatformFlag(Dockerfile.From from) {
         if (from.getFlags() == null) {
