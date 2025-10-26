@@ -230,11 +230,29 @@ public interface DockerfileParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitJsonString(DockerfileParser.JsonStringContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#image}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImage(DockerfileParser.ImageContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#imageName}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitImageName(DockerfileParser.ImageNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#tag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTag(DockerfileParser.TagContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#digest}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDigest(DockerfileParser.DigestContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#stageName}.
 	 * @param ctx the parse tree

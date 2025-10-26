@@ -571,11 +571,12 @@ class DockerfileParserTest implements RewriteTest {
             spec -> spec.afterRecipe(doc -> {
                 Dockerfile.From from = (Dockerfile.From) doc.getInstructions().getLast();
                 List<Dockerfile.ArgumentContent> contents = from.getImage().getContents();
-                assertThat(contents).hasSize(4);
+                assertThat(contents).hasSize(5);
                 assertThat(contents.getFirst()).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("REGISTRY");
-                assertThat(contents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("/image:");
-                assertThat(contents.get(2)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("VERSION");
-                assertThat(contents.get(3)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("-suffix");
+                assertThat(contents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("/image");
+                assertThat(contents.get(2)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo(":");
+                assertThat(contents.get(3)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("VERSION");
+                assertThat(contents.get(4)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("-suffix");
             })
           )
         );

@@ -363,6 +363,16 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 */
 	void exitJsonString(DockerfileParser.JsonStringContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#image}.
+	 * @param ctx the parse tree
+	 */
+	void enterImage(DockerfileParser.ImageContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#image}.
+	 * @param ctx the parse tree
+	 */
+	void exitImage(DockerfileParser.ImageContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#imageName}.
 	 * @param ctx the parse tree
 	 */
@@ -372,6 +382,26 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitImageName(DockerfileParser.ImageNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#tag}.
+	 * @param ctx the parse tree
+	 */
+	void enterTag(DockerfileParser.TagContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#tag}.
+	 * @param ctx the parse tree
+	 */
+	void exitTag(DockerfileParser.TagContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#digest}.
+	 * @param ctx the parse tree
+	 */
+	void enterDigest(DockerfileParser.DigestContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#digest}.
+	 * @param ctx the parse tree
+	 */
+	void exitDigest(DockerfileParser.DigestContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#stageName}.
 	 * @param ctx the parse tree

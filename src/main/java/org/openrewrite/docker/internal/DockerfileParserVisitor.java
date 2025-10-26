@@ -94,7 +94,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         skip(ctx.FROM().getSymbol());
 
         List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
-        Dockerfile.Argument image = visitArgument(ctx.imageName());
+        Dockerfile.Argument image = parseImageName(ctx.image());
         Dockerfile.From.As as = ctx.AS() != null ? visitFromAs(ctx) : null;
 
         // Advance cursor to end of instruction, but NOT past trailing comment
@@ -107,7 +107,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 if (ctx.AS() != null) {
                     stopToken = ctx.stageName().getStop();
                 } else {
-                    stopToken = ctx.imageName().getStop();
+                    stopToken = ctx.image().getStop();
                 }
             }
             advanceCursor(stopToken.getStopIndex() + 1);
@@ -127,6 +127,106 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 asKeyword,
                 visitArgument(ctx.stageName())
         );
+    }
+
+    private Dockerfile.Argument parseImageName(DockerfileParser.ImageContext ctx) {
+        return convert(ctx, (c, prefix) -> {
+            List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+
+            // Visit the imageName part (required)
+            if (c.imageName() != null) {
+                contents.addAll(parseText(c.imageName().text()));
+            }
+
+            // Visit the tag or digest part (optional)
+            if (c.COLON() != null && c.tag() != null) {
+                // The COLON token is handled as part of text parsing
+                contents.addAll(parseText(c.tag().text()));
+            } else if (c.AT_SIGN() != null && c.digest() != null) {
+                // The AT_SIGN token is handled as part of text parsing
+                contents.addAll(parseText(c.digest().text()));
+            }
+
+            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+        });
+    }
+
+    private List<Dockerfile.ArgumentContent> parseText(DockerfileParser.TextContext textCtx) {
+        List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+
+        if (textCtx == null) {
+            return contents;
+        }
+
+        // Check if text contains quoted strings or environment variables
+        String fullText = textCtx.getText();
+        boolean hasQuotedString = fullText.contains("\"") || fullText.contains("'");
+        boolean hasEnvironmentVariable = fullText.contains("$");
+
+        if (!hasQuotedString && !hasEnvironmentVariable) {
+            // Simple case: just plain text
+            contents.add(new Dockerfile.PlainText(
+                    randomId(),
+                    Space.EMPTY,
+                    Markers.EMPTY,
+                    fullText
+            ));
+            return contents;
+        }
+
+        // Complex case: parse token by token
+        for (int i = 0; i < textCtx.getChildCount(); i++) {
+            ParseTree child = textCtx.getChild(i);
+
+            if (child instanceof DockerfileParser.TextElementContext) {
+                DockerfileParser.TextElementContext textElement = (DockerfileParser.TextElementContext) child;
+                if (textElement.getChildCount() > 0 && textElement.getChild(0) instanceof TerminalNode) {
+                    TerminalNode terminal = (TerminalNode) textElement.getChild(0);
+                    Token token = terminal.getSymbol();
+                    String tokenText = token.getText();
+
+                    if (token.getType() == DockerfileLexer.DOUBLE_QUOTED_STRING) {
+                        String value = tokenText.substring(1, tokenText.length() - 1);
+                        contents.add(new Dockerfile.QuotedString(
+                                randomId(),
+                                Space.EMPTY,
+                                Markers.EMPTY,
+                                value,
+                                Dockerfile.QuotedString.QuoteStyle.DOUBLE
+                        ));
+                    } else if (token.getType() == DockerfileLexer.SINGLE_QUOTED_STRING) {
+                        String value = tokenText.substring(1, tokenText.length() - 1);
+                        contents.add(new Dockerfile.QuotedString(
+                                randomId(),
+                                Space.EMPTY,
+                                Markers.EMPTY,
+                                value,
+                                Dockerfile.QuotedString.QuoteStyle.SINGLE
+                        ));
+                    } else if (token.getType() == DockerfileLexer.ENV_VAR) {
+                        boolean braced = tokenText.startsWith("${");
+                        String varName = braced ? tokenText.substring(2, tokenText.length() - 1) : tokenText.substring(1);
+                        contents.add(new Dockerfile.EnvironmentVariable(
+                                randomId(),
+                                Space.EMPTY,
+                                Markers.EMPTY,
+                                varName,
+                                braced
+                        ));
+                    } else if (token.getType() != DockerfileLexer.COMMENT) {
+                        // Plain text for other tokens
+                        contents.add(new Dockerfile.PlainText(
+                                randomId(),
+                                Space.EMPTY,
+                                Markers.EMPTY,
+                                tokenText
+                        ));
+                    }
+                }
+            }
+        }
+
+        return contents;
     }
 
     @Override
@@ -986,93 +1086,16 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         }
 
         return convert(ctx, (c, prefix) -> {
-            // Only use detailed parsing for ImageNameContext that contains quoted strings or environment variables
-            // For everything else (including simple unquoted image names), use simple plain text approach
+            // Simple implementation - just convert the entire context to plain text
+            // This is used for stage names and other simple arguments
             String fullText = c.getText();
-            boolean hasQuotedString = fullText.contains("\"") || fullText.contains("'");
-            boolean hasEnvironmentVariable = fullText.contains("$");
-
-            if (!(c instanceof DockerfileParser.ImageNameContext) || (!hasQuotedString && !hasEnvironmentVariable)) {
-                // Simple implementation - works for most cases and preserves trailing comments
-                Dockerfile.PlainText plainText = new Dockerfile.PlainText(
-                        randomId(),
-                        Space.EMPTY,
-                        Markers.EMPTY,
-                        fullText
-                );
-                return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, singletonList(plainText));
-            }
-
-            // Process each textElement child
-            // Grammar structure: text -> textElement+ -> terminal
-            ParserRuleContext textCtx = ((DockerfileParser.ImageNameContext) c).text();
-            List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
-            for (int i = 0; i < textCtx.getChildCount(); i++) {
-                ParseTree child = textCtx.getChild(i);
-
-                if (child instanceof DockerfileParser.TextElementContext) {
-                    DockerfileParser.TextElementContext textElement = (DockerfileParser.TextElementContext) child;
-                    if (textElement.getChildCount() > 0 && textElement.getChild(0) instanceof TerminalNode) {
-                        TerminalNode terminal = (TerminalNode) textElement.getChild(0);
-                        Token token = terminal.getSymbol();
-                        String tokenText = token.getText();
-
-                        if (token.getType() == DockerfileLexer.DOUBLE_QUOTED_STRING) {
-                            // Remove quotes
-                            String value = tokenText.substring(1, tokenText.length() - 1);
-                            contents.add(new Dockerfile.QuotedString(
-                                    randomId(),
-                                    Space.EMPTY,
-                                    Markers.EMPTY,
-                                    value,
-                                    Dockerfile.QuotedString.QuoteStyle.DOUBLE
-                            ));
-                        } else if (token.getType() == DockerfileLexer.SINGLE_QUOTED_STRING) {
-                            // Remove quotes
-                            String value = tokenText.substring(1, tokenText.length() - 1);
-                            contents.add(new Dockerfile.QuotedString(
-                                    randomId(),
-                                    Space.EMPTY,
-                                    Markers.EMPTY,
-                                    value,
-                                    Dockerfile.QuotedString.QuoteStyle.SINGLE
-                            ));
-                        } else if (token.getType() == DockerfileLexer.ENV_VAR) {
-                            // Environment variable - check if it's braced ${VAR} or unbraced $VAR
-                            boolean braced = tokenText.startsWith("${");
-                            String varName = braced ? tokenText.substring(2, tokenText.length() - 1) : tokenText.substring(1);
-                            contents.add(new Dockerfile.EnvironmentVariable(
-                                    randomId(),
-                                    Space.EMPTY,
-                                    Markers.EMPTY,
-                                    varName,
-                                    braced
-                            ));
-                        } else if (token.getType() != DockerfileLexer.COMMENT) {
-                            // Plain text (UNQUOTED_TEXT, WS, EQUALS, DASH_DASH, LINE_CONTINUATION, etc.)
-                            contents.add(new Dockerfile.PlainText(
-                                    randomId(),
-                                    Space.EMPTY,
-                                    Markers.EMPTY,
-                                    tokenText
-                            ));
-                        }
-                        // Don't call skip() - let convert() handle cursor advancement automatically
-                    }
-                }
-            }
-
-            // If no contents were added, fall back to plain text
-            if (contents.isEmpty()) {
-                contents.add(new Dockerfile.PlainText(
-                        randomId(),
-                        Space.EMPTY,
-                        Markers.EMPTY,
-                        c.getText()
-                ));
-            }
-
-            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+            Dockerfile.PlainText plainText = new Dockerfile.PlainText(
+                    randomId(),
+                    Space.EMPTY,
+                    Markers.EMPTY,
+                    fullText
+            );
+            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, singletonList(plainText));
         });
     }
 
