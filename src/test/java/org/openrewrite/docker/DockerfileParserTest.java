@@ -216,8 +216,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("CMD instruction not yet implemented")
+    @Test
     void cmdShellForm() {
         rewriteRun(
             dockerfile(
@@ -229,8 +229,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("CMD instruction not yet implemented")
+    @Test
     void cmdExecForm() {
         rewriteRun(
             dockerfile(
@@ -242,8 +242,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("ENV instruction not yet implemented")
+    @Test
     void envSingleLine() {
         rewriteRun(
             dockerfile(
@@ -256,8 +256,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("ARG instruction not yet implemented")
+    @Test
     void argInstructions() {
         rewriteRun(
             dockerfile(
@@ -270,8 +270,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("COPY instruction not yet implemented")
+    @Test
     void copyInstructions() {
         rewriteRun(
             dockerfile(
@@ -284,8 +284,8 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Test
     @Disabled("Multiple instructions not yet implemented")
+    @Test
     void comprehensiveDockerfile() {
         rewriteRun(
             dockerfile(
