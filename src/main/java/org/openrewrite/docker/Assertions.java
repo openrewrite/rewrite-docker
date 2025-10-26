@@ -17,9 +17,9 @@ package org.openrewrite.docker;
 
 import org.intellij.lang.annotations.Language;
 import org.jspecify.annotations.Nullable;
+import org.openrewrite.docker.tree.Dockerfile;
 import org.openrewrite.test.SourceSpec;
 import org.openrewrite.test.SourceSpecs;
-import org.openrewrite.docker.tree.Dockerfile;
 
 import java.util.function.Consumer;
 

@@ -15,14 +15,16 @@
  */
 package org.openrewrite.docker.tree;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import lombok.With;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
 import org.openrewrite.docker.DockerfileVisitor;
 import org.openrewrite.docker.internal.DockerfilePrinter;
 import org.openrewrite.marker.Markers;
 
-import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;

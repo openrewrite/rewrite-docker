@@ -30,8 +30,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.Document d = document;
         d = d.withPrefix(visitSpace(d.getPrefix(), p));
         d = d.withMarkers(visitMarkers(d.getMarkers(), p));
-        d = d.withInstructions(ListUtils.map(d.getInstructions(), inst -> (Dockerfile.Instruction) visit(inst, p)));
-        return d;
+        return d.withInstructions(ListUtils.map(d.getInstructions(), inst -> (Dockerfile.Instruction) visit(inst, p)));
     }
 
     @Override
@@ -53,8 +52,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.From.As a = as;
         a = a.withPrefix(visitSpace(a.getPrefix(), p));
         a = a.withMarkers(visitMarkers(a.getMarkers(), p));
-        a = a.withName((Dockerfile.Argument) visit(a.getName(), p));
-        return a;
+        return a.withName((Dockerfile.Argument) visit(a.getName(), p));
     }
 
     @Override
@@ -65,8 +63,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         if (r.getFlags() != null) {
             r = r.withFlags(ListUtils.map(r.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
         }
-        r = r.withCommandLine((Dockerfile.CommandLine) visit(r.getCommandLine(), p));
-        return r;
+        return r.withCommandLine((Dockerfile.CommandLine) visit(r.getCommandLine(), p));
     }
 
     @Override
@@ -74,8 +71,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.CommandLine cl = commandLine;
         cl = cl.withPrefix(visitSpace(cl.getPrefix(), p));
         cl = cl.withMarkers(visitMarkers(cl.getMarkers(), p));
-        cl = cl.withForm((Dockerfile.CommandForm) visit(cl.getForm(), p));
-        return cl;
+        return cl.withForm((Dockerfile.CommandForm) visit(cl.getForm(), p));
     }
 
     @Override
@@ -83,8 +79,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.ShellForm sf = shellForm;
         sf = sf.withPrefix(visitSpace(sf.getPrefix(), p));
         sf = sf.withMarkers(visitMarkers(sf.getMarkers(), p));
-        sf = sf.withArguments(ListUtils.map(sf.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
-        return sf;
+        return sf.withArguments(ListUtils.map(sf.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
     }
 
     @Override
@@ -92,8 +87,7 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.ExecForm ef = execForm;
         ef = ef.withPrefix(visitSpace(ef.getPrefix(), p));
         ef = ef.withMarkers(visitMarkers(ef.getMarkers(), p));
-        ef = ef.withArguments(ListUtils.map(ef.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
-        return ef;
+        return ef.withArguments(ListUtils.map(ef.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
     }
 
     @Override
@@ -112,31 +106,27 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.Argument a = argument;
         a = a.withPrefix(visitSpace(a.getPrefix(), p));
         a = a.withMarkers(visitMarkers(a.getMarkers(), p));
-        a = a.withContents(ListUtils.map(a.getContents(), content -> (Dockerfile.ArgumentContent) visit(content, p)));
-        return a;
+        return a.withContents(ListUtils.map(a.getContents(), content -> (Dockerfile.ArgumentContent) visit(content, p)));
     }
 
     @Override
     public Dockerfile visitPlainText(Dockerfile.PlainText plainText, P p) {
         Dockerfile.PlainText pt = plainText;
         pt = pt.withPrefix(visitSpace(pt.getPrefix(), p));
-        pt = pt.withMarkers(visitMarkers(pt.getMarkers(), p));
-        return pt;
+        return pt.withMarkers(visitMarkers(pt.getMarkers(), p));
     }
 
     @Override
     public Dockerfile visitQuotedString(Dockerfile.QuotedString quotedString, P p) {
         Dockerfile.QuotedString qs = quotedString;
         qs = qs.withPrefix(visitSpace(qs.getPrefix(), p));
-        qs = qs.withMarkers(visitMarkers(qs.getMarkers(), p));
-        return qs;
+        return qs.withMarkers(visitMarkers(qs.getMarkers(), p));
     }
 
     @Override
     public Dockerfile visitEnvironmentVariable(Dockerfile.EnvironmentVariable environmentVariable, P p) {
         Dockerfile.EnvironmentVariable ev = environmentVariable;
         ev = ev.withPrefix(visitSpace(ev.getPrefix(), p));
-        ev = ev.withMarkers(visitMarkers(ev.getMarkers(), p));
-        return ev;
+        return ev.withMarkers(visitMarkers(ev.getMarkers(), p));
     }
 }

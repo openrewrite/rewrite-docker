@@ -16,7 +16,6 @@
 package org.openrewrite.docker.internal;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.FileAttributes;
 import org.openrewrite.docker.internal.grammar.DockerfileParser;
@@ -29,9 +28,10 @@ import org.openrewrite.marker.Markers;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.openrewrite.Tree.randomId;
 
 public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerfile> {
@@ -119,7 +119,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             form = visitShellFormContext(ctx.shellForm());
         } else {
             // heredoc - not implemented yet, treat as shell form
-            form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, Collections.emptyList());
+            form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
         }
 
         return new Dockerfile.CommandLine(
@@ -149,7 +149,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 randomId(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                Collections.singletonList(visitArgument(ctx.text()))
+                singletonList(visitArgument(ctx.text()))
         );
     }
 
@@ -174,7 +174,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                         randomId(),
                         Space.EMPTY,
                         Markers.EMPTY,
-                        Collections.singletonList(qs)
+                        singletonList(qs)
                 ));
             }
         }
@@ -189,7 +189,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
     private Dockerfile.Argument visitArgument(ParserRuleContext ctx) {
         if (ctx == null) {
-            return new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, Collections.emptyList());
+            return new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
         }
 
         String text = ctx.getText();

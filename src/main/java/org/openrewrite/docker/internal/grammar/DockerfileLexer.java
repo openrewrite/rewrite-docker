@@ -15,14 +15,12 @@
  */
 // Generated from /home/tim/Documents/workspace/openrewrite/rewrite-docker/src/main/antlr/DockerfileLexer.g4 by ANTLR 4.13.2
 package org.openrewrite.docker.internal.grammar;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.LexerATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
 public class DockerfileLexer extends Lexer {
@@ -32,11 +30,11 @@ public class DockerfileLexer extends Lexer {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7, 
-		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14, 
-		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20, 
-		AS=21, NONE=22, HEREDOC_MARKER=23, LINE_CONTINUATION=24, LBRACKET=25, 
-		RBRACKET=26, COMMA=27, EQUALS=28, DASH_DASH=29, DOUBLE_QUOTED_STRING=30, 
+		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7,
+		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14,
+		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20,
+		AS=21, NONE=22, HEREDOC_MARKER=23, LINE_CONTINUATION=24, LBRACKET=25,
+		RBRACKET=26, COMMA=27, EQUALS=28, DASH_DASH=29, DOUBLE_QUOTED_STRING=30,
 		SINGLE_QUOTED_STRING=31, ENV_VAR=32, UNQUOTED_TEXT=33, WS=34, NEWLINE=35;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
@@ -48,12 +46,12 @@ public class DockerfileLexer extends Lexer {
 
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE", 
-			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG", 
-			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS", 
-			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET", 
-			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING", 
-			"ESCAPE_SEQUENCE", "HEX_DIGIT", "ENV_VAR", "UNQUOTED_TEXT", "WS", "WS_CHAR", 
+			"PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE",
+			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG",
+			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS",
+			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET",
+			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING",
+			"ESCAPE_SEQUENCE", "HEX_DIGIT", "ENV_VAR", "UNQUOTED_TEXT", "WS", "WS_CHAR",
 			"NEWLINE", "NEWLINE_CHAR"
 		};
 	}
@@ -61,19 +59,19 @@ public class DockerfileLexer extends Lexer {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null,
+			null, null, null, null, null, null, null, null, null, null, null, null,
 			null, "'['", "']'", "','", "'='", "'--'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE", 
-			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG", 
-			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS", 
-			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET", 
-			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING", 
+			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE",
+			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG",
+			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS",
+			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET",
+			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING",
 			"ENV_VAR", "UNQUOTED_TEXT", "WS", "NEWLINE"
 		};
 	}

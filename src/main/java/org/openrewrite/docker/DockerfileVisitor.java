@@ -15,7 +15,6 @@
  */
 package org.openrewrite.docker;
 
-import org.jspecify.annotations.Nullable;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.docker.tree.Dockerfile;
 
