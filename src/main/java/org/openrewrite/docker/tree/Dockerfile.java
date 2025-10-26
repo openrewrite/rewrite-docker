@@ -229,6 +229,144 @@ public interface Dockerfile extends Tree {
     }
 
     /**
+     * CMD instruction - provides defaults for executing container
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Cmd implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        CommandLine commandLine;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitCmd(this, p);
+        }
+    }
+
+    /**
+     * ENTRYPOINT instruction - configures container to run as executable
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Entrypoint implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        CommandLine commandLine;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitEntrypoint(this, p);
+        }
+    }
+
+    /**
+     * WORKDIR instruction - sets the working directory
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Workdir implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Argument path;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitWorkdir(this, p);
+        }
+    }
+
+    /**
+     * USER instruction - sets the user and optionally group
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class User implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Argument userSpec;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitUser(this, p);
+        }
+    }
+
+    /**
+     * STOPSIGNAL instruction - sets the signal to stop the container
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Stopsignal implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Argument signal;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitStopsignal(this, p);
+        }
+    }
+
+    /**
+     * MAINTAINER instruction - sets the author field (deprecated but still supported)
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Maintainer implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Argument text;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitMaintainer(this, p);
+        }
+    }
+
+    /**
      * Command line that can be in shell or exec form
      */
     @Value

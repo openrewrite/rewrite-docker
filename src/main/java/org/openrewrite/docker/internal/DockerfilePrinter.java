@@ -108,6 +108,60 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     }
 
     @Override
+    public Dockerfile visitCmd(Dockerfile.Cmd cmd, PrintOutputCapture<P> p) {
+        beforeSyntax(cmd, p);
+        p.append(cmd.getKeyword());
+        visit(cmd.getCommandLine(), p);
+        afterSyntax(cmd, p);
+        return cmd;
+    }
+
+    @Override
+    public Dockerfile visitEntrypoint(Dockerfile.Entrypoint entrypoint, PrintOutputCapture<P> p) {
+        beforeSyntax(entrypoint, p);
+        p.append(entrypoint.getKeyword());
+        visit(entrypoint.getCommandLine(), p);
+        afterSyntax(entrypoint, p);
+        return entrypoint;
+    }
+
+    @Override
+    public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, PrintOutputCapture<P> p) {
+        beforeSyntax(workdir, p);
+        p.append(workdir.getKeyword());
+        visit(workdir.getPath(), p);
+        afterSyntax(workdir, p);
+        return workdir;
+    }
+
+    @Override
+    public Dockerfile visitUser(Dockerfile.User user, PrintOutputCapture<P> p) {
+        beforeSyntax(user, p);
+        p.append(user.getKeyword());
+        visit(user.getUserSpec(), p);
+        afterSyntax(user, p);
+        return user;
+    }
+
+    @Override
+    public Dockerfile visitStopsignal(Dockerfile.Stopsignal stopsignal, PrintOutputCapture<P> p) {
+        beforeSyntax(stopsignal, p);
+        p.append(stopsignal.getKeyword());
+        visit(stopsignal.getSignal(), p);
+        afterSyntax(stopsignal, p);
+        return stopsignal;
+    }
+
+    @Override
+    public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, PrintOutputCapture<P> p) {
+        beforeSyntax(maintainer, p);
+        p.append(maintainer.getKeyword());
+        visit(maintainer.getText(), p);
+        afterSyntax(maintainer, p);
+        return maintainer;
+    }
+
+    @Override
     public Dockerfile visitCommandLine(Dockerfile.CommandLine commandLine, PrintOutputCapture<P> p) {
         beforeSyntax(commandLine, p);
         visit(commandLine.getForm(), p);

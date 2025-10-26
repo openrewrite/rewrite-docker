@@ -244,6 +244,30 @@ class DockerfileParserTest implements RewriteTest {
     }
 
     @Test
+    void entrypointExecForm() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ENTRYPOINT ["./app"]
+                """
+            )
+        );
+    }
+
+    @Test
+    void entrypointShellForm() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ENTRYPOINT /bin/sh -c 'echo hello'
+                """
+            )
+        );
+    }
+
+    @Test
     void envSingleLine() {
         rewriteRun(
             dockerfile(
@@ -288,6 +312,66 @@ class DockerfileParserTest implements RewriteTest {
                 ARG BASE_IMAGE=ubuntu:20.04
                 FROM ${BASE_IMAGE}
                 ARG VERSION
+                """
+            )
+        );
+    }
+
+    @Test
+    void workdirInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                WORKDIR /app
+                """
+            )
+        );
+    }
+
+    @Test
+    void userInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                USER nobody
+                """
+            )
+        );
+    }
+
+    @Test
+    void userWithGroup() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                USER app:app
+                """
+            )
+        );
+    }
+
+    @Test
+    void stopsignalInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                STOPSIGNAL SIGTERM
+                """
+            )
+        );
+    }
+
+    @Test
+    void maintainerInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                MAINTAINER John Doe <john@example.com>
                 """
             )
         );

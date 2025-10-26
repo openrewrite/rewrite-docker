@@ -40,6 +40,30 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         return arg;
     }
 
+    public Dockerfile visitCmd(Dockerfile.Cmd cmd, P p) {
+        return cmd;
+    }
+
+    public Dockerfile visitEntrypoint(Dockerfile.Entrypoint entrypoint, P p) {
+        return entrypoint;
+    }
+
+    public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, P p) {
+        return workdir;
+    }
+
+    public Dockerfile visitUser(Dockerfile.User user, P p) {
+        return user;
+    }
+
+    public Dockerfile visitStopsignal(Dockerfile.Stopsignal stopsignal, P p) {
+        return stopsignal;
+    }
+
+    public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, P p) {
+        return maintainer;
+    }
+
     public Dockerfile visitCommandLine(Dockerfile.CommandLine commandLine, P p) {
         return commandLine;
     }

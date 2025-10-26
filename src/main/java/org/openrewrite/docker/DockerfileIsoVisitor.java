@@ -91,6 +91,54 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile visitCmd(Dockerfile.Cmd cmd, P p) {
+        Dockerfile.Cmd c = cmd;
+        c = c.withPrefix(visitSpace(c.getPrefix(), p));
+        c = c.withMarkers(visitMarkers(c.getMarkers(), p));
+        return c.withCommandLine((Dockerfile.CommandLine) visit(c.getCommandLine(), p));
+    }
+
+    @Override
+    public Dockerfile visitEntrypoint(Dockerfile.Entrypoint entrypoint, P p) {
+        Dockerfile.Entrypoint e = entrypoint;
+        e = e.withPrefix(visitSpace(e.getPrefix(), p));
+        e = e.withMarkers(visitMarkers(e.getMarkers(), p));
+        return e.withCommandLine((Dockerfile.CommandLine) visit(e.getCommandLine(), p));
+    }
+
+    @Override
+    public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, P p) {
+        Dockerfile.Workdir w = workdir;
+        w = w.withPrefix(visitSpace(w.getPrefix(), p));
+        w = w.withMarkers(visitMarkers(w.getMarkers(), p));
+        return w.withPath((Dockerfile.Argument) visit(w.getPath(), p));
+    }
+
+    @Override
+    public Dockerfile visitUser(Dockerfile.User user, P p) {
+        Dockerfile.User u = user;
+        u = u.withPrefix(visitSpace(u.getPrefix(), p));
+        u = u.withMarkers(visitMarkers(u.getMarkers(), p));
+        return u.withUserSpec((Dockerfile.Argument) visit(u.getUserSpec(), p));
+    }
+
+    @Override
+    public Dockerfile visitStopsignal(Dockerfile.Stopsignal stopsignal, P p) {
+        Dockerfile.Stopsignal s = stopsignal;
+        s = s.withPrefix(visitSpace(s.getPrefix(), p));
+        s = s.withMarkers(visitMarkers(s.getMarkers(), p));
+        return s.withSignal((Dockerfile.Argument) visit(s.getSignal(), p));
+    }
+
+    @Override
+    public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, P p) {
+        Dockerfile.Maintainer m = maintainer;
+        m = m.withPrefix(visitSpace(m.getPrefix(), p));
+        m = m.withMarkers(visitMarkers(m.getMarkers(), p));
+        return m.withText((Dockerfile.Argument) visit(m.getText(), p));
+    }
+
+    @Override
     public Dockerfile visitCommandLine(Dockerfile.CommandLine commandLine, P p) {
         Dockerfile.CommandLine cl = commandLine;
         cl = cl.withPrefix(visitSpace(cl.getPrefix(), p));

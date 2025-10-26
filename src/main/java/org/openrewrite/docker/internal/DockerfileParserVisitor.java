@@ -220,6 +220,140 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         return new Dockerfile.Arg(randomId(), prefix, Markers.EMPTY, argKeyword, name, value);
     }
 
+    @Override
+    public Dockerfile visitCmdInstruction(DockerfileParser.CmdInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String cmdKeyword = ctx.CMD().getText();
+        skip(ctx.CMD().getSymbol());
+
+        Dockerfile.CommandLine commandLine = visitCommandLineForCmd(ctx);
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                if (ctx.execForm() != null) {
+                    stopToken = ctx.execForm().getStop();
+                } else if (ctx.shellForm() != null) {
+                    stopToken = ctx.shellForm().getStop();
+                }
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Cmd(randomId(), prefix, Markers.EMPTY, cmdKeyword, commandLine);
+    }
+
+    @Override
+    public Dockerfile visitEntrypointInstruction(DockerfileParser.EntrypointInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String entrypointKeyword = ctx.ENTRYPOINT().getText();
+        skip(ctx.ENTRYPOINT().getSymbol());
+
+        Dockerfile.CommandLine commandLine = visitCommandLineForEntrypoint(ctx);
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                if (ctx.execForm() != null) {
+                    stopToken = ctx.execForm().getStop();
+                } else if (ctx.shellForm() != null) {
+                    stopToken = ctx.shellForm().getStop();
+                }
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Entrypoint(randomId(), prefix, Markers.EMPTY, entrypointKeyword, commandLine);
+    }
+
+    @Override
+    public Dockerfile visitWorkdirInstruction(DockerfileParser.WorkdirInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String workdirKeyword = ctx.WORKDIR().getText();
+        skip(ctx.WORKDIR().getSymbol());
+
+        Dockerfile.Argument path = visitArgument(ctx.path());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.path().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Workdir(randomId(), prefix, Markers.EMPTY, workdirKeyword, path);
+    }
+
+    @Override
+    public Dockerfile visitUserInstruction(DockerfileParser.UserInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String userKeyword = ctx.USER().getText();
+        skip(ctx.USER().getSymbol());
+
+        Dockerfile.Argument userSpec = visitArgument(ctx.userSpec());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.userSpec().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.User(randomId(), prefix, Markers.EMPTY, userKeyword, userSpec);
+    }
+
+    @Override
+    public Dockerfile visitStopsignalInstruction(DockerfileParser.StopsignalInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String stopsignalKeyword = ctx.STOPSIGNAL().getText();
+        skip(ctx.STOPSIGNAL().getSymbol());
+
+        Dockerfile.Argument signal = visitArgument(ctx.signal());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.signal().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Stopsignal(randomId(), prefix, Markers.EMPTY, stopsignalKeyword, signal);
+    }
+
+    @Override
+    public Dockerfile visitMaintainerInstruction(DockerfileParser.MaintainerInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String maintainerKeyword = ctx.MAINTAINER().getText();
+        skip(ctx.MAINTAINER().getSymbol());
+
+        Dockerfile.Argument text = visitArgument(ctx.text());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.text().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Maintainer(randomId(), prefix, Markers.EMPTY, maintainerKeyword, text);
+    }
+
     private Dockerfile.CommandLine visitCommandLine(DockerfileParser.RunInstructionContext ctx) {
         Dockerfile.CommandForm form;
         if (ctx.execForm() != null) {
@@ -228,6 +362,42 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             form = visitShellFormContext(ctx.shellForm());
         } else {
             // heredoc - not implemented yet, treat as shell form
+            form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
+        }
+
+        return new Dockerfile.CommandLine(
+                randomId(),
+                Space.EMPTY,
+                Markers.EMPTY,
+                form
+        );
+    }
+
+    private Dockerfile.CommandLine visitCommandLineForCmd(DockerfileParser.CmdInstructionContext ctx) {
+        Dockerfile.CommandForm form;
+        if (ctx.execForm() != null) {
+            form = visitExecFormContext(ctx.execForm());
+        } else if (ctx.shellForm() != null) {
+            form = visitShellFormContext(ctx.shellForm());
+        } else {
+            form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
+        }
+
+        return new Dockerfile.CommandLine(
+                randomId(),
+                Space.EMPTY,
+                Markers.EMPTY,
+                form
+        );
+    }
+
+    private Dockerfile.CommandLine visitCommandLineForEntrypoint(DockerfileParser.EntrypointInstructionContext ctx) {
+        Dockerfile.CommandForm form;
+        if (ctx.execForm() != null) {
+            form = visitExecFormContext(ctx.execForm());
+        } else if (ctx.shellForm() != null) {
+            form = visitShellFormContext(ctx.shellForm());
+        } else {
             form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
         }
 
