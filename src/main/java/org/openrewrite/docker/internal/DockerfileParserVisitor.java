@@ -1061,6 +1061,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                                     tokenText
                             ));
                         }
+                        // Don't call skip() - let convert() handle cursor advancement automatically
                     }
                 }
             }

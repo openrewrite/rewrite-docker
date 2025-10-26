@@ -342,7 +342,7 @@ class ChangeBaseImageTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Trailing comment not yet preserved")
+    @ExpectedToFail("Trailing comments with quoted strings not yet supported - cursor management issue")
     @Test
     void changeBaseImageWithSingleQuotedStringPreservesTrailingComment() {
         rewriteRun(
