@@ -48,7 +48,6 @@ class DockerfileIsoVisitorTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet implemented")
     @Test
     void replaceFromImageWithFlags() {
         rewriteRun(

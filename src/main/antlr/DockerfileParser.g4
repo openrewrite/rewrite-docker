@@ -139,7 +139,11 @@ flagName
     ;
 
 flagValue
-    : UNQUOTED_TEXT | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+    : flagValueElement+
+    ;
+
+flagValueElement
+    : UNQUOTED_TEXT | EQUALS | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
     ;
 
 execForm
@@ -268,6 +272,7 @@ textElement
     | SINGLE_QUOTED_STRING
     | ENV_VAR
     | EQUALS  // Allow = in shell form text (e.g., ENV_VAR=value in RUN commands)
+    | DASH_DASH  // Allow -- in shell form text (e.g., --option in shell commands)
     | LINE_CONTINUATION  // Allow line continuations in shell commands
     | WS
     | COMMENT  // Allow comments in heredoc content

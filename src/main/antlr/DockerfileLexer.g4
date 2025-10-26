@@ -63,6 +63,11 @@ RBRACKET : ']';
 EQUALS     : '=';
 DASH_DASH  : '--';
 
+// Unquoted text fragment (to be used in UNQUOTED_TEXT)
+// This matches text that doesn't start with --
+fragment UNQUOTED_CHAR : ~[ \t\r\n\\"'$[\]=];
+fragment ESCAPED_CHAR : '\\' .;
+
 // String literals
 DOUBLE_QUOTED_STRING : '"' ( ESCAPE_SEQUENCE | ~["\\\r\n] )* '"';
 SINGLE_QUOTED_STRING : '\'' ( ESCAPE_SEQUENCE | ~['\\\r\n] )* '\'';
@@ -81,7 +86,12 @@ ENV_VAR : '$' '{' [a-zA-Z_][a-zA-Z0-9_]* ( ':-' | ':+' | ':' )? ~[}]* '}' | '$' 
 // Unquoted text (arguments, file paths, etc.)
 // This should be after more specific tokens
 // Note: comma is NOT excluded here - it's only special in JSON arrays
-UNQUOTED_TEXT : ( ~[ \t\r\n\\"'$[\]=] | '\\' . )+;
+// We structure this to not match text starting with -- (so DASH_DASH can match first)
+UNQUOTED_TEXT
+    : ~[- \t\r\n\\"'$[\]=] ( UNQUOTED_CHAR | ESCAPED_CHAR )*   // Start with non-hyphen, non-space
+    | '-' ~[- \t\r\n\\"'$[\]=] ( UNQUOTED_CHAR | ESCAPED_CHAR )*  // Single hyphen followed by non-hyphen, non-space
+    | '-'  // Just a hyphen by itself
+    ;
 
 // Whitespace (preserve for LST)
 WS : WS_CHAR+ ;
