@@ -24,6 +24,7 @@ import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.docker.tree.Dockerfile;
 import org.openrewrite.docker.tree.Space;
+import org.openrewrite.internal.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class ChangeBaseImage extends Recipe {
                     return f;
                 }
 
-                if (!matchesGlob(imageText, oldImageName)) {
+                if (!StringUtils.matchesGlob(imageText, oldImageName)) {
                     return f;
                 }
 
@@ -209,49 +210,5 @@ public class ChangeBaseImage extends Recipe {
                 platform
             ))
         );
-    }
-
-    private boolean matchesGlob(String value, @Nullable String glob) {
-        if (glob == null) {
-            return false;
-        }
-
-        // If no glob patterns, do exact match
-        if (!glob.contains("*") && !glob.contains("?")) {
-            return value.equals(glob);
-        }
-
-        // Convert glob to regex by iterating through characters
-        StringBuilder regex = new StringBuilder();
-        for (int i = 0; i < glob.length(); i++) {
-            char c = glob.charAt(i);
-            switch (c) {
-                case '*':
-                    regex.append(".*");
-                    break;
-                case '?':
-                    regex.append(".");
-                    break;
-                // Escape regex special characters
-                case '.':
-                case '+':
-                case '(':
-                case ')':
-                case '[':
-                case ']':
-                case '{':
-                case '}':
-                case '^':
-                case '$':
-                case '|':
-                case '\\':
-                    regex.append("\\").append(c);
-                    break;
-                default:
-                    regex.append(c);
-            }
-        }
-
-        return value.matches(regex.toString());
     }
 }
