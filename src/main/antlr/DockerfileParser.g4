@@ -54,7 +54,7 @@ instruction
     ;
 
 fromInstruction
-    : FROM WS+ ( flags WS+ )? image ( WS+ AS WS+ stageName )? trailingComment?
+    : FROM WS+ ( flags WS+ )? imageName ( WS+ AS WS+ stageName )? trailingComment?
     ;
 
 runInstruction
@@ -180,19 +180,7 @@ jsonString
     : JSON_STRING
     ;
 
-image
-    : imageName ( COLON tag | AT_SIGN digest )?
-    ;
-
 imageName
-    : text
-    ;
-
-tag
-    : text
-    ;
-
-digest
     : text
     ;
 
@@ -261,7 +249,7 @@ pathList
     ;
 
 userSpec
-    : UNQUOTED_TEXT
+    : text
     ;
 
 argName
@@ -287,8 +275,6 @@ textElement
     | ENV_VAR
     | EQUALS  // Allow = in shell form text (e.g., ENV_VAR=value in RUN commands)
     | DASH_DASH  // Allow -- in shell form text (e.g., --option in shell commands)
-    | COLON  // Allow : in text contexts
-    | AT_SIGN  // Allow @ in text contexts
     | LINE_CONTINUATION  // Allow line continuations in shell commands
     | WS
     | COMMENT  // Allow comments in heredoc content

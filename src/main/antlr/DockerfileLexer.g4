@@ -62,12 +62,10 @@ RBRACKET : ']';
 // Assignment and flags
 EQUALS     : '=';
 DASH_DASH  : '--';
-COLON      : ':';
-AT_SIGN    : '@';
 
 // Unquoted text fragment (to be used in UNQUOTED_TEXT)
 // This matches text that doesn't start with --
-fragment UNQUOTED_CHAR : ~[ \t\r\n\\"'$[\]=:@];
+fragment UNQUOTED_CHAR : ~[ \t\r\n\\"'$[\]=];
 fragment ESCAPED_CHAR : '\\' .;
 
 // String literals
@@ -90,8 +88,8 @@ ENV_VAR : '$' '{' [a-zA-Z_][a-zA-Z0-9_]* ( ':-' | ':+' | ':' )? ~[}]* '}' | '$' 
 // Note: comma is NOT excluded here - it's only special in JSON arrays
 // We structure this to not match text starting with -- (so DASH_DASH can match first)
 UNQUOTED_TEXT
-    : ~[- \t\r\n\\"'$[\]=:@] ( UNQUOTED_CHAR | ESCAPED_CHAR )*   // Start with non-hyphen, non-space
-    | '-' ~[- \t\r\n\\"'$[\]=:@] ( UNQUOTED_CHAR | ESCAPED_CHAR )*  // Single hyphen followed by non-hyphen, non-space
+    : ~[- \t\r\n\\"'$[\]=] ( UNQUOTED_CHAR | ESCAPED_CHAR )*   // Start with non-hyphen, non-space
+    | '-' ~[- \t\r\n\\"'$[\]=] ( UNQUOTED_CHAR | ESCAPED_CHAR )*  // Single hyphen followed by non-hyphen, non-space
     | '-'  // Just a hyphen by itself
     ;
 

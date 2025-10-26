@@ -188,7 +188,11 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         Dockerfile.User u = user;
         u = u.withPrefix(visitSpace(u.getPrefix(), p));
         u = u.withMarkers(visitMarkers(u.getMarkers(), p));
-        return u.withUserSpec((Dockerfile.Argument) visit(u.getUserSpec(), p));
+        u = u.withUser((Dockerfile.Argument) visit(u.getUser(), p));
+        if (u.getGroup() != null) {
+            u = u.withGroup((Dockerfile.Argument) visit(u.getGroup(), p));
+        }
+        return u;
     }
 
     public Dockerfile visitStopsignal(Dockerfile.Stopsignal stopsignal, P p) {

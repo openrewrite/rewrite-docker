@@ -265,7 +265,11 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     public Dockerfile visitUser(Dockerfile.User user, PrintOutputCapture<P> p) {
         beforeSyntax(user, p);
         p.append(user.getKeyword());
-        visit(user.getUserSpec(), p);
+        visit(user.getUser(), p);
+        if (user.getGroup() != null) {
+            p.append(":");
+            visit(user.getGroup(), p);
+        }
         afterSyntax(user, p);
         return user;
     }

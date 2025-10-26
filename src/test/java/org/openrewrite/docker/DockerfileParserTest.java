@@ -374,7 +374,12 @@ class DockerfileParserTest implements RewriteTest {
                 """
                 FROM ubuntu:20.04
                 USER nobody
-                """
+                """,
+              spec -> spec.afterRecipe(doc -> {
+                  Dockerfile.User user = (Dockerfile.User) doc.getInstructions().getLast();
+                  assertThat(((Dockerfile.PlainText) user.getUser().getContents().getFirst()).getText()).isEqualTo("nobody");
+                  assertThat(user.getGroup()).isNull();
+              })
             )
         );
     }
@@ -385,8 +390,13 @@ class DockerfileParserTest implements RewriteTest {
             dockerfile(
                 """
                 FROM ubuntu:20.04
-                USER app:app
-                """
+                USER app:group
+                """,
+              spec -> spec.afterRecipe(doc -> {
+                  Dockerfile.User user = (Dockerfile.User) doc.getInstructions().getLast();
+                  assertThat(((Dockerfile.PlainText) user.getUser().getContents().getFirst()).getText()).isEqualTo("app");
+                  assertThat(((Dockerfile.PlainText) user.getGroup().getContents().getFirst()).getText()).isEqualTo("group");
+              })
             )
         );
     }

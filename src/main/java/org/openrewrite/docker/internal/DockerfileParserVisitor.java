@@ -94,7 +94,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         skip(ctx.FROM().getSymbol());
 
         List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
-        Dockerfile.Argument image = parseImageName(ctx.image());
+        Dockerfile.Argument image = parseImageName(ctx.imageName());
         Dockerfile.From.As as = ctx.AS() != null ? visitFromAs(ctx) : null;
 
         // Advance cursor to end of instruction, but NOT past trailing comment
@@ -107,7 +107,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 if (ctx.AS() != null) {
                     stopToken = ctx.stageName().getStop();
                 } else {
-                    stopToken = ctx.image().getStop();
+                    stopToken = ctx.imageName().getStop();
                 }
             }
             advanceCursor(stopToken.getStopIndex() + 1);
@@ -129,26 +129,54 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         );
     }
 
-    private Dockerfile.Argument parseImageName(DockerfileParser.ImageContext ctx) {
+    private Dockerfile.Argument parseImageName(DockerfileParser.ImageNameContext ctx) {
         return convert(ctx, (c, prefix) -> {
-            List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+            // Parse the text and split out environment variables
+            List<Dockerfile.ArgumentContent> contents = parseText(c.text());
 
-            // Visit the imageName part (required)
-            if (c.imageName() != null) {
-                contents.addAll(parseText(c.imageName().text()));
+            // Further split any PlainText elements that contain : or @ to separate image from tag/digest
+            List<Dockerfile.ArgumentContent> splitContents = new ArrayList<>();
+            for (Dockerfile.ArgumentContent content : contents) {
+                if (content instanceof Dockerfile.PlainText) {
+                    splitContents.addAll(splitImageComponents(((Dockerfile.PlainText) content).getText()));
+                } else {
+                    splitContents.add(content);
+                }
             }
 
-            // Visit the tag or digest part (optional)
-            if (c.COLON() != null && c.tag() != null) {
-                // The COLON token is handled as part of text parsing
-                contents.addAll(parseText(c.tag().text()));
-            } else if (c.AT_SIGN() != null && c.digest() != null) {
-                // The AT_SIGN token is handled as part of text parsing
-                contents.addAll(parseText(c.digest().text()));
-            }
-
-            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, splitContents);
         });
+    }
+
+    private List<Dockerfile.ArgumentContent> splitImageComponents(String text) {
+        List<Dockerfile.ArgumentContent> result = new ArrayList<>();
+
+        // Find the last occurrence of : or @ (for tag or digest)
+        int colonIndex = text.lastIndexOf(':');
+        int atIndex = text.lastIndexOf('@');
+
+        // Use whichever comes last (if any)
+        int splitIndex = Math.max(colonIndex, atIndex);
+
+        if (splitIndex > 0) {
+            // Split into image, separator, and tag/digest
+            String imagePart = text.substring(0, splitIndex);
+            String separator = text.substring(splitIndex, splitIndex + 1);
+            String tagOrDigest = text.substring(splitIndex + 1);
+
+            if (!imagePart.isEmpty()) {
+                result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, imagePart));
+            }
+            result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, separator));
+            if (!tagOrDigest.isEmpty()) {
+                result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, tagOrDigest));
+            }
+        } else {
+            // No split needed
+            result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
+        }
+
+        return result;
     }
 
     private List<Dockerfile.ArgumentContent> parseText(DockerfileParser.TextContext textCtx) {
@@ -764,7 +792,10 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         String userKeyword = ctx.USER().getText();
         skip(ctx.USER().getSymbol());
 
-        Dockerfile.Argument userSpec = visitArgument(ctx.userSpec());
+        // Parse userSpec and split into user and optional group
+        Dockerfile.Argument[] userAndGroup = parseUserSpec(ctx.userSpec());
+        Dockerfile.Argument user = userAndGroup[0];
+        Dockerfile.Argument group = userAndGroup[1];
 
         // Advance cursor to end of instruction, but NOT past trailing comment
         if (ctx.getStop() != null) {
@@ -775,7 +806,60 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             advanceCursor(stopToken.getStopIndex() + 1);
         }
 
-        return new Dockerfile.User(randomId(), prefix, Markers.EMPTY, userKeyword, userSpec);
+        return new Dockerfile.User(randomId(), prefix, Markers.EMPTY, userKeyword, user, group);
+    }
+
+    private Dockerfile.Argument[] parseUserSpec(DockerfileParser.UserSpecContext ctx) {
+        return convert(ctx, (c, prefix) -> {
+            // Parse the text
+            List<Dockerfile.ArgumentContent> contents = parseText(c.text());
+
+            // Find the colon separator to split user and group
+            List<Dockerfile.ArgumentContent> userContents = new ArrayList<>();
+            List<Dockerfile.ArgumentContent> groupContents = new ArrayList<>();
+            boolean foundColon = false;
+
+            for (Dockerfile.ArgumentContent content : contents) {
+                if (content instanceof Dockerfile.PlainText) {
+                    String text = ((Dockerfile.PlainText) content).getText();
+                    int colonIndex = text.indexOf(':');
+
+                    if (colonIndex >= 0 && !foundColon) {
+                        // Split at the colon
+                        foundColon = true;
+                        String userPart = text.substring(0, colonIndex);
+                        String groupPart = text.substring(colonIndex + 1);
+
+                        if (!userPart.isEmpty()) {
+                            userContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, userPart));
+                        }
+                        if (!groupPart.isEmpty()) {
+                            groupContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, groupPart));
+                        }
+                    } else {
+                        // Add to the appropriate list
+                        if (foundColon) {
+                            groupContents.add(content);
+                        } else {
+                            userContents.add(content);
+                        }
+                    }
+                } else {
+                    // Environment variables or quoted strings
+                    if (foundColon) {
+                        groupContents.add(content);
+                    } else {
+                        userContents.add(content);
+                    }
+                }
+            }
+
+            Dockerfile.Argument user = new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, userContents);
+            Dockerfile.Argument group = groupContents.isEmpty() ? null :
+                new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, groupContents);
+
+            return new Dockerfile.Argument[]{user, group};
+        });
     }
 
     @Override

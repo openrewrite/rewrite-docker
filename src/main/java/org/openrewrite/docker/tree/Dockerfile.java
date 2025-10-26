@@ -501,7 +501,10 @@ public interface Dockerfile extends Tree {
 
         String keyword;
 
-        Argument userSpec;
+        Argument user;
+
+        @Nullable
+        Argument group;
 
         @Override
         public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
