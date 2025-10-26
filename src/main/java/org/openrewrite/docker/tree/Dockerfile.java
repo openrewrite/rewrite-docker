@@ -176,6 +176,33 @@ public interface Dockerfile extends Tree {
     }
 
     /**
+     * ADD instruction - adds files from source to destination (can extract archives and fetch URLs)
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Add implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        @Nullable
+        List<Flag> flags;
+
+        List<Argument> sources;
+        Argument destination;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitAdd(this, p);
+        }
+    }
+
+    /**
      * COPY instruction - copies files from source to destination
      */
     @Value
@@ -225,6 +252,80 @@ public interface Dockerfile extends Tree {
         @Override
         public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
             return v.visitArg(this, p);
+        }
+    }
+
+    /**
+     * ENV instruction - sets environment variables
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Env implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        List<EnvPair> pairs;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitEnv(this, p);
+        }
+
+        @Value
+        @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+        @With
+        public static class EnvPair {
+            @EqualsAndHashCode.Include
+            UUID id;
+
+            Space prefix;
+            Markers markers;
+            Argument key;
+            boolean hasEquals;  // true for KEY=value, false for KEY value (old format)
+            Argument value;
+        }
+    }
+
+    /**
+     * LABEL instruction - adds metadata to an image
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Label implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        List<LabelPair> pairs;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitLabel(this, p);
+        }
+
+        @Value
+        @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+        @With
+        public static class LabelPair {
+            @EqualsAndHashCode.Include
+            UUID id;
+
+            Space prefix;
+            Markers markers;
+            Argument key;
+            // LABEL always uses equals sign
+            Argument value;
         }
     }
 

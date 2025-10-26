@@ -78,6 +78,23 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     }
 
     @Override
+    public Dockerfile visitAdd(Dockerfile.Add add, PrintOutputCapture<P> p) {
+        beforeSyntax(add, p);
+        p.append(add.getKeyword());
+        if (add.getFlags() != null) {
+            for (Dockerfile.Flag flag : add.getFlags()) {
+                visit(flag, p);
+            }
+        }
+        for (Dockerfile.Argument source : add.getSources()) {
+            visit(source, p);
+        }
+        visit(add.getDestination(), p);
+        afterSyntax(add, p);
+        return add;
+    }
+
+    @Override
     public Dockerfile visitCopy(Dockerfile.Copy copy, PrintOutputCapture<P> p) {
         beforeSyntax(copy, p);
         p.append(copy.getKeyword());
@@ -105,6 +122,36 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
         }
         afterSyntax(arg, p);
         return arg;
+    }
+
+    @Override
+    public Dockerfile visitEnv(Dockerfile.Env env, PrintOutputCapture<P> p) {
+        beforeSyntax(env, p);
+        p.append(env.getKeyword());
+        for (Dockerfile.Env.EnvPair pair : env.getPairs()) {
+            visitSpace(pair.getPrefix(), p);
+            visit(pair.getKey(), p);
+            if (pair.isHasEquals()) {
+                p.append("=");
+            }
+            visit(pair.getValue(), p);
+        }
+        afterSyntax(env, p);
+        return env;
+    }
+
+    @Override
+    public Dockerfile visitLabel(Dockerfile.Label label, PrintOutputCapture<P> p) {
+        beforeSyntax(label, p);
+        p.append(label.getKeyword());
+        for (Dockerfile.Label.LabelPair pair : label.getPairs()) {
+            visitSpace(pair.getPrefix(), p);
+            visit(pair.getKey(), p);
+            p.append("=");
+            visit(pair.getValue(), p);
+        }
+        afterSyntax(label, p);
+        return label;
     }
 
     @Override

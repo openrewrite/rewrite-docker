@@ -67,6 +67,18 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile visitAdd(Dockerfile.Add add, P p) {
+        Dockerfile.Add a = add;
+        a = a.withPrefix(visitSpace(a.getPrefix(), p));
+        a = a.withMarkers(visitMarkers(a.getMarkers(), p));
+        if (a.getFlags() != null) {
+            a = a.withFlags(ListUtils.map(a.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
+        }
+        a = a.withSources(ListUtils.map(a.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        return a.withDestination((Dockerfile.Argument) visit(a.getDestination(), p));
+    }
+
+    @Override
     public Dockerfile visitCopy(Dockerfile.Copy copy, P p) {
         Dockerfile.Copy c = copy;
         c = c.withPrefix(visitSpace(c.getPrefix(), p));
@@ -88,6 +100,38 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
             a = a.withValue((Dockerfile.Argument) visit(a.getValue(), p));
         }
         return a;
+    }
+
+    @Override
+    public Dockerfile visitEnv(Dockerfile.Env env, P p) {
+        Dockerfile.Env e = env;
+        e = e.withPrefix(visitSpace(e.getPrefix(), p));
+        e = e.withMarkers(visitMarkers(e.getMarkers(), p));
+        return e.withPairs(ListUtils.map(e.getPairs(), pair -> visitEnvPair(pair, p)));
+    }
+
+    public Dockerfile.Env.EnvPair visitEnvPair(Dockerfile.Env.EnvPair pair, P p) {
+        Dockerfile.Env.EnvPair ep = pair;
+        ep = ep.withPrefix(visitSpace(ep.getPrefix(), p));
+        ep = ep.withMarkers(visitMarkers(ep.getMarkers(), p));
+        ep = ep.withKey((Dockerfile.Argument) visit(ep.getKey(), p));
+        return ep.withValue((Dockerfile.Argument) visit(ep.getValue(), p));
+    }
+
+    @Override
+    public Dockerfile visitLabel(Dockerfile.Label label, P p) {
+        Dockerfile.Label l = label;
+        l = l.withPrefix(visitSpace(l.getPrefix(), p));
+        l = l.withMarkers(visitMarkers(l.getMarkers(), p));
+        return l.withPairs(ListUtils.map(l.getPairs(), pair -> visitLabelPair(pair, p)));
+    }
+
+    public Dockerfile.Label.LabelPair visitLabelPair(Dockerfile.Label.LabelPair pair, P p) {
+        Dockerfile.Label.LabelPair lp = pair;
+        lp = lp.withPrefix(visitSpace(lp.getPrefix(), p));
+        lp = lp.withMarkers(visitMarkers(lp.getMarkers(), p));
+        lp = lp.withKey((Dockerfile.Argument) visit(lp.getKey(), p));
+        return lp.withValue((Dockerfile.Argument) visit(lp.getValue(), p));
     }
 
     @Override

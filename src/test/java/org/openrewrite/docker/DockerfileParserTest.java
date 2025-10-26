@@ -281,6 +281,66 @@ class DockerfileParserTest implements RewriteTest {
     }
 
     @Test
+    void envMultiplePairs() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ENV NODE_VERSION=18.0.0 NPM_VERSION=9.0.0
+                """
+            )
+        );
+    }
+
+    @Test
+    void envOldStyleSpaceSeparated() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ENV NODE_VERSION 18.0.0
+                """
+            )
+        );
+    }
+
+    @Test
+    void labelSinglePair() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                LABEL version=1.0.0
+                """
+            )
+        );
+    }
+
+    @Test
+    void labelMultiplePairs() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                LABEL version=1.0.0 app=myapp
+                """
+            )
+        );
+    }
+
+    @Test
+    void labelWithQuotedValues() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                LABEL description="My application" version="1.0.0"
+                """
+            )
+        );
+    }
+
+    @Test
     void simpleArg() {
         rewriteRun(
             dockerfile(
@@ -384,6 +444,18 @@ class DockerfileParserTest implements RewriteTest {
                 """
                 FROM ubuntu:20.04
                 COPY app.jar /app/
+                """
+            )
+        );
+    }
+
+    @Test
+    void addInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ADD app.tar.gz /app/
                 """
             )
         );

@@ -32,12 +32,24 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         return run;
     }
 
+    public Dockerfile visitAdd(Dockerfile.Add add, P p) {
+        return add;
+    }
+
     public Dockerfile visitCopy(Dockerfile.Copy copy, P p) {
         return copy;
     }
 
     public Dockerfile visitArg(Dockerfile.Arg arg, P p) {
         return arg;
+    }
+
+    public Dockerfile visitEnv(Dockerfile.Env env, P p) {
+        return env;
+    }
+
+    public Dockerfile visitLabel(Dockerfile.Label label, P p) {
+        return label;
     }
 
     public Dockerfile visitCmd(Dockerfile.Cmd cmd, P p) {

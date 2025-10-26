@@ -17,8 +17,11 @@ package org.openrewrite.docker.internal;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.FileAttributes;
+import org.openrewrite.docker.internal.grammar.DockerfileLexer;
 import org.openrewrite.docker.internal.grammar.DockerfileParser;
 import org.openrewrite.docker.internal.grammar.DockerfileParserBaseVisitor;
 import org.openrewrite.docker.tree.Dockerfile;
@@ -157,6 +160,37 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
     }
 
     @Override
+    public Dockerfile visitAddInstruction(DockerfileParser.AddInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the ADD keyword
+        String addKeyword = ctx.ADD().getText();
+        skip(ctx.ADD().getSymbol());
+
+        List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
+
+        // Parse source list
+        List<Dockerfile.Argument> sources = new ArrayList<>();
+        for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
+            sources.add(visitArgument(sourceCtx.path()));
+        }
+
+        Dockerfile.Argument destination = visitArgument(ctx.destination().path());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                // Don't advance past the trailing comment
+                stopToken = ctx.destination().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Add(randomId(), prefix, Markers.EMPTY, addKeyword, flags, sources, destination);
+    }
+
+    @Override
     public Dockerfile visitCopyInstruction(DockerfileParser.CopyInstructionContext ctx) {
         Space prefix = prefix(ctx.getStart());
 
@@ -218,6 +252,109 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         }
 
         return new Dockerfile.Arg(randomId(), prefix, Markers.EMPTY, argKeyword, name, value);
+    }
+
+    @Override
+    public Dockerfile visitEnvInstruction(DockerfileParser.EnvInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the ENV keyword
+        String envKeyword = ctx.ENV().getText();
+        skip(ctx.ENV().getSymbol());
+
+        // Parse env pairs
+        List<Dockerfile.Env.EnvPair> pairs = new ArrayList<>();
+        for (DockerfileParser.EnvPairContext pairCtx : ctx.envPairs().envPair()) {
+            Space pairPrefix = prefix(pairCtx.getStart());
+            Dockerfile.Argument key = visitArgument(pairCtx.envKey());
+
+            boolean hasEquals = pairCtx.EQUALS() != null;
+            if (hasEquals) {
+                skip(pairCtx.EQUALS().getSymbol());
+            }
+
+            Dockerfile.Argument value = visitArgument(pairCtx.envValue());
+
+            pairs.add(new Dockerfile.Env.EnvPair(randomId(), pairPrefix, Markers.EMPTY, key, hasEquals, value));
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.envPairs().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Env(randomId(), prefix, Markers.EMPTY, envKeyword, pairs);
+    }
+
+    @Override
+    public Dockerfile visitLabelInstruction(DockerfileParser.LabelInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the LABEL keyword
+        String labelKeyword = ctx.LABEL().getText();
+        skip(ctx.LABEL().getSymbol());
+
+        // Parse label pairs
+        List<Dockerfile.Label.LabelPair> pairs = new ArrayList<>();
+        for (DockerfileParser.LabelPairContext pairCtx : ctx.labelPairs().labelPair()) {
+            Space pairPrefix = prefix(pairCtx.getStart());
+            Dockerfile.Argument key = visitLabelKeyOrValue(pairCtx.labelKey());
+
+            // LABEL always has equals
+            skip(pairCtx.EQUALS().getSymbol());
+
+            Dockerfile.Argument value = visitLabelKeyOrValue(pairCtx.labelValue());
+
+            pairs.add(new Dockerfile.Label.LabelPair(randomId(), pairPrefix, Markers.EMPTY, key, value));
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.labelPairs().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Label(randomId(), prefix, Markers.EMPTY, labelKeyword, pairs);
+    }
+
+    private Dockerfile.Argument visitLabelKeyOrValue(ParserRuleContext ctx) {
+        // labelKey and labelValue can be UNQUOTED_TEXT, DOUBLE_QUOTED_STRING, or SINGLE_QUOTED_STRING
+        Space prefix = prefix(ctx.getStart());
+        List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+
+        if (ctx.getChildCount() > 0) {
+            ParseTree child = ctx.getChild(0);
+            if (child instanceof TerminalNode) {
+                TerminalNode terminal = (TerminalNode) child;
+                Token token = terminal.getSymbol();
+                String text = token.getText();
+
+                if (token.getType() == DockerfileLexer.DOUBLE_QUOTED_STRING) {
+                    // Remove quotes
+                    String value = text.substring(1, text.length() - 1);
+                    contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, value, Dockerfile.QuotedString.QuoteStyle.DOUBLE));
+                    skip(token);
+                } else if (token.getType() == DockerfileLexer.SINGLE_QUOTED_STRING) {
+                    // Remove quotes
+                    String value = text.substring(1, text.length() - 1);
+                    contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, value, Dockerfile.QuotedString.QuoteStyle.SINGLE));
+                    skip(token);
+                } else {
+                    // UNQUOTED_TEXT
+                    contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
+                    skip(token);
+                }
+            }
+        }
+
+        return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
     }
 
     @Override
