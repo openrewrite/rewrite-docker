@@ -13,6 +13,37 @@
 # limitations under the License.
 ---
 type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.docker.DockerfileIsoVisitorTest$ReplaceFromImage
+examples:
+- description: '`DockerfileIsoVisitorTest#replaceFromImage`'
+  parameters:
+  - ubuntu:20.04
+  - ubuntu:22.04
+  sources:
+  - before: |
+      FROM ubuntu:20.04
+      RUN apt-get update
+    after: |
+      FROM ubuntu:22.04
+      RUN apt-get update
+    language: dockerfile
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.docker.DockerfileVisitorTest$ReplaceAddWithCopy
+examples:
+- description: '`DockerfileVisitorTest#replaceAddWithCopy`'
+  sources:
+  - before: |
+      FROM ubuntu:20.04
+      ADD app.jar /app/
+      RUN echo "test"
+    after: |
+      FROM ubuntu:20.04
+      COPY app.jar /app/
+      RUN echo "test"
+    language: dockerfile
+---
+type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.docker.search.FindDockerImageUses
 examples:
 - description: '`FindDockerImagesUsedTest#yamlFileWithMultipleImages`'
