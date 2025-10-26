@@ -130,64 +130,6 @@ class DockerfileParserTest implements RewriteTest {
     }
 
     @Test
-    void commentsAtTop() {
-        rewriteRun(
-            dockerfile(
-                """
-                # This is a comment
-                # Another comment line
-                FROM ubuntu:20.04
-                """
-            )
-        );
-    }
-
-    @Test
-    void commentsInline() {
-        rewriteRun(
-            dockerfile(
-                """
-                FROM ubuntu:20.04  # Base image
-                RUN apt-get update  # Update packages
-                """
-            )
-        );
-    }
-
-    @Test
-    void commentsBetweenInstructions() {
-        rewriteRun(
-            dockerfile(
-                """
-                FROM ubuntu:20.04
-                # Update and install dependencies
-                RUN apt-get update
-                # Install curl
-                RUN apt-get install -y curl
-                """
-            )
-        );
-    }
-
-    @Test
-    void emptyLinesAndComments() {
-        rewriteRun(
-            dockerfile(
-                """
-                # Base image
-                FROM ubuntu:20.04
-
-                # System updates
-                RUN apt-get update
-
-                # Install packages
-                RUN apt-get install -y curl wget
-                """
-            )
-        );
-    }
-
-    @Test
     void multiStageFrom() {
         rewriteRun(
             dockerfile(

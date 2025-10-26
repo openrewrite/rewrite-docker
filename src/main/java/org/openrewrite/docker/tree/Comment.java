@@ -34,7 +34,7 @@ public class Comment {
     /**
      * Whitespace that precedes this comment
      */
-    String suffix;
+    String prefix;
 
     Markers markers;
 }

@@ -26,7 +26,7 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
 
     public Space visitSpace(Space space, PrintOutputCapture<P> p) {
         for (Comment comment : space.getComments()) {
-            p.append(comment.getSuffix());
+            p.append(comment.getPrefix());
             p.append(comment.getText());
         }
         p.append(space.getWhitespace());

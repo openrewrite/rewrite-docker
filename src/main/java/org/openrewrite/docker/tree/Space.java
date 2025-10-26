@@ -72,14 +72,14 @@ public class Space {
 
     public String getIndent() {
         if (!comments.isEmpty()) {
-            return getWhitespaceIndent(comments.get(comments.size() - 1).getSuffix());
+            return getWhitespaceIndent(comments.get(comments.size() - 1).getPrefix());
         }
         return getWhitespaceIndent(whitespace);
     }
 
     public String getLastWhitespace() {
         if (!comments.isEmpty()) {
-            return comments.get(comments.size() - 1).getSuffix();
+            return comments.get(comments.size() - 1).getPrefix();
         }
         return whitespace == null ? "" : whitespace;
     }
@@ -222,7 +222,7 @@ public class Space {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (Comment comment : comments) {
-            sb.append(comment.getSuffix());
+            sb.append(comment.getPrefix());
             sb.append(comment.getText());
         }
         sb.append(whitespace == null ? "" : whitespace);
