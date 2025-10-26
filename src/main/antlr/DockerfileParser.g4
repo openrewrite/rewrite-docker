@@ -136,6 +136,8 @@ flag
 
 flagName
     : UNQUOTED_TEXT
+    | FROM  // Allow 'from' as flag name (e.g., --from=builder in COPY)
+    | AS    // Allow 'as' as flag name
     ;
 
 flagValue

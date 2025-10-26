@@ -22,6 +22,8 @@ tasks.register<JavaExec>("generateAntlrSources") {
     ) + fileTree("src/main/antlr").matching { include("**/*.g4") }.map { it.path }
 
     classpath = antlrGeneration
+
+    finalizedBy("licenseFormat")
 }
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()

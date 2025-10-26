@@ -15,17 +15,14 @@
  */
 // Generated from /home/tim/Documents/workspace/openrewrite/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
 package org.openrewrite.docker.internal.grammar;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
 public class DockerfileParser extends Parser {
@@ -35,44 +32,44 @@ public class DockerfileParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7,
-		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14,
-		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20,
-		AS=21, HEREDOC_START=22, LINE_CONTINUATION=23, LBRACKET=24, RBRACKET=25,
-		EQUALS=26, DASH_DASH=27, DOUBLE_QUOTED_STRING=28, SINGLE_QUOTED_STRING=29,
-		ENV_VAR=30, UNQUOTED_TEXT=31, WS=32, NEWLINE=33, JSON_COMMA=34, JSON_RBRACKET=35,
+		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7, 
+		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14, 
+		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20, 
+		AS=21, HEREDOC_START=22, LINE_CONTINUATION=23, LBRACKET=24, RBRACKET=25, 
+		EQUALS=26, DASH_DASH=27, DOUBLE_QUOTED_STRING=28, SINGLE_QUOTED_STRING=29, 
+		ENV_VAR=30, UNQUOTED_TEXT=31, WS=32, NEWLINE=33, JSON_COMMA=34, JSON_RBRACKET=35, 
 		JSON_STRING=36, JSON_WS=37;
 	public static final int
-		RULE_dockerfile = 0, RULE_parserDirective = 1, RULE_instruction = 2, RULE_fromInstruction = 3,
-		RULE_runInstruction = 4, RULE_cmdInstruction = 5, RULE_labelInstruction = 6,
-		RULE_exposeInstruction = 7, RULE_envInstruction = 8, RULE_addInstruction = 9,
-		RULE_copyInstruction = 10, RULE_entrypointInstruction = 11, RULE_volumeInstruction = 12,
-		RULE_userInstruction = 13, RULE_workdirInstruction = 14, RULE_argInstruction = 15,
-		RULE_onbuildInstruction = 16, RULE_stopsignalInstruction = 17, RULE_healthcheckInstruction = 18,
-		RULE_shellInstruction = 19, RULE_maintainerInstruction = 20, RULE_flags = 21,
-		RULE_flag = 22, RULE_flagName = 23, RULE_flagValue = 24, RULE_flagValueElement = 25,
-		RULE_execForm = 26, RULE_shellForm = 27, RULE_heredoc = 28, RULE_heredocLine = 29,
-		RULE_heredocEnd = 30, RULE_jsonArray = 31, RULE_jsonArrayElements = 32,
-		RULE_jsonString = 33, RULE_imageName = 34, RULE_stageName = 35, RULE_labelPairs = 36,
-		RULE_labelPair = 37, RULE_labelKey = 38, RULE_labelValue = 39, RULE_portList = 40,
-		RULE_port = 41, RULE_envPairs = 42, RULE_envPair = 43, RULE_envKey = 44,
-		RULE_envValue = 45, RULE_sourceList = 46, RULE_source = 47, RULE_destination = 48,
-		RULE_path = 49, RULE_pathList = 50, RULE_userSpec = 51, RULE_argName = 52,
-		RULE_argValue = 53, RULE_signal = 54, RULE_text = 55, RULE_textElement = 56,
+		RULE_dockerfile = 0, RULE_parserDirective = 1, RULE_instruction = 2, RULE_fromInstruction = 3, 
+		RULE_runInstruction = 4, RULE_cmdInstruction = 5, RULE_labelInstruction = 6, 
+		RULE_exposeInstruction = 7, RULE_envInstruction = 8, RULE_addInstruction = 9, 
+		RULE_copyInstruction = 10, RULE_entrypointInstruction = 11, RULE_volumeInstruction = 12, 
+		RULE_userInstruction = 13, RULE_workdirInstruction = 14, RULE_argInstruction = 15, 
+		RULE_onbuildInstruction = 16, RULE_stopsignalInstruction = 17, RULE_healthcheckInstruction = 18, 
+		RULE_shellInstruction = 19, RULE_maintainerInstruction = 20, RULE_flags = 21, 
+		RULE_flag = 22, RULE_flagName = 23, RULE_flagValue = 24, RULE_flagValueElement = 25, 
+		RULE_execForm = 26, RULE_shellForm = 27, RULE_heredoc = 28, RULE_heredocLine = 29, 
+		RULE_heredocEnd = 30, RULE_jsonArray = 31, RULE_jsonArrayElements = 32, 
+		RULE_jsonString = 33, RULE_imageName = 34, RULE_stageName = 35, RULE_labelPairs = 36, 
+		RULE_labelPair = 37, RULE_labelKey = 38, RULE_labelValue = 39, RULE_portList = 40, 
+		RULE_port = 41, RULE_envPairs = 42, RULE_envPair = 43, RULE_envKey = 44, 
+		RULE_envValue = 45, RULE_sourceList = 46, RULE_source = 47, RULE_destination = 48, 
+		RULE_path = 49, RULE_pathList = 50, RULE_userSpec = 51, RULE_argName = 52, 
+		RULE_argValue = 53, RULE_signal = 54, RULE_text = 55, RULE_textElement = 56, 
 		RULE_trailingComment = 57;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"dockerfile", "parserDirective", "instruction", "fromInstruction", "runInstruction",
-			"cmdInstruction", "labelInstruction", "exposeInstruction", "envInstruction",
-			"addInstruction", "copyInstruction", "entrypointInstruction", "volumeInstruction",
-			"userInstruction", "workdirInstruction", "argInstruction", "onbuildInstruction",
-			"stopsignalInstruction", "healthcheckInstruction", "shellInstruction",
-			"maintainerInstruction", "flags", "flag", "flagName", "flagValue", "flagValueElement",
-			"execForm", "shellForm", "heredoc", "heredocLine", "heredocEnd", "jsonArray",
-			"jsonArrayElements", "jsonString", "imageName", "stageName", "labelPairs",
-			"labelPair", "labelKey", "labelValue", "portList", "port", "envPairs",
-			"envPair", "envKey", "envValue", "sourceList", "source", "destination",
-			"path", "pathList", "userSpec", "argName", "argValue", "signal", "text",
+			"dockerfile", "parserDirective", "instruction", "fromInstruction", "runInstruction", 
+			"cmdInstruction", "labelInstruction", "exposeInstruction", "envInstruction", 
+			"addInstruction", "copyInstruction", "entrypointInstruction", "volumeInstruction", 
+			"userInstruction", "workdirInstruction", "argInstruction", "onbuildInstruction", 
+			"stopsignalInstruction", "healthcheckInstruction", "shellInstruction", 
+			"maintainerInstruction", "flags", "flag", "flagName", "flagValue", "flagValueElement", 
+			"execForm", "shellForm", "heredoc", "heredocLine", "heredocEnd", "jsonArray", 
+			"jsonArrayElements", "jsonString", "imageName", "stageName", "labelPairs", 
+			"labelPair", "labelKey", "labelValue", "portList", "port", "envPairs", 
+			"envPair", "envKey", "envValue", "sourceList", "source", "destination", 
+			"path", "pathList", "userSpec", "argName", "argValue", "signal", "text", 
 			"textElement", "trailingComment"
 		};
 	}
@@ -80,20 +77,20 @@ public class DockerfileParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, null, null, null, null,
-			null, null, null, null, null, null, null, null, null, null, null, null,
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null, 
 			"'['", null, "'='", "'--'", null, null, null, null, null, null, "','"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE",
-			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG",
-			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS",
-			"HEREDOC_START", "LINE_CONTINUATION", "LBRACKET", "RBRACKET", "EQUALS",
-			"DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING", "ENV_VAR",
-			"UNQUOTED_TEXT", "WS", "NEWLINE", "JSON_COMMA", "JSON_RBRACKET", "JSON_STRING",
+			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE", 
+			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG", 
+			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS", 
+			"HEREDOC_START", "LINE_CONTINUATION", "LBRACKET", "RBRACKET", "EQUALS", 
+			"DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING", "ENV_VAR", 
+			"UNQUOTED_TEXT", "WS", "NEWLINE", "JSON_COMMA", "JSON_RBRACKET", "JSON_STRING", 
 			"JSON_WS"
 		};
 	}
@@ -189,8 +186,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitDockerfile(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitDockerfile(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -254,7 +251,7 @@ public class DockerfileParser extends Parser {
 					switch (_input.LA(1)) {
 					case NEWLINE:
 						{
-						setState(126);
+						setState(126); 
 						_errHandler.sync(this);
 						_alt = 1;
 						do {
@@ -270,7 +267,7 @@ public class DockerfileParser extends Parser {
 							default:
 								throw new NoViableAltException(this);
 							}
-							setState(128);
+							setState(128); 
 							_errHandler.sync(this);
 							_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 						} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -334,8 +331,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitParserDirective(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitParserDirective(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -430,8 +427,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -617,8 +614,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFromInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFromInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -632,7 +629,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(166);
 			match(FROM);
-			setState(168);
+			setState(168); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -648,7 +645,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(170);
+				setState(170); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -659,7 +656,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(172);
 				flags();
-				setState(174);
+				setState(174); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -675,7 +672,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(176);
+					setState(176); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -689,7 +686,7 @@ public class DockerfileParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				{
-				setState(182);
+				setState(182); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -699,13 +696,13 @@ public class DockerfileParser extends Parser {
 					match(WS);
 					}
 					}
-					setState(184);
+					setState(184); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==WS );
 				setState(186);
 				match(AS);
-				setState(188);
+				setState(188); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -715,7 +712,7 @@ public class DockerfileParser extends Parser {
 					match(WS);
 					}
 					}
-					setState(190);
+					setState(190); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==WS );
@@ -783,8 +780,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitRunInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitRunInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -797,7 +794,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(198);
 			match(RUN);
-			setState(200);
+			setState(200); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -813,7 +810,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(202);
+				setState(202); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -824,7 +821,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(204);
 				flags();
-				setState(206);
+				setState(206); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -840,7 +837,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(208);
+					setState(208); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -932,8 +929,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitCmdInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitCmdInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -946,7 +943,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(220);
 			match(CMD);
-			setState(222);
+			setState(222); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -962,7 +959,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(224);
+				setState(224); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1042,8 +1039,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1056,7 +1053,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(233);
 			match(LABEL);
-			setState(235);
+			setState(235); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1066,7 +1063,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(237);
+				setState(237); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1122,8 +1119,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitExposeInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitExposeInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1136,7 +1133,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(243);
 			match(EXPOSE);
-			setState(245);
+			setState(245); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1146,7 +1143,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(247);
+				setState(247); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1202,8 +1199,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1216,7 +1213,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(253);
 			match(ENV);
-			setState(255);
+			setState(255); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1226,7 +1223,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(257);
+				setState(257); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1291,8 +1288,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitAddInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitAddInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1305,7 +1302,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(263);
 			match(ADD);
-			setState(265);
+			setState(265); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1321,7 +1318,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(267);
+				setState(267); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1332,7 +1329,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(269);
 				flags();
-				setState(271);
+				setState(271); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1348,7 +1345,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(273);
+					setState(273); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1376,7 +1373,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(278);
 				sourceList();
-				setState(280);
+				setState(280); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1392,7 +1389,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(282);
+					setState(282); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1462,8 +1459,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitCopyInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitCopyInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1476,7 +1473,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(291);
 			match(COPY);
-			setState(293);
+			setState(293); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1492,7 +1489,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(295);
+				setState(295); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,34,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1503,7 +1500,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(297);
 				flags();
-				setState(299);
+				setState(299); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1519,7 +1516,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(301);
+					setState(301); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,35,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1547,7 +1544,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(306);
 				sourceList();
-				setState(308);
+				setState(308); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1563,7 +1560,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(310);
+					setState(310); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,37,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1627,8 +1624,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEntrypointInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEntrypointInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1641,7 +1638,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(319);
 			match(ENTRYPOINT);
-			setState(321);
+			setState(321); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1657,7 +1654,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(323);
+				setState(323); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,40,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1740,8 +1737,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitVolumeInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitVolumeInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1754,7 +1751,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(332);
 			match(VOLUME);
-			setState(334);
+			setState(334); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1770,7 +1767,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(336);
+				setState(336); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,43,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1850,8 +1847,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitUserInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitUserInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1864,7 +1861,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(345);
 			match(USER);
-			setState(347);
+			setState(347); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1874,7 +1871,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(349);
+				setState(349); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1930,8 +1927,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitWorkdirInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitWorkdirInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1944,7 +1941,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(355);
 			match(WORKDIR);
-			setState(357);
+			setState(357); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1960,7 +1957,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(359);
+				setState(359); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,48,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -2020,8 +2017,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2034,7 +2031,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(365);
 			match(ARG);
-			setState(367);
+			setState(367); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2044,7 +2041,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(369);
+				setState(369); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2112,8 +2109,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitOnbuildInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitOnbuildInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2126,7 +2123,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(379);
 			match(ONBUILD);
-			setState(381);
+			setState(381); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2136,7 +2133,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(383);
+				setState(383); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2192,8 +2189,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitStopsignalInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitStopsignalInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2206,7 +2203,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(389);
 			match(STOPSIGNAL);
-			setState(391);
+			setState(391); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2216,7 +2213,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(393);
+				setState(393); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2276,8 +2273,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitHealthcheckInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitHealthcheckInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2290,7 +2287,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(399);
 			match(HEALTHCHECK);
-			setState(401);
+			setState(401); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2300,7 +2297,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(403);
+				setState(403); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2323,7 +2320,7 @@ public class DockerfileParser extends Parser {
 					{
 					setState(406);
 					flags();
-					setState(408);
+					setState(408); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -2333,7 +2330,7 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(410);
+						setState(410); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
@@ -2397,8 +2394,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitShellInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitShellInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2411,7 +2408,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(420);
 			match(SHELL);
-			setState(422);
+			setState(422); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2421,7 +2418,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(424);
+				setState(424); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2477,8 +2474,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitMaintainerInstruction(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitMaintainerInstruction(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2491,7 +2488,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(430);
 			match(MAINTAINER);
-			setState(432);
+			setState(432); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -2507,7 +2504,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(434);
+				setState(434); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,64,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -2562,8 +2559,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlags(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlags(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2584,7 +2581,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(442);
+					setState(442); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -2594,14 +2591,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(444);
+						setState(444); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(446);
 					flag();
 					}
-					}
+					} 
 				}
 				setState(451);
 				_errHandler.sync(this);
@@ -2644,8 +2641,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlag(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlag(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2688,6 +2685,8 @@ public class DockerfileParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class FlagNameContext extends ParserRuleContext {
 		public TerminalNode UNQUOTED_TEXT() { return getToken(DockerfileParser.UNQUOTED_TEXT, 0); }
+		public TerminalNode FROM() { return getToken(DockerfileParser.FROM, 0); }
+		public TerminalNode AS() { return getToken(DockerfileParser.AS, 0); }
 		public FlagNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2702,19 +2701,28 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagName(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagName(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
 	public final FlagNameContext flagName() throws RecognitionException {
 		FlagNameContext _localctx = new FlagNameContext(_ctx, getState());
 		enterRule(_localctx, 46, RULE_flagName);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(458);
-			match(UNQUOTED_TEXT);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 2149580808L) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -2750,8 +2758,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagValue(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2762,7 +2770,7 @@ public class DockerfileParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(461);
+			setState(461); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2772,7 +2780,7 @@ public class DockerfileParser extends Parser {
 				flagValueElement();
 				}
 				}
-				setState(463);
+				setState(463); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 3019898880L) != 0) );
@@ -2809,8 +2817,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagValueElement(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitFlagValueElement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2863,8 +2871,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitExecForm(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitExecForm(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2908,8 +2916,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitShellForm(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitShellForm(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2968,8 +2976,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredoc(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredoc(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2988,7 +2996,7 @@ public class DockerfileParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==WS) {
 				{
-				setState(473);
+				setState(473); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -3004,7 +3012,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(475);
+					setState(475); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,70,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -3025,7 +3033,7 @@ public class DockerfileParser extends Parser {
 					setState(481);
 					heredocLine();
 					}
-					}
+					} 
 				}
 				setState(486);
 				_errHandler.sync(this);
@@ -3066,8 +3074,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredocLine(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredocLine(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3120,8 +3128,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredocEnd(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitHeredocEnd(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3171,8 +3179,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonArray(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonArray(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3260,8 +3268,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonArrayElements(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonArrayElements(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3307,7 +3315,7 @@ public class DockerfileParser extends Parser {
 					setState(516);
 					jsonString();
 					}
-					}
+					} 
 				}
 				setState(521);
 				_errHandler.sync(this);
@@ -3343,8 +3351,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonString(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitJsonString(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3388,8 +3396,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitImageName(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitImageName(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3431,8 +3439,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitStageName(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitStageName(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3483,8 +3491,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelPairs(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelPairs(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3505,7 +3513,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(530);
+					setState(530); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3515,14 +3523,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(532);
+						setState(532); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(534);
 					labelPair();
 					}
-					}
+					} 
 				}
 				setState(539);
 				_errHandler.sync(this);
@@ -3564,8 +3572,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelPair(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelPair(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3613,8 +3621,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelKey(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelKey(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3667,8 +3675,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelValue(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitLabelValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3728,8 +3736,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitPortList(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitPortList(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3750,7 +3758,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(550);
+					setState(550); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3760,14 +3768,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(552);
+						setState(552); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(554);
 					port();
 					}
-					}
+					} 
 				}
 				setState(559);
 				_errHandler.sync(this);
@@ -3803,8 +3811,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitPort(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitPort(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3855,8 +3863,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvPairs(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvPairs(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3877,7 +3885,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(564);
+					setState(564); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3887,14 +3895,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(566);
+						setState(566); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(568);
 					envPair();
 					}
-					}
+					} 
 				}
 				setState(573);
 				_errHandler.sync(this);
@@ -3940,8 +3948,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvPair(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvPair(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3967,7 +3975,7 @@ public class DockerfileParser extends Parser {
 				break;
 			case WS:
 				{
-				setState(578);
+				setState(578); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -3983,7 +3991,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(580);
+					setState(580); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,86,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -4024,8 +4032,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvKey(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvKey(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4069,8 +4077,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvValue(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitEnvValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4121,8 +4129,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitSourceList(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitSourceList(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4142,7 +4150,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(591);
+					setState(591); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -4158,14 +4166,14 @@ public class DockerfileParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(593);
+						setState(593); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,88,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 					setState(595);
 					source();
 					}
-					}
+					} 
 				}
 				setState(600);
 				_errHandler.sync(this);
@@ -4203,8 +4211,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitSource(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitSource(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4248,8 +4256,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitDestination(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitDestination(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4293,8 +4301,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitPath(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitPath(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4345,8 +4353,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitPathList(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitPathList(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4366,7 +4374,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(609);
+					setState(609); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -4382,14 +4390,14 @@ public class DockerfileParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(611);
+						setState(611); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,90,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 					setState(613);
 					path();
 					}
-					}
+					} 
 				}
 				setState(618);
 				_errHandler.sync(this);
@@ -4425,8 +4433,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitUserSpec(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitUserSpec(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4468,8 +4476,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgName(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgName(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4513,8 +4521,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgValue(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitArgValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4556,8 +4564,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitSignal(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitSignal(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4604,8 +4612,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitText(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitText(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4616,7 +4624,7 @@ public class DockerfileParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(628);
+			setState(628); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -4632,7 +4640,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(630);
+				setState(630); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,92,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -4674,8 +4682,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitTextElement(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitTextElement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4730,8 +4738,8 @@ public class DockerfileParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof DockerfileParserVisitor) return ((DockerfileParserVisitor<? extends T>)visitor).visitTrailingComment(this);
-			return visitor.visitChildren(this);
+			if ( visitor instanceof DockerfileParserVisitor ) return ((DockerfileParserVisitor<? extends T>)visitor).visitTrailingComment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4866,60 +4874,61 @@ public class DockerfileParser extends Parser {
 		"7\f7\u0276\u00018\u00018\u00019\u00059\u027c\b9\n9\f9\u027f\t9\u00019"+
 		"\u00019\u00019\u0000\u0000:\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010"+
 		"\u0012\u0014\u0016\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@BDFHJLNPR"+
-		"TVXZ\\^`bdfhjlnpr\u0000\u0003\u0003\u0000\u001a\u001a\u001c\u001d\u001f"+
-		"\u001f\u0002\u0000\u001c\u001d\u001f\u001f\u0003\u0000\u0002\u0002\u0017"+
-		"\u0017\u001a \u02b9\u0000y\u0001\u0000\u0000\u0000\u0002\u0090\u0001\u0000"+
-		"\u0000\u0000\u0004\u00a4\u0001\u0000\u0000\u0000\u0006\u00a6\u0001\u0000"+
-		"\u0000\u0000\b\u00c6\u0001\u0000\u0000\u0000\n\u00dc\u0001\u0000\u0000"+
-		"\u0000\f\u00e9\u0001\u0000\u0000\u0000\u000e\u00f3\u0001\u0000\u0000\u0000"+
-		"\u0010\u00fd\u0001\u0000\u0000\u0000\u0012\u0107\u0001\u0000\u0000\u0000"+
-		"\u0014\u0123\u0001\u0000\u0000\u0000\u0016\u013f\u0001\u0000\u0000\u0000"+
-		"\u0018\u014c\u0001\u0000\u0000\u0000\u001a\u0159\u0001\u0000\u0000\u0000"+
-		"\u001c\u0163\u0001\u0000\u0000\u0000\u001e\u016d\u0001\u0000\u0000\u0000"+
-		" \u017b\u0001\u0000\u0000\u0000\"\u0185\u0001\u0000\u0000\u0000$\u018f"+
-		"\u0001\u0000\u0000\u0000&\u01a4\u0001\u0000\u0000\u0000(\u01ae\u0001\u0000"+
-		"\u0000\u0000*\u01b8\u0001\u0000\u0000\u0000,\u01c4\u0001\u0000\u0000\u0000"+
-		".\u01ca\u0001\u0000\u0000\u00000\u01cd\u0001\u0000\u0000\u00002\u01d1"+
-		"\u0001\u0000\u0000\u00004\u01d3\u0001\u0000\u0000\u00006\u01d5\u0001\u0000"+
-		"\u0000\u00008\u01d7\u0001\u0000\u0000\u0000:\u01ea\u0001\u0000\u0000\u0000"+
-		"<\u01ee\u0001\u0000\u0000\u0000>\u01f0\u0001\u0000\u0000\u0000@\u01fc"+
-		"\u0001\u0000\u0000\u0000B\u020a\u0001\u0000\u0000\u0000D\u020c\u0001\u0000"+
-		"\u0000\u0000F\u020e\u0001\u0000\u0000\u0000H\u0210\u0001\u0000\u0000\u0000"+
-		"J\u021c\u0001\u0000\u0000\u0000L\u0220\u0001\u0000\u0000\u0000N\u0222"+
-		"\u0001\u0000\u0000\u0000P\u0224\u0001\u0000\u0000\u0000R\u0230\u0001\u0000"+
-		"\u0000\u0000T\u0232\u0001\u0000\u0000\u0000V\u023e\u0001\u0000\u0000\u0000"+
-		"X\u0249\u0001\u0000\u0000\u0000Z\u024b\u0001\u0000\u0000\u0000\\\u024d"+
-		"\u0001\u0000\u0000\u0000^\u0259\u0001\u0000\u0000\u0000`\u025b\u0001\u0000"+
-		"\u0000\u0000b\u025d\u0001\u0000\u0000\u0000d\u025f\u0001\u0000\u0000\u0000"+
-		"f\u026b\u0001\u0000\u0000\u0000h\u026d\u0001\u0000\u0000\u0000j\u026f"+
-		"\u0001\u0000\u0000\u0000l\u0271\u0001\u0000\u0000\u0000n\u0274\u0001\u0000"+
-		"\u0000\u0000p\u0278\u0001\u0000\u0000\u0000r\u027d\u0001\u0000\u0000\u0000"+
-		"tx\u0003\u0002\u0001\u0000ux\u0005!\u0000\u0000vx\u0005\u0002\u0000\u0000"+
-		"wt\u0001\u0000\u0000\u0000wu\u0001\u0000\u0000\u0000wv\u0001\u0000\u0000"+
-		"\u0000x{\u0001\u0000\u0000\u0000yw\u0001\u0000\u0000\u0000yz\u0001\u0000"+
-		"\u0000\u0000z\u008b\u0001\u0000\u0000\u0000{y\u0001\u0000\u0000\u0000"+
-		"|\u0086\u0003\u0004\u0002\u0000}\u007f\u0005!\u0000\u0000~}\u0001\u0000"+
-		"\u0000\u0000\u007f\u0080\u0001\u0000\u0000\u0000\u0080~\u0001\u0000\u0000"+
-		"\u0000\u0080\u0081\u0001\u0000\u0000\u0000\u0081\u0085\u0001\u0000\u0000"+
-		"\u0000\u0082\u0085\u0005\u0017\u0000\u0000\u0083\u0085\u0005\u0002\u0000"+
-		"\u0000\u0084~\u0001\u0000\u0000\u0000\u0084\u0082\u0001\u0000\u0000\u0000"+
-		"\u0084\u0083\u0001\u0000\u0000\u0000\u0085\u0088\u0001\u0000\u0000\u0000"+
-		"\u0086\u0084\u0001\u0000\u0000\u0000\u0086\u0087\u0001\u0000\u0000\u0000"+
-		"\u0087\u008a\u0001\u0000\u0000\u0000\u0088\u0086\u0001\u0000\u0000\u0000"+
-		"\u0089|\u0001\u0000\u0000\u0000\u008a\u008d\u0001\u0000\u0000\u0000\u008b"+
-		"\u0089\u0001\u0000\u0000\u0000\u008b\u008c\u0001\u0000\u0000\u0000\u008c"+
-		"\u008e\u0001\u0000\u0000\u0000\u008d\u008b\u0001\u0000\u0000\u0000\u008e"+
-		"\u008f\u0005\u0000\u0000\u0001\u008f\u0001\u0001\u0000\u0000\u0000\u0090"+
-		"\u0091\u0005\u0001\u0000\u0000\u0091\u0003\u0001\u0000\u0000\u0000\u0092"+
-		"\u00a5\u0003\u0006\u0003\u0000\u0093\u00a5\u0003\b\u0004\u0000\u0094\u00a5"+
-		"\u0003\n\u0005\u0000\u0095\u00a5\u0003\f\u0006\u0000\u0096\u00a5\u0003"+
-		"\u000e\u0007\u0000\u0097\u00a5\u0003\u0010\b\u0000\u0098\u00a5\u0003\u0012"+
-		"\t\u0000\u0099\u00a5\u0003\u0014\n\u0000\u009a\u00a5\u0003\u0016\u000b"+
-		"\u0000\u009b\u00a5\u0003\u0018\f\u0000\u009c\u00a5\u0003\u001a\r\u0000"+
-		"\u009d\u00a5\u0003\u001c\u000e\u0000\u009e\u00a5\u0003\u001e\u000f\u0000"+
-		"\u009f\u00a5\u0003 \u0010\u0000\u00a0\u00a5\u0003\"\u0011\u0000\u00a1"+
-		"\u00a5\u0003$\u0012\u0000\u00a2\u00a5\u0003&\u0013\u0000\u00a3\u00a5\u0003"+
-		"(\u0014\u0000\u00a4\u0092\u0001\u0000\u0000\u0000\u00a4\u0093\u0001\u0000"+
+		"TVXZ\\^`bdfhjlnpr\u0000\u0004\u0003\u0000\u0003\u0003\u0015\u0015\u001f"+
+		"\u001f\u0003\u0000\u001a\u001a\u001c\u001d\u001f\u001f\u0002\u0000\u001c"+
+		"\u001d\u001f\u001f\u0003\u0000\u0002\u0002\u0017\u0017\u001a \u02b9\u0000"+
+		"y\u0001\u0000\u0000\u0000\u0002\u0090\u0001\u0000\u0000\u0000\u0004\u00a4"+
+		"\u0001\u0000\u0000\u0000\u0006\u00a6\u0001\u0000\u0000\u0000\b\u00c6\u0001"+
+		"\u0000\u0000\u0000\n\u00dc\u0001\u0000\u0000\u0000\f\u00e9\u0001\u0000"+
+		"\u0000\u0000\u000e\u00f3\u0001\u0000\u0000\u0000\u0010\u00fd\u0001\u0000"+
+		"\u0000\u0000\u0012\u0107\u0001\u0000\u0000\u0000\u0014\u0123\u0001\u0000"+
+		"\u0000\u0000\u0016\u013f\u0001\u0000\u0000\u0000\u0018\u014c\u0001\u0000"+
+		"\u0000\u0000\u001a\u0159\u0001\u0000\u0000\u0000\u001c\u0163\u0001\u0000"+
+		"\u0000\u0000\u001e\u016d\u0001\u0000\u0000\u0000 \u017b\u0001\u0000\u0000"+
+		"\u0000\"\u0185\u0001\u0000\u0000\u0000$\u018f\u0001\u0000\u0000\u0000"+
+		"&\u01a4\u0001\u0000\u0000\u0000(\u01ae\u0001\u0000\u0000\u0000*\u01b8"+
+		"\u0001\u0000\u0000\u0000,\u01c4\u0001\u0000\u0000\u0000.\u01ca\u0001\u0000"+
+		"\u0000\u00000\u01cd\u0001\u0000\u0000\u00002\u01d1\u0001\u0000\u0000\u0000"+
+		"4\u01d3\u0001\u0000\u0000\u00006\u01d5\u0001\u0000\u0000\u00008\u01d7"+
+		"\u0001\u0000\u0000\u0000:\u01ea\u0001\u0000\u0000\u0000<\u01ee\u0001\u0000"+
+		"\u0000\u0000>\u01f0\u0001\u0000\u0000\u0000@\u01fc\u0001\u0000\u0000\u0000"+
+		"B\u020a\u0001\u0000\u0000\u0000D\u020c\u0001\u0000\u0000\u0000F\u020e"+
+		"\u0001\u0000\u0000\u0000H\u0210\u0001\u0000\u0000\u0000J\u021c\u0001\u0000"+
+		"\u0000\u0000L\u0220\u0001\u0000\u0000\u0000N\u0222\u0001\u0000\u0000\u0000"+
+		"P\u0224\u0001\u0000\u0000\u0000R\u0230\u0001\u0000\u0000\u0000T\u0232"+
+		"\u0001\u0000\u0000\u0000V\u023e\u0001\u0000\u0000\u0000X\u0249\u0001\u0000"+
+		"\u0000\u0000Z\u024b\u0001\u0000\u0000\u0000\\\u024d\u0001\u0000\u0000"+
+		"\u0000^\u0259\u0001\u0000\u0000\u0000`\u025b\u0001\u0000\u0000\u0000b"+
+		"\u025d\u0001\u0000\u0000\u0000d\u025f\u0001\u0000\u0000\u0000f\u026b\u0001"+
+		"\u0000\u0000\u0000h\u026d\u0001\u0000\u0000\u0000j\u026f\u0001\u0000\u0000"+
+		"\u0000l\u0271\u0001\u0000\u0000\u0000n\u0274\u0001\u0000\u0000\u0000p"+
+		"\u0278\u0001\u0000\u0000\u0000r\u027d\u0001\u0000\u0000\u0000tx\u0003"+
+		"\u0002\u0001\u0000ux\u0005!\u0000\u0000vx\u0005\u0002\u0000\u0000wt\u0001"+
+		"\u0000\u0000\u0000wu\u0001\u0000\u0000\u0000wv\u0001\u0000\u0000\u0000"+
+		"x{\u0001\u0000\u0000\u0000yw\u0001\u0000\u0000\u0000yz\u0001\u0000\u0000"+
+		"\u0000z\u008b\u0001\u0000\u0000\u0000{y\u0001\u0000\u0000\u0000|\u0086"+
+		"\u0003\u0004\u0002\u0000}\u007f\u0005!\u0000\u0000~}\u0001\u0000\u0000"+
+		"\u0000\u007f\u0080\u0001\u0000\u0000\u0000\u0080~\u0001\u0000\u0000\u0000"+
+		"\u0080\u0081\u0001\u0000\u0000\u0000\u0081\u0085\u0001\u0000\u0000\u0000"+
+		"\u0082\u0085\u0005\u0017\u0000\u0000\u0083\u0085\u0005\u0002\u0000\u0000"+
+		"\u0084~\u0001\u0000\u0000\u0000\u0084\u0082\u0001\u0000\u0000\u0000\u0084"+
+		"\u0083\u0001\u0000\u0000\u0000\u0085\u0088\u0001\u0000\u0000\u0000\u0086"+
+		"\u0084\u0001\u0000\u0000\u0000\u0086\u0087\u0001\u0000\u0000\u0000\u0087"+
+		"\u008a\u0001\u0000\u0000\u0000\u0088\u0086\u0001\u0000\u0000\u0000\u0089"+
+		"|\u0001\u0000\u0000\u0000\u008a\u008d\u0001\u0000\u0000\u0000\u008b\u0089"+
+		"\u0001\u0000\u0000\u0000\u008b\u008c\u0001\u0000\u0000\u0000\u008c\u008e"+
+		"\u0001\u0000\u0000\u0000\u008d\u008b\u0001\u0000\u0000\u0000\u008e\u008f"+
+		"\u0005\u0000\u0000\u0001\u008f\u0001\u0001\u0000\u0000\u0000\u0090\u0091"+
+		"\u0005\u0001\u0000\u0000\u0091\u0003\u0001\u0000\u0000\u0000\u0092\u00a5"+
+		"\u0003\u0006\u0003\u0000\u0093\u00a5\u0003\b\u0004\u0000\u0094\u00a5\u0003"+
+		"\n\u0005\u0000\u0095\u00a5\u0003\f\u0006\u0000\u0096\u00a5\u0003\u000e"+
+		"\u0007\u0000\u0097\u00a5\u0003\u0010\b\u0000\u0098\u00a5\u0003\u0012\t"+
+		"\u0000\u0099\u00a5\u0003\u0014\n\u0000\u009a\u00a5\u0003\u0016\u000b\u0000"+
+		"\u009b\u00a5\u0003\u0018\f\u0000\u009c\u00a5\u0003\u001a\r\u0000\u009d"+
+		"\u00a5\u0003\u001c\u000e\u0000\u009e\u00a5\u0003\u001e\u000f\u0000\u009f"+
+		"\u00a5\u0003 \u0010\u0000\u00a0\u00a5\u0003\"\u0011\u0000\u00a1\u00a5"+
+		"\u0003$\u0012\u0000\u00a2\u00a5\u0003&\u0013\u0000\u00a3\u00a5\u0003("+
+		"\u0014\u0000\u00a4\u0092\u0001\u0000\u0000\u0000\u00a4\u0093\u0001\u0000"+
 		"\u0000\u0000\u00a4\u0094\u0001\u0000\u0000\u0000\u00a4\u0095\u0001\u0000"+
 		"\u0000\u0000\u00a4\u0096\u0001\u0000\u0000\u0000\u00a4\u0097\u0001\u0000"+
 		"\u0000\u0000\u00a4\u0098\u0001\u0000\u0000\u0000\u00a4\u0099\u0001\u0000"+
@@ -5096,11 +5105,11 @@ public class DockerfileParser extends Parser {
 		"\u0005\u001b\u0000\u0000\u01c5\u01c8\u0003.\u0017\u0000\u01c6\u01c7\u0005"+
 		"\u001a\u0000\u0000\u01c7\u01c9\u00030\u0018\u0000\u01c8\u01c6\u0001\u0000"+
 		"\u0000\u0000\u01c8\u01c9\u0001\u0000\u0000\u0000\u01c9-\u0001\u0000\u0000"+
-		"\u0000\u01ca\u01cb\u0005\u001f\u0000\u0000\u01cb/\u0001\u0000\u0000\u0000"+
+		"\u0000\u01ca\u01cb\u0007\u0000\u0000\u0000\u01cb/\u0001\u0000\u0000\u0000"+
 		"\u01cc\u01ce\u00032\u0019\u0000\u01cd\u01cc\u0001\u0000\u0000\u0000\u01ce"+
 		"\u01cf\u0001\u0000\u0000\u0000\u01cf\u01cd\u0001\u0000\u0000\u0000\u01cf"+
 		"\u01d0\u0001\u0000\u0000\u0000\u01d01\u0001\u0000\u0000\u0000\u01d1\u01d2"+
-		"\u0007\u0000\u0000\u0000\u01d23\u0001\u0000\u0000\u0000\u01d3\u01d4\u0003"+
+		"\u0007\u0001\u0000\u0000\u01d23\u0001\u0000\u0000\u0000\u01d3\u01d4\u0003"+
 		">\u001f\u0000\u01d45\u0001\u0000\u0000\u0000\u01d5\u01d6\u0003n7\u0000"+
 		"\u01d67\u0001\u0000\u0000\u0000\u01d7\u01de\u0005\u0016\u0000\u0000\u01d8"+
 		"\u01da\u0005 \u0000\u0000\u01d9\u01d8\u0001\u0000\u0000\u0000\u01da\u01db"+
@@ -5142,7 +5151,7 @@ public class DockerfileParser extends Parser {
 		"\u0000\u0000\u021aI\u0001\u0000\u0000\u0000\u021b\u0219\u0001\u0000\u0000"+
 		"\u0000\u021c\u021d\u0003L&\u0000\u021d\u021e\u0005\u001a\u0000\u0000\u021e"+
 		"\u021f\u0003N\'\u0000\u021fK\u0001\u0000\u0000\u0000\u0220\u0221\u0007"+
-		"\u0001\u0000\u0000\u0221M\u0001\u0000\u0000\u0000\u0222\u0223\u0007\u0001"+
+		"\u0002\u0000\u0000\u0221M\u0001\u0000\u0000\u0000\u0222\u0223\u0007\u0002"+
 		"\u0000\u0000\u0223O\u0001\u0000\u0000\u0000\u0224\u022d\u0003R)\u0000"+
 		"\u0225\u0227\u0005 \u0000\u0000\u0226\u0225\u0001\u0000\u0000\u0000\u0227"+
 		"\u0228\u0001\u0000\u0000\u0000\u0228\u0226\u0001\u0000\u0000\u0000\u0228"+
@@ -5187,7 +5196,7 @@ public class DockerfileParser extends Parser {
 		"\u0272m\u0001\u0000\u0000\u0000\u0273\u0275\u0003p8\u0000\u0274\u0273"+
 		"\u0001\u0000\u0000\u0000\u0275\u0276\u0001\u0000\u0000\u0000\u0276\u0274"+
 		"\u0001\u0000\u0000\u0000\u0276\u0277\u0001\u0000\u0000\u0000\u0277o\u0001"+
-		"\u0000\u0000\u0000\u0278\u0279\u0007\u0002\u0000\u0000\u0279q\u0001\u0000"+
+		"\u0000\u0000\u0000\u0278\u0279\u0007\u0003\u0000\u0000\u0279q\u0001\u0000"+
 		"\u0000\u0000\u027a\u027c\u0005 \u0000\u0000\u027b\u027a\u0001\u0000\u0000"+
 		"\u0000\u027c\u027f\u0001\u0000\u0000\u0000\u027d\u027b\u0001\u0000\u0000"+
 		"\u0000\u027d\u027e\u0001\u0000\u0000\u0000\u027e\u0280\u0001\u0000\u0000"+
