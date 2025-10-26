@@ -80,21 +80,19 @@ public class ChangeBaseImage extends Recipe {
                 // Visit children first
                 Dockerfile.From f = super.visitFrom(from, ctx);
 
-                // Find the content containing the image name (PlainText or QuotedString)
-                Dockerfile.ArgumentContent originalContent = f.getImage().getContents().stream()
-                        .filter(content -> content instanceof Dockerfile.PlainText || content instanceof Dockerfile.QuotedString)
-                        .findFirst()
-                        .orElse(null);
-
-                // Extract the text value from either PlainText or QuotedString
-                String imageText;
-                if (originalContent instanceof Dockerfile.PlainText) {
-                    imageText = ((Dockerfile.PlainText) originalContent).getText();
-                } else if (originalContent instanceof Dockerfile.QuotedString) {
-                    imageText = ((Dockerfile.QuotedString) originalContent).getValue();
-                } else {
-                    return f;
+                // Reconstruct the full image name from all contents
+                StringBuilder imageTextBuilder = new StringBuilder();
+                for (Dockerfile.ArgumentContent content : f.getImage().getContents()) {
+                    if (content instanceof Dockerfile.PlainText) {
+                        imageTextBuilder.append(((Dockerfile.PlainText) content).getText());
+                    } else if (content instanceof Dockerfile.QuotedString) {
+                        imageTextBuilder.append(((Dockerfile.QuotedString) content).getValue());
+                    } else if (content instanceof Dockerfile.EnvironmentVariable) {
+                        // For environment variables, we can't know the actual value, so skip matching
+                        return f;
+                    }
                 }
+                String imageText = imageTextBuilder.toString();
 
                 if (!StringUtils.matchesGlob(imageText, oldImageName)) {
                     return f;
@@ -120,11 +118,28 @@ public class ChangeBaseImage extends Recipe {
                 // Update image if needed
                 Dockerfile.From result = f;
                 if (imageChanged) {
+                    // Check if the original used quotes
+                    boolean wasQuoted = f.getImage().getContents().stream()
+                            .anyMatch(content -> content instanceof Dockerfile.QuotedString);
+
+                    // Create new content with the same style (quoted or unquoted)
                     Dockerfile.ArgumentContent newContent;
-                    if (originalContent instanceof Dockerfile.PlainText) {
-                        newContent = ((Dockerfile.PlainText) originalContent).withText(newImageName);
+                    if (wasQuoted) {
+                        // Preserve the quoted style from the original
+                        Dockerfile.QuotedString originalQuoted = (Dockerfile.QuotedString) f.getImage().getContents().stream()
+                                .filter(content -> content instanceof Dockerfile.QuotedString)
+                                .findFirst()
+                                .orElse(null);
+                        newContent = new Dockerfile.QuotedString(
+                                randomId(),
+                                Space.EMPTY,
+                                org.openrewrite.marker.Markers.EMPTY,
+                                newImageName,
+                                originalQuoted != null ? originalQuoted.getQuoteStyle() : Dockerfile.QuotedString.QuoteStyle.DOUBLE
+                        );
                     } else {
-                        newContent = ((Dockerfile.QuotedString) originalContent).withValue(newImageName);
+                        // Create plain text that will be split into components by the printer if needed
+                        newContent = new Dockerfile.PlainText(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, newImageName);
                     }
                     Dockerfile.Argument newImageArg = f.getImage().withContents(singletonList(newContent));
                     result = result.withImage(newImageArg);
