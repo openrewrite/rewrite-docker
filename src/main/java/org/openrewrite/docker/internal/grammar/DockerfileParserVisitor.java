@@ -176,12 +176,6 @@ public interface DockerfileParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFlagValue(DockerfileParser.FlagValueContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DockerfileParser#flagValueElement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFlagValueElement(DockerfileParser.FlagValueElementContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#execForm}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -199,6 +193,18 @@ public interface DockerfileParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitHeredoc(DockerfileParser.HeredocContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#heredocLine}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitHeredocLine(DockerfileParser.HeredocLineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#heredocEnd}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitHeredocEnd(DockerfileParser.HeredocEndContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#jsonArray}.
 	 * @param ctx the parse tree

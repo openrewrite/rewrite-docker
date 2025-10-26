@@ -332,18 +332,6 @@ public class DockerfileParserBaseListener implements DockerfileParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFlagValueElement(DockerfileParser.FlagValueElementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFlagValueElement(DockerfileParser.FlagValueElementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExecForm(DockerfileParser.ExecFormContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -375,6 +363,30 @@ public class DockerfileParserBaseListener implements DockerfileParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitHeredoc(DockerfileParser.HeredocContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterHeredocLine(DockerfileParser.HeredocLineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitHeredocLine(DockerfileParser.HeredocLineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterHeredocEnd(DockerfileParser.HeredocEndContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitHeredocEnd(DockerfileParser.HeredocEndContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

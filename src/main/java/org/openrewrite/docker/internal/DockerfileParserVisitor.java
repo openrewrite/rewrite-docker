@@ -171,25 +171,32 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
         Dockerfile.HeredocForm heredoc = null;
         List<Dockerfile.Argument> sources = null;
+        Dockerfile.Argument destination = null;
 
         // Check if heredoc or sourceList is present
         if (ctx.heredoc() != null) {
             heredoc = visitHeredocContext(ctx.heredoc());
+            // For heredoc, destination is part of the heredoc (if present)
+            // No separate destination to parse
         } else if (ctx.sourceList() != null) {
             sources = new ArrayList<>();
             for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
                 sources.add(visitArgument(sourceCtx.path()));
             }
+            // For sourceList, destination is separate
+            destination = visitArgument(ctx.destination().path());
         }
-
-        Dockerfile.Argument destination = visitArgument(ctx.destination().path());
 
         // Advance cursor to end of instruction, but NOT past trailing comment
         if (ctx.getStop() != null) {
             Token stopToken = ctx.getStop();
             if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
                 // Don't advance past the trailing comment
-                stopToken = ctx.destination().getStop();
+                if (ctx.heredoc() != null) {
+                    stopToken = ctx.heredoc().getStop();
+                } else if (ctx.destination() != null) {
+                    stopToken = ctx.destination().getStop();
+                }
             }
             advanceCursor(stopToken.getStopIndex() + 1);
         }
@@ -209,25 +216,32 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
         Dockerfile.HeredocForm heredoc = null;
         List<Dockerfile.Argument> sources = null;
+        Dockerfile.Argument destination = null;
 
         // Check if heredoc or sourceList is present
         if (ctx.heredoc() != null) {
             heredoc = visitHeredocContext(ctx.heredoc());
+            // For heredoc, destination is part of the heredoc (if present)
+            // No separate destination to parse
         } else if (ctx.sourceList() != null) {
             sources = new ArrayList<>();
             for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
                 sources.add(visitArgument(sourceCtx.path()));
             }
+            // For sourceList, destination is separate
+            destination = visitArgument(ctx.destination().path());
         }
-
-        Dockerfile.Argument destination = visitArgument(ctx.destination().path());
 
         // Advance cursor to end of instruction, but NOT past trailing comment
         if (ctx.getStop() != null) {
             Token stopToken = ctx.getStop();
             if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
                 // Don't advance past the trailing comment
-                stopToken = ctx.destination().getStop();
+                if (ctx.heredoc() != null) {
+                    stopToken = ctx.heredoc().getStop();
+                } else if (ctx.destination() != null) {
+                    stopToken = ctx.destination().getStop();
+                }
             }
             advanceCursor(stopToken.getStopIndex() + 1);
         }
@@ -514,14 +528,14 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 arguments.add(arg);
 
                 // Skip comma after this element if it's not the last one
-                // The grammar is: jsonString ( WS? COMMA WS? jsonString )*
-                // So we need to skip the COMMA tokens
+                // The grammar is: jsonString ( JSON_WS? JSON_COMMA JSON_WS? jsonString )*
+                // So we need to skip the JSON_COMMA tokens
                 if (i < jsonStrings.size() - 1) {
-                    // Find and skip the COMMA token between this element and the next
+                    // Find and skip the JSON_COMMA token between this element and the next
                     for (int j = 0; j < elementsCtx.getChildCount(); j++) {
                         if (elementsCtx.getChild(j) instanceof TerminalNode) {
                             TerminalNode terminal = (TerminalNode) elementsCtx.getChild(j);
-                            if (terminal.getSymbol().getType() == DockerfileLexer.COMMA &&
+                            if (terminal.getSymbol().getType() == DockerfileLexer.JSON_COMMA &&
                                 terminal.getSymbol().getStartIndex() > jsonStrings.get(i).getStop().getStopIndex() &&
                                 terminal.getSymbol().getStartIndex() < jsonStrings.get(i + 1).getStart().getStartIndex()) {
                                 skip(terminal.getSymbol());
@@ -534,14 +548,14 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         }
 
         // Skip the closing bracket
-        skip(ctx.RBRACKET().getSymbol());
+        skip(ctx.JSON_RBRACKET().getSymbol());
 
         return arguments;
     }
 
     private Dockerfile.Argument convertJsonString(DockerfileParser.JsonStringContext ctx) {
         Space prefix = prefix(ctx.getStart());
-        Token token = ctx.DOUBLE_QUOTED_STRING().getSymbol();
+        Token token = ctx.JSON_STRING().getSymbol();
         String text = token.getText();
 
         // Remove quotes
@@ -600,11 +614,11 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
                 // Skip comma after this element if it's not the last one
                 if (i < jsonStrings.size() - 1) {
-                    // Find and skip the COMMA token between this element and the next
+                    // Find and skip the JSON_COMMA token between this element and the next
                     for (int j = 0; j < elementsCtx.getChildCount(); j++) {
                         if (elementsCtx.getChild(j) instanceof TerminalNode) {
                             TerminalNode terminal = (TerminalNode) elementsCtx.getChild(j);
-                            if (terminal.getSymbol().getType() == DockerfileLexer.COMMA &&
+                            if (terminal.getSymbol().getType() == DockerfileLexer.JSON_COMMA &&
                                 terminal.getSymbol().getStartIndex() > jsonStrings.get(i).getStop().getStopIndex() &&
                                 terminal.getSymbol().getStartIndex() < jsonStrings.get(i + 1).getStart().getStartIndex()) {
                                 skip(terminal.getSymbol());
@@ -617,7 +631,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         }
 
         // Skip the closing bracket
-        skip(ctx.RBRACKET().getSymbol());
+        skip(ctx.JSON_RBRACKET().getSymbol());
 
         return arguments;
     }
@@ -855,40 +869,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             Dockerfile.Argument flagValue = null;
             if (flagCtx.EQUALS() != null) {
                 skip(flagCtx.EQUALS().getSymbol());
-                // Build argument from flag value elements
-                if (flagCtx.flagValue() != null) {
-                    List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
-                    for (DockerfileParser.FlagValueElementContext elemCtx : flagCtx.flagValue().flagValueElement()) {
-                        if (elemCtx.UNQUOTED_TEXT() != null) {
-                            String text = elemCtx.UNQUOTED_TEXT().getText();
-                            advanceCursor(elemCtx.UNQUOTED_TEXT().getSymbol().getStopIndex() + 1);
-                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
-                        } else if (elemCtx.DOUBLE_QUOTED_STRING() != null) {
-                            String text = elemCtx.DOUBLE_QUOTED_STRING().getText();
-                            // Remove quotes
-                            if (text.startsWith("\"") && text.endsWith("\"")) {
-                                text = text.substring(1, text.length() - 1);
-                            }
-                            advanceCursor(elemCtx.DOUBLE_QUOTED_STRING().getSymbol().getStopIndex() + 1);
-                            contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, text, Dockerfile.QuotedString.QuoteStyle.DOUBLE));
-                        } else if (elemCtx.SINGLE_QUOTED_STRING() != null) {
-                            String text = elemCtx.SINGLE_QUOTED_STRING().getText();
-                            // Remove quotes
-                            if (text.startsWith("'") && text.endsWith("'")) {
-                                text = text.substring(1, text.length() - 1);
-                            }
-                            advanceCursor(elemCtx.SINGLE_QUOTED_STRING().getSymbol().getStopIndex() + 1);
-                            contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, text, Dockerfile.QuotedString.QuoteStyle.SINGLE));
-                        } else if (elemCtx.COMMA() != null) {
-                            advanceCursor(elemCtx.COMMA().getSymbol().getStopIndex() + 1);
-                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, ","));
-                        } else if (elemCtx.EQUALS() != null) {
-                            advanceCursor(elemCtx.EQUALS().getSymbol().getStopIndex() + 1);
-                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, "="));
-                        }
-                    }
-                    flagValue = new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, contents);
-                }
+                flagValue = visitArgument(flagCtx.flagValue());
             }
 
             flags.add(new Dockerfile.Flag(randomId(), flagPrefix, Markers.EMPTY, flagName, flagValue));
@@ -917,12 +898,12 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             if (jsonArray.jsonArrayElements() != null) {
                 for (DockerfileParser.JsonStringContext jsonStr : jsonArray.jsonArrayElements().jsonString()) {
                     Space argPrefix = prefix(jsonStr.getStart());
-                    String value = jsonStr.getText();
+                    String value = jsonStr.JSON_STRING().getText();
                     // Remove surrounding quotes
                     if (value.startsWith("\"") && value.endsWith("\"")) {
                         value = value.substring(1, value.length() - 1);
                     }
-                    advanceCursor(jsonStr.getStop().getStopIndex() + 1);
+                    advanceCursor(jsonStr.JSON_STRING().getSymbol().getStopIndex() + 1);
 
                     Dockerfile.QuotedString qs = new Dockerfile.QuotedString(
                             randomId(),
@@ -940,7 +921,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 }
             }
 
-            skip(jsonArray.RBRACKET().getSymbol());
+            skip(jsonArray.JSON_RBRACKET().getSymbol());
 
             return new Dockerfile.ExecForm(randomId(), prefix, Markers.EMPTY, args);
         });
@@ -952,37 +933,50 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             String opening = c.HEREDOC_START().getText();
             skip(c.HEREDOC_START().getSymbol());
 
-            // Collect all content including newlines for reconstruction
+            // Check for optional destination (for COPY/ADD with inline destination)
+            Dockerfile.Argument destination = null;
+            if (c.path() != null) {
+                destination = visitArgument(c.path());
+            }
+
+            // Collect content lines (each heredocLine is text? + NEWLINE)
             List<String> contentLines = new ArrayList<>();
 
-            // Skip opening newline and capture it
-            if (!c.HEREDOC_NEWLINE().isEmpty()) {
-                String openingNewline = c.HEREDOC_NEWLINE().get(0).getText();
-                skip(c.HEREDOC_NEWLINE().get(0).getSymbol());
+            // Add the opening newline first
+            if (c.NEWLINE() != null) {
+                String openingNewline = c.NEWLINE().getText();
                 contentLines.add(openingNewline);
+                skip(c.NEWLINE().getSymbol());
             }
+            for (DockerfileParser.HeredocLineContext lineCtx : c.heredocLine()) {
+                StringBuilder line = new StringBuilder();
 
-            // Collect content lines with their newlines
-            List<TerminalNode> contentNodes = c.HEREDOC_CONTENT();
-            List<TerminalNode> newlineNodes = c.HEREDOC_NEWLINE();
-
-            for (int i = 0; i < contentNodes.size(); i++) {
-                // Add content
-                contentLines.add(contentNodes.get(i).getText());
-                skip(contentNodes.get(i).getSymbol());
-
-                // Add newline after content (offset by 1 because first newline is opening)
-                if (i + 1 < newlineNodes.size()) {
-                    contentLines.add(newlineNodes.get(i + 1).getText());
-                    skip(newlineNodes.get(i + 1).getSymbol());
+                // Add text content if present
+                if (lineCtx.text() != null) {
+                    String lineText = lineCtx.text().getText();
+                    line.append(lineText);
+                    // Skip all tokens in the text
+                    for (int i = 0; i < lineCtx.text().getChildCount(); i++) {
+                        if (lineCtx.text().getChild(i) instanceof TerminalNode) {
+                            skip(((TerminalNode) lineCtx.text().getChild(i)).getSymbol());
+                        }
+                    }
                 }
+
+                // Add newline
+                if (lineCtx.NEWLINE() != null) {
+                    line.append(lineCtx.NEWLINE().getText());
+                    skip(lineCtx.NEWLINE().getSymbol());
+                }
+
+                contentLines.add(line.toString());
             }
 
-            // Get closing marker (just the marker name)
-            String closing = c.HEREDOC_END().getText();
-            skip(c.HEREDOC_END().getSymbol());
+            // Get closing marker (UNQUOTED_TEXT)
+            String closing = c.heredocEnd().UNQUOTED_TEXT().getText();
+            skip(c.heredocEnd().UNQUOTED_TEXT().getSymbol());
 
-            return new Dockerfile.HeredocForm(randomId(), prefix, Markers.EMPTY, opening, contentLines, closing);
+            return new Dockerfile.HeredocForm(randomId(), prefix, Markers.EMPTY, opening, destination, contentLines, closing);
         });
     }
 

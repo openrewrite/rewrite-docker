@@ -678,7 +678,7 @@ public interface Dockerfile extends Tree {
     }
 
     /**
-     * Heredoc form: RUN <<EOF\ncommands\nEOF
+     * Heredoc form: RUN <<EOF\ncommands\nEOF or COPY <<EOF /dest\ncommands\nEOF
      */
     @Value
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
@@ -694,6 +694,12 @@ public interface Dockerfile extends Tree {
          * The opening marker including << and optional dash (e.g., "<<EOF" or "<<-EOF")
          */
         String opening;
+
+        /**
+         * Optional destination path (for COPY/ADD with inline destination)
+         */
+        @Nullable
+        Argument destination;
 
         /**
          * Content lines between opening and closing markers

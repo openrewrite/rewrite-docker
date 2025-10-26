@@ -16,7 +16,6 @@
 package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ExpectedToFail;
 import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.docker.Assertions.dockerfile;
@@ -170,7 +169,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Flag values with commas need additional parser work - comma tokenization issue")
     @Test
     void runWithFlagContainingComma() {
         rewriteRun(
@@ -183,7 +181,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Flag values with commas need additional parser work - comma tokenization issue")
     @Test
     void runWithMultipleFlags() {
         rewriteRun(
@@ -617,7 +614,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("COPY with heredoc has complex syntax with destination on same line - not yet supported")
     @Test
     void copyWithHeredoc() {
         rewriteRun(

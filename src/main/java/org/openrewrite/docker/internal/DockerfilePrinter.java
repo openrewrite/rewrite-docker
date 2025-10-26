@@ -354,6 +354,9 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     public Dockerfile visitHeredocForm(Dockerfile.HeredocForm heredocForm, PrintOutputCapture<P> p) {
         beforeSyntax(heredocForm, p);
         p.append(heredocForm.getOpening());
+        if (heredocForm.getDestination() != null) {
+            visit(heredocForm.getDestination(), p);
+        }
         for (String contentLine : heredocForm.getContentLines()) {
             p.append(contentLine);
         }

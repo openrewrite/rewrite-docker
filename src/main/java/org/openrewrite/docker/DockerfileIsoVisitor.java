@@ -265,6 +265,9 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         Dockerfile.HeredocForm hf = heredocForm;
         hf = hf.withPrefix(visitSpace(hf.getPrefix(), p));
         hf = hf.withMarkers(visitMarkers(hf.getMarkers(), p));
+        if (hf.getDestination() != null) {
+            hf = hf.withDestination(visitAndCast(hf.getDestination(), p));
+        }
         return hf;
     }
 

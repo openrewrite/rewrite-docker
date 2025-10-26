@@ -273,16 +273,6 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 */
 	void exitFlagValue(DockerfileParser.FlagValueContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DockerfileParser#flagValueElement}.
-	 * @param ctx the parse tree
-	 */
-	void enterFlagValueElement(DockerfileParser.FlagValueElementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DockerfileParser#flagValueElement}.
-	 * @param ctx the parse tree
-	 */
-	void exitFlagValueElement(DockerfileParser.FlagValueElementContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#execForm}.
 	 * @param ctx the parse tree
 	 */
@@ -312,6 +302,26 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitHeredoc(DockerfileParser.HeredocContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#heredocLine}.
+	 * @param ctx the parse tree
+	 */
+	void enterHeredocLine(DockerfileParser.HeredocLineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#heredocLine}.
+	 * @param ctx the parse tree
+	 */
+	void exitHeredocLine(DockerfileParser.HeredocLineContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#heredocEnd}.
+	 * @param ctx the parse tree
+	 */
+	void enterHeredocEnd(DockerfileParser.HeredocEndContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#heredocEnd}.
+	 * @param ctx the parse tree
+	 */
+	void exitHeredocEnd(DockerfileParser.HeredocEndContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#jsonArray}.
 	 * @param ctx the parse tree

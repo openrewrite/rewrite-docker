@@ -49,16 +49,15 @@ MAINTAINER : [Mm][Aa][Ii][Nn][Tt][Aa][Ii][Nn][Ee][Rr];
 // Special keywords
 AS         : [Aa][Ss];
 
-// Heredoc start - captures <<EOF or <<-EOF and switches to HEREDOC mode
-HEREDOC_START : '<<' '-'? [A-Za-z_][A-Za-z0-9_]* -> pushMode(HEREDOC_MODE);
+// Heredoc start - captures <<EOF or <<-EOF (no mode switch, handled by parser)
+HEREDOC_START : '<<' '-'? [A-Za-z_][A-Za-z0-9_]*;
 
 // Line continuation
 LINE_CONTINUATION : '\\' [ \t]* NEWLINE_CHAR;
 
 // JSON array delimiters (for exec form)
-LBRACKET : '[';
+LBRACKET : '[' -> pushMode(JSON_MODE);
 RBRACKET : ']';
-COMMA    : ',';
 
 // Assignment and flags
 EQUALS     : '=';
@@ -81,7 +80,8 @@ ENV_VAR : '$' '{' [a-zA-Z_][a-zA-Z0-9_]* ( ':-' | ':+' | ':' )? ~[}]* '}' | '$' 
 
 // Unquoted text (arguments, file paths, etc.)
 // This should be after more specific tokens
-UNQUOTED_TEXT : ( ~[ \t\r\n\\"'$[\],=] | '\\' . )+;
+// Note: comma is NOT excluded here - it's only special in JSON arrays
+UNQUOTED_TEXT : ( ~[ \t\r\n\\"'$[\]=] | '\\' . )+;
 
 // Whitespace (preserve for LST)
 WS : WS_CHAR+ ;
@@ -93,14 +93,17 @@ NEWLINE : NEWLINE_CHAR+;
 
 fragment NEWLINE_CHAR : [\r\n];
 
-// HEREDOC mode - captures content until closing marker
-mode HEREDOC_MODE;
+// JSON mode - for parsing JSON arrays in exec form
+mode JSON_MODE;
 
-// Initial newline after opening marker
-HEREDOC_NEWLINE : NEWLINE_CHAR+ ;
+// Comma separator in JSON arrays
+JSON_COMMA : ',' ;
 
-// Closing marker on its own line - must match identifier alone on a line
-HEREDOC_END : [A-Za-z_][A-Za-z0-9_]* -> popMode;
+// Closing bracket - exit JSON mode
+JSON_RBRACKET : ']' -> popMode;
 
-// Content line in heredoc (anything except newline)
-HEREDOC_CONTENT : ~[\r\n]+ ;
+// JSON strings (only double-quoted allowed in JSON)
+JSON_STRING : '"' ( ESCAPE_SEQUENCE | ~["\\\r\n] )* '"';
+
+// Whitespace in JSON arrays
+JSON_WS : WS_CHAR+ ;

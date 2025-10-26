@@ -78,11 +78,11 @@ envInstruction
     ;
 
 addInstruction
-    : ADD WS+ ( flags WS+ )? ( heredoc WS+ destination | sourceList WS+ destination ) trailingComment?
+    : ADD WS+ ( flags WS+ )? ( heredoc | sourceList WS+ destination ) trailingComment?
     ;
 
 copyInstruction
-    : COPY WS+ ( flags WS+ )? ( heredoc WS+ destination | sourceList WS+ destination ) trailingComment?
+    : COPY WS+ ( flags WS+ )? ( heredoc | sourceList WS+ destination ) trailingComment?
     ;
 
 entrypointInstruction
@@ -139,15 +139,7 @@ flagName
     ;
 
 flagValue
-    : flagValueElement+
-    ;
-
-flagValueElement
-    : UNQUOTED_TEXT
-    | DOUBLE_QUOTED_STRING
-    | SINGLE_QUOTED_STRING
-    | COMMA  // Allow commas in flag values (e.g., --mount=type=cache,target=/cache)
-    | EQUALS  // Allow equals in flag values
+    : UNQUOTED_TEXT | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
     ;
 
 execForm
@@ -159,19 +151,27 @@ shellForm
     ;
 
 heredoc
-    : HEREDOC_START HEREDOC_NEWLINE (HEREDOC_CONTENT HEREDOC_NEWLINE)* HEREDOC_END
+    : HEREDOC_START ( WS+ path )? NEWLINE ( heredocLine )* heredocEnd
+    ;
+
+heredocLine
+    : text? NEWLINE
+    ;
+
+heredocEnd
+    : UNQUOTED_TEXT
     ;
 
 jsonArray
-    : LBRACKET WS? jsonArrayElements? WS? RBRACKET
+    : LBRACKET JSON_WS? jsonArrayElements? JSON_WS? JSON_RBRACKET
     ;
 
 jsonArrayElements
-    : jsonString ( WS? COMMA WS? jsonString )*
+    : jsonString ( JSON_WS? JSON_COMMA JSON_WS? jsonString )*
     ;
 
 jsonString
-    : DOUBLE_QUOTED_STRING
+    : JSON_STRING
     ;
 
 imageName
@@ -270,6 +270,7 @@ textElement
     | EQUALS  // Allow = in shell form text (e.g., ENV_VAR=value in RUN commands)
     | LINE_CONTINUATION  // Allow line continuations in shell commands
     | WS
+    | COMMENT  // Allow comments in heredoc content
     ;
 
 trailingComment
