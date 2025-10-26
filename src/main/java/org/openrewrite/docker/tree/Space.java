@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.marker.Markers;
 
@@ -40,6 +41,7 @@ public class Space {
     public static final Space EMPTY = new Space("", emptyList());
     public static final Space SINGLE_SPACE = new Space(" ", emptyList());
 
+    @Getter
     private final List<Comment> comments;
 
     @Nullable
@@ -97,10 +99,6 @@ public class Space {
 		}
 		return whitespace;
 	}
-
-    public List<Comment> getComments() {
-        return comments;
-    }
 
     public String getWhitespace() {
         return whitespace == null ? "" : whitespace;

@@ -293,7 +293,7 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
         p.append(healthcheck.getKeyword());
         if (healthcheck.isNone()) {
             // Need to print the space and NONE keyword
-            if (healthcheck.getCmd() != null && healthcheck.getCmd().getPrefix() != null) {
+            if (healthcheck.getCmd() != null) {
                 visitSpace(healthcheck.getCmd().getPrefix(), p);
             }
             p.append("NONE");
