@@ -120,22 +120,9 @@ public class ChangeBaseImage extends Recipe {
                 if (imageChanged) {
                     Dockerfile.ArgumentContent newContent;
                     if (originalContent instanceof Dockerfile.PlainText) {
-                        Dockerfile.PlainText pt = (Dockerfile.PlainText) originalContent;
-                        newContent = new Dockerfile.PlainText(
-                            randomId(),
-                            pt.getPrefix(),
-                            pt.getMarkers(),
-                            newImageName
-                        );
+                        newContent = ((Dockerfile.PlainText) originalContent).withText(newImageName);
                     } else {
-                        Dockerfile.QuotedString qs = (Dockerfile.QuotedString) originalContent;
-                        newContent = new Dockerfile.QuotedString(
-                            randomId(),
-                            qs.getPrefix(),
-                            qs.getMarkers(),
-                            newImageName,
-                            qs.getQuoteStyle()
-                        );
+                        newContent = ((Dockerfile.QuotedString) originalContent).withValue(newImageName);
                     }
                     Dockerfile.Argument newImageArg = f.getImage().withContents(singletonList(newContent));
                     result = result.withImage(newImageArg);
