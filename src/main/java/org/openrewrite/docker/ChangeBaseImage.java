@@ -24,9 +24,10 @@ import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.docker.tree.Dockerfile;
 import org.openrewrite.docker.tree.Space;
+import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.StringUtils;
+import org.openrewrite.marker.Markers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,9 +82,9 @@ public class ChangeBaseImage extends Recipe {
 
                 // Find the content containing the image name (PlainText or QuotedString)
                 Dockerfile.ArgumentContent originalContent = f.getImage().getContents().stream()
-                    .filter(content -> content instanceof Dockerfile.PlainText || content instanceof Dockerfile.QuotedString)
-                    .findFirst()
-                    .orElse(null);
+                        .filter(content -> content instanceof Dockerfile.PlainText || content instanceof Dockerfile.QuotedString)
+                        .findFirst()
+                        .orElse(null);
 
                 // Extract the text value from either PlainText or QuotedString
                 String imageText;
@@ -139,7 +140,7 @@ public class ChangeBaseImage extends Recipe {
         };
     }
 
-	private @Nullable String getPlatformFlag(Dockerfile.From from) {
+    private @Nullable String getPlatformFlag(Dockerfile.From from) {
         if (from.getFlags() == null) {
             return null;
         }
@@ -147,68 +148,76 @@ public class ChangeBaseImage extends Recipe {
         for (Dockerfile.Flag flag : from.getFlags()) {
             if ("platform".equals(flag.getName()) && flag.getValue() != null) {
                 for (Dockerfile.ArgumentContent content : flag.getValue().getContents()) {
-					if (content instanceof Dockerfile.PlainText) {
-						return ((Dockerfile.PlainText)content).getText();
-					}
-					if (content instanceof Dockerfile.QuotedString) {
-						return ((Dockerfile.QuotedString)content).getValue();
-					}
-				}
+                    if (content instanceof Dockerfile.PlainText) {
+                        return ((Dockerfile.PlainText) content).getText();
+                    }
+                    if (content instanceof Dockerfile.QuotedString) {
+                        return ((Dockerfile.QuotedString) content).getValue();
+                    }
+                }
             }
         }
         return null;
     }
 
     private Dockerfile.From updatePlatformFlag(Dockerfile.From from, @Nullable String platform) {
-        List<Dockerfile.Flag> newFlags = new ArrayList<>();
-        boolean platformFound = false;
+        List<Dockerfile.Flag> oldFlags = from.getFlags();
 
-        // Copy existing flags, updating or removing platform flag
-        if (from.getFlags() != null) {
-            for (Dockerfile.Flag flag : from.getFlags()) {
-                if ("platform".equals(flag.getName())) {
-                    platformFound = true;
-                    if (platform != null) {
-                        // Update existing platform flag
-                        Dockerfile.Argument newValue = createPlatformValue(platform,
-                            flag.getValue() != null ? flag.getValue().getPrefix() : Space.EMPTY,
-                            from.getMarkers());
-                        newFlags.add(flag.withValue(newValue));
-                    }
-                    // If platform is null, skip this flag (removes it)
-                } else {
-                    newFlags.add(flag);
+        // Update or remove existing platform flag
+        List<Dockerfile.Flag> newFlags = ListUtils.map(oldFlags, flag -> {
+            if ("platform".equals(flag.getName())) {
+                if (platform != null) {
+                    // Update existing platform flag using withers
+                    return flag.withValue(updatePlatformValue(flag.getValue(), platform));
                 }
+                // If platform is null, return null to remove this flag
+                return null;
             }
+            return flag;
+        });
+        if (oldFlags != newFlags || platform == null) {
+            return from.withFlags(newFlags);
         }
 
         // Add new platform flag if it wasn't found and platform is not null
-        if (!platformFound && platform != null) {
-            Dockerfile.Flag platformFlag = new Dockerfile.Flag(
+        Dockerfile.Flag platformFlag = new Dockerfile.Flag(
                 randomId(),
-                from.getFlags() != null && !from.getFlags().isEmpty() ?
-                    from.getFlags().get(0).getPrefix() : Space.SINGLE_SPACE,
+                oldFlags != null && !oldFlags.isEmpty() ? oldFlags.get(0).getPrefix() : Space.SINGLE_SPACE,
                 from.getMarkers(),
                 "platform",
-                createPlatformValue(platform, Space.EMPTY, from.getMarkers())
-            );
-            newFlags.add(0, platformFlag);
-        }
-
-        return from.withFlags(newFlags.isEmpty() ? null : newFlags);
+                createPlatformValue(platform, Space.EMPTY)
+        );
+        return from.withFlags(ListUtils.concat(platformFlag, newFlags));
     }
 
-    private Dockerfile.Argument createPlatformValue(String platform, Space prefix, org.openrewrite.marker.Markers markers) {
+    private Dockerfile.Argument updatePlatformValue(Dockerfile.@Nullable Argument existingValue, String platform) {
+        if (existingValue != null && !existingValue.getContents().isEmpty()) {
+            // Update existing value using withers
+            Dockerfile.ArgumentContent firstContent = existingValue.getContents().get(0);
+            if (firstContent instanceof Dockerfile.PlainText) {
+                Dockerfile.PlainText updated = ((Dockerfile.PlainText) firstContent).withText(platform);
+                return existingValue.withContents(singletonList(updated));
+            }
+            if (firstContent instanceof Dockerfile.QuotedString) {
+                Dockerfile.QuotedString updated = ((Dockerfile.QuotedString) firstContent).withValue(platform);
+                return existingValue.withContents(singletonList(updated));
+            }
+        }
+        // Fallback: create new value
+        return createPlatformValue(platform, existingValue != null ? existingValue.getPrefix() : Space.EMPTY);
+    }
+
+    private Dockerfile.Argument createPlatformValue(String platform, Space prefix) {
         return new Dockerfile.Argument(
-            randomId(),
-            prefix,
-            markers,
-            singletonList(new Dockerfile.PlainText(
                 randomId(),
-                Space.EMPTY,
-                markers,
-                platform
-            ))
+                prefix,
+                Markers.EMPTY,
+                singletonList(new Dockerfile.PlainText(
+                        randomId(),
+                        Space.EMPTY,
+                        Markers.EMPTY,
+                        platform
+                ))
         );
     }
 }
