@@ -15,6 +15,7 @@
  */
 package org.openrewrite.docker;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RewriteTest;
 
@@ -87,6 +88,226 @@ class DockerfileParserTest implements RewriteTest {
                 FROM ubuntu:20.04
                 RUN apt-get update
                 RUN apt-get install -y curl
+                """
+            )
+        );
+    }
+
+    @Test
+    void lowercaseInstructions() {
+        rewriteRun(
+            dockerfile(
+                """
+                from ubuntu:20.04
+                run apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void mixedCaseInstructions() {
+        rewriteRun(
+            dockerfile(
+                """
+                From ubuntu:20.04 as builder
+                Run apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void commentsAtTop() {
+        rewriteRun(
+            dockerfile(
+                """
+                # This is a comment
+                # Another comment line
+                FROM ubuntu:20.04
+                """
+            )
+        );
+    }
+
+    @Test
+    void commentsInline() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04  # Base image
+                RUN apt-get update  # Update packages
+                """
+            )
+        );
+    }
+
+    @Test
+    void commentsBetweenInstructions() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                # Update and install dependencies
+                RUN apt-get update
+                # Install curl
+                RUN apt-get install -y curl
+                """
+            )
+        );
+    }
+
+    @Test
+    void emptyLinesAndComments() {
+        rewriteRun(
+            dockerfile(
+                """
+                # Base image
+                FROM ubuntu:20.04
+
+                # System updates
+                RUN apt-get update
+
+                # Install packages
+                RUN apt-get install -y curl wget
+                """
+            )
+        );
+    }
+
+    @Test
+    void multiStageFrom() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM golang:1.20 AS builder
+                RUN go build -o app .
+
+                FROM alpine:latest
+                RUN apk add --no-cache ca-certificates
+                """
+            )
+        );
+    }
+
+    @Test
+    void runWithLineContinuation() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN apt-get update && \\
+                    apt-get install -y curl && \\
+                    rm -rf /var/lib/apt/lists/*
+                """
+            )
+        );
+    }
+
+    @Test
+    void runWithMultipleFlags() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN --network=none --mount=type=cache,target=/cache apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("CMD instruction not yet implemented")
+    void cmdShellForm() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                CMD nginx -g daemon off;
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("CMD instruction not yet implemented")
+    void cmdExecForm() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                CMD ["nginx", "-g", "daemon off;"]
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("ENV instruction not yet implemented")
+    void envSingleLine() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ENV NODE_VERSION=18.0.0
+                ENV PATH=/usr/local/bin:$PATH
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("ARG instruction not yet implemented")
+    void argInstructions() {
+        rewriteRun(
+            dockerfile(
+                """
+                ARG BASE_IMAGE=ubuntu:20.04
+                FROM ${BASE_IMAGE}
+                ARG VERSION
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("COPY instruction not yet implemented")
+    void copyInstructions() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                COPY --chown=app:app app.jar /app/
+                COPY --from=builder /build/output /app/
+                """
+            )
+        );
+    }
+
+    @Test
+    @Disabled("Multiple instructions not yet implemented")
+    void comprehensiveDockerfile() {
+        rewriteRun(
+            dockerfile(
+                """
+                # syntax=docker/dockerfile:1
+
+                # Build stage
+                FROM golang:1.20 AS builder
+                WORKDIR /build
+                COPY go.mod go.sum ./
+                RUN go mod download
+                COPY . .
+                RUN CGO_ENABLED=0 go build -o app
+
+                # Runtime stage
+                FROM alpine:latest
+                RUN apk add --no-cache ca-certificates
+                WORKDIR /app
+                COPY --from=builder /build/app .
+                EXPOSE 8080
+                USER nobody
+                ENTRYPOINT ["./app"]
                 """
             )
         );
