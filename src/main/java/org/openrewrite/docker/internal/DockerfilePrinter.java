@@ -25,11 +25,11 @@ import org.openrewrite.marker.Marker;
 public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P>> {
 
     public Space visitSpace(Space space, PrintOutputCapture<P> p) {
-        p.append(space.getWhitespace());
         for (Comment comment : space.getComments()) {
             p.append(comment.getSuffix());
             p.append(comment.getText());
         }
+        p.append(space.getWhitespace());
         return space;
     }
 
@@ -47,7 +47,7 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     @Override
     public Dockerfile visitFrom(Dockerfile.From from, PrintOutputCapture<P> p) {
         beforeSyntax(from, p);
-        p.append("FROM");
+        p.append(from.getKeyword());
         if (from.getFlags() != null) {
             for (Dockerfile.Flag flag : from.getFlags()) {
                 visit(flag, p);
@@ -56,7 +56,7 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
         visit(from.getImage(), p);
         if (from.getAs() != null) {
             visitSpace(from.getAs().getPrefix(), p);
-            p.append("AS");
+            p.append(from.getAs().getKeyword());
             visit(from.getAs().getName(), p);
         }
         afterSyntax(from, p);
@@ -66,7 +66,7 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     @Override
     public Dockerfile visitRun(Dockerfile.Run run, PrintOutputCapture<P> p) {
         beforeSyntax(run, p);
-        p.append("RUN");
+        p.append(run.getKeyword());
         if (run.getFlags() != null) {
             for (Dockerfile.Flag flag : run.getFlags()) {
                 visit(flag, p);
@@ -99,13 +99,8 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     public Dockerfile visitExecForm(Dockerfile.ExecForm execForm, PrintOutputCapture<P> p) {
         beforeSyntax(execForm, p);
         p.append("[");
-        boolean first = true;
         for (Dockerfile.Argument arg : execForm.getArguments()) {
-            if (!first) {
-                p.append(",");
-            }
             visit(arg, p);
-            first = false;
         }
         p.append("]");
         afterSyntax(execForm, p);

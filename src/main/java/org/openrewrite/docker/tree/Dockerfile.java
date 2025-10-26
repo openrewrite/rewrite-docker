@@ -120,6 +120,8 @@ public interface Dockerfile extends Tree {
         Space prefix;
         Markers markers;
 
+        String keyword;
+
         @Nullable
         List<Flag> flags;
 
@@ -142,6 +144,7 @@ public interface Dockerfile extends Tree {
 
             Space prefix;
             Markers markers;
+            String keyword;
             Argument name;
         }
     }
@@ -158,6 +161,8 @@ public interface Dockerfile extends Tree {
 
         Space prefix;
         Markers markers;
+
+        String keyword;
 
         @Nullable
         List<Flag> flags;
