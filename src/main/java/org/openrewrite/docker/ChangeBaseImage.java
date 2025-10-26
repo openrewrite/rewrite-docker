@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 import static org.openrewrite.Tree.randomId;
 
 @Value
@@ -158,8 +159,8 @@ public class ChangeBaseImage extends Recipe {
                         result = result.withImageName(newImageArg);
                     } else {
                         // Split into components
-                        String[] parts = parseNewImageName(newImageName);
-                        String newImage = parts[0];
+                        @Nullable String[] parts = parseNewImageName(newImageName);
+                        String newImage = requireNonNull(parts[0]);
                         String newTag = parts[1];
                         String newDigest = parts[2];
 
@@ -196,7 +197,7 @@ public class ChangeBaseImage extends Recipe {
         };
     }
 
-    private String[] parseNewImageName(String fullImageName) {
+    private @Nullable String [] parseNewImageName(String fullImageName) {
         String imageName;
         String tag = null;
         String digest = null;
@@ -217,7 +218,7 @@ public class ChangeBaseImage extends Recipe {
             }
         }
 
-        return new String[]{imageName, tag, digest};
+        return new @Nullable String[]{imageName, tag, digest};
     }
 
     private boolean hasQuotedString(Dockerfile.Argument arg) {
