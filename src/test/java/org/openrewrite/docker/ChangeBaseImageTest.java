@@ -26,7 +26,7 @@ class ChangeBaseImageTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04"));
+        spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", null, null));
     }
 
     @DocumentExample
@@ -65,7 +65,7 @@ class ChangeBaseImageTest implements RewriteTest {
     @Test
     void changeBaseImageWithAs() {
         rewriteRun(
-            spec -> spec.recipe(new ChangeBaseImage("golang:1.20", "golang:1.21")),
+            spec -> spec.recipe(new ChangeBaseImage("golang:1.20", "golang:1.21", null, null)),
             dockerfile(
                 """
                 FROM golang:1.20 AS builder
@@ -128,7 +128,7 @@ class ChangeBaseImageTest implements RewriteTest {
     @Test
     void changeWithGlobPattern() {
         rewriteRun(
-            spec -> spec.recipe(new ChangeBaseImage("ubuntu:*", "ubuntu:22.04")),
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:*", "ubuntu:22.04", null, null)),
             dockerfile(
                 """
                 FROM ubuntu:20.04
@@ -145,7 +145,7 @@ class ChangeBaseImageTest implements RewriteTest {
     @Test
     void changeWithGlobPatternMultipleMatches() {
         rewriteRun(
-            spec -> spec.recipe(new ChangeBaseImage("ubuntu:*", "ubuntu:22.04")),
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:*", "ubuntu:22.04", null, null)),
             dockerfile(
                 """
                 FROM ubuntu:18.04 AS base
@@ -164,13 +164,127 @@ class ChangeBaseImageTest implements RewriteTest {
     @Test
     void changeWithWildcardImageName() {
         rewriteRun(
-            spec -> spec.recipe(new ChangeBaseImage("*/ubuntu:20.04", "docker.io/library/ubuntu:22.04")),
+            spec -> spec.recipe(new ChangeBaseImage("*/ubuntu:20.04", "docker.io/library/ubuntu:22.04", null, null)),
             dockerfile(
                 """
                 FROM gcr.io/ubuntu:20.04
                 """,
                 """
                 FROM docker.io/library/ubuntu:22.04
+                """
+            )
+        );
+    }
+
+    @Test
+    void addPlatformFlag() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:20.04", null, "linux/arm64")),
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN apt-get update
+                """,
+                """
+                FROM --platform=linux/arm64 ubuntu:20.04
+                RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void updatePlatformFlag() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:20.04", null, "linux/arm64")),
+            dockerfile(
+                """
+                FROM --platform=linux/amd64 ubuntu:20.04
+                RUN apt-get update
+                """,
+                """
+                FROM --platform=linux/arm64 ubuntu:20.04
+                RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void removePlatformFlag() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:20.04", "linux/amd64", null)),
+            dockerfile(
+                """
+                FROM --platform=linux/amd64 ubuntu:20.04
+                RUN apt-get update
+                """,
+                """
+                FROM ubuntu:20.04
+                RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void changeImageAndPlatform() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", null, "linux/arm64")),
+            dockerfile(
+                """
+                FROM --platform=linux/amd64 ubuntu:20.04
+                RUN apt-get update
+                """,
+                """
+                FROM --platform=linux/arm64 ubuntu:22.04
+                RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void onlyChangeImageWithMatchingPlatform() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", "linux/amd64", null)),
+            dockerfile(
+                """
+                FROM --platform=linux/amd64 ubuntu:20.04
+                RUN apt-get update
+
+                FROM --platform=linux/arm64 ubuntu:20.04
+                RUN apt-get install -y nginx
+                """,
+                """
+                FROM ubuntu:22.04
+                RUN apt-get update
+
+                FROM --platform=linux/arm64 ubuntu:20.04
+                RUN apt-get install -y nginx
+                """
+            )
+        );
+    }
+
+    @Test
+    void changeImageAndPlatformWhenMatchingOldPlatform() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", "linux/amd64", "linux/arm64")),
+            dockerfile(
+                """
+                FROM --platform=linux/amd64 ubuntu:20.04
+                RUN apt-get update
+
+                FROM ubuntu:20.04
+                RUN apt-get install -y nginx
+                """,
+                """
+                FROM --platform=linux/arm64 ubuntu:22.04
+                RUN apt-get update
+
+                FROM ubuntu:20.04
+                RUN apt-get install -y nginx
                 """
             )
         );

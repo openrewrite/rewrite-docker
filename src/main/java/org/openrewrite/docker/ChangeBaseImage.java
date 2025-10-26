@@ -25,6 +25,10 @@ import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.docker.tree.Dockerfile;
+import org.openrewrite.docker.tree.Space;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.openrewrite.Tree.randomId;
@@ -43,12 +47,19 @@ public class ChangeBaseImage extends Recipe {
             example = "ubuntu:22.04")
     String newImageName;
 
-    @JsonCreator
-    public ChangeBaseImage(@JsonProperty("oldImageName") String oldImageName,
-                           @JsonProperty("newImageName") String newImageName) {
-        this.oldImageName = oldImageName;
-        this.newImageName = newImageName;
-    }
+    @Option(displayName = "Old platform",
+            description = "Only change images with this platform. If null, matches any platform.",
+            example = "linux/amd64",
+            required = false)
+    @Nullable
+    String oldPlatform;
+
+    @Option(displayName = "New platform",
+            description = "Set the platform to this value. If null and oldPlatform is specified, removes the platform flag from matched images. If both oldPlatform and newPlatform are null, platform flags are preserved.",
+            example = "linux/arm64",
+            required = false)
+    @Nullable
+    String newPlatform;
 
     @Override
     public String getDisplayName() {
@@ -75,10 +86,30 @@ public class ChangeBaseImage extends Recipe {
                     .findFirst()
                     .orElse(null);
 
-                if (originalPlainText != null &&
-                    matchesGlob(originalPlainText.getText(), oldImageName) &&
-                    !originalPlainText.getText().equals(newImageName)) {
-                    // Replace the image argument, preserving the original prefix
+                if (originalPlainText == null || !matchesGlob(originalPlainText.getText(), oldImageName)) {
+                    return f;
+                }
+
+                // Get the current platform flag value, if any
+                String currentPlatform = getPlatformFlag(f);
+
+                // Check if oldPlatform is specified and matches
+                if (oldPlatform != null && !oldPlatform.equals(currentPlatform)) {
+                    return f;
+                }
+
+                boolean imageChanged = !originalPlainText.getText().equals(newImageName);
+                // Only consider platform changed if oldPlatform or newPlatform was explicitly set
+                boolean shouldChangePlatform = oldPlatform != null || newPlatform != null;
+                boolean platformChanged = shouldChangePlatform && !java.util.Objects.equals(currentPlatform, newPlatform);
+
+                if (!imageChanged && !platformChanged) {
+                    return f;
+                }
+
+                // Update image if needed
+                Dockerfile.From result = f;
+                if (imageChanged) {
                     Dockerfile.Argument newImageArg = f.getImage().withContents(
                         singletonList(
                             new Dockerfile.PlainText(
@@ -89,13 +120,88 @@ public class ChangeBaseImage extends Recipe {
                             )
                         )
                     );
-
-                    return f.withImage(newImageArg);
+                    result = result.withImage(newImageArg);
                 }
 
-                return f;
+                // Update platform flag if needed
+                if (platformChanged) {
+                    result = updatePlatformFlag(result, newPlatform);
+                }
+
+                return result;
             }
         };
+    }
+
+    @Nullable
+    private String getPlatformFlag(Dockerfile.From from) {
+        if (from.getFlags() == null) {
+            return null;
+        }
+
+        for (Dockerfile.Flag flag : from.getFlags()) {
+            if ("platform".equals(flag.getName()) && flag.getValue() != null) {
+                return flag.getValue().getContents().stream()
+                    .filter(content -> content instanceof Dockerfile.PlainText)
+                    .map(content -> ((Dockerfile.PlainText) content).getText())
+                    .findFirst()
+                    .orElse(null);
+            }
+        }
+        return null;
+    }
+
+    private Dockerfile.From updatePlatformFlag(Dockerfile.From from, @Nullable String platform) {
+        List<Dockerfile.Flag> newFlags = new ArrayList<>();
+        boolean platformFound = false;
+
+        // Copy existing flags, updating or removing platform flag
+        if (from.getFlags() != null) {
+            for (Dockerfile.Flag flag : from.getFlags()) {
+                if ("platform".equals(flag.getName())) {
+                    platformFound = true;
+                    if (platform != null) {
+                        // Update existing platform flag
+                        Dockerfile.Argument newValue = createPlatformValue(platform,
+                            flag.getValue() != null ? flag.getValue().getPrefix() : Space.EMPTY,
+                            from.getMarkers());
+                        newFlags.add(flag.withValue(newValue));
+                    }
+                    // If platform is null, skip this flag (removes it)
+                } else {
+                    newFlags.add(flag);
+                }
+            }
+        }
+
+        // Add new platform flag if it wasn't found and platform is not null
+        if (!platformFound && platform != null) {
+            Dockerfile.Flag platformFlag = new Dockerfile.Flag(
+                randomId(),
+                from.getFlags() != null && !from.getFlags().isEmpty() ?
+                    from.getFlags().get(0).getPrefix() : Space.SINGLE_SPACE,
+                from.getMarkers(),
+                "platform",
+                createPlatformValue(platform, Space.EMPTY, from.getMarkers())
+            );
+            newFlags.add(0, platformFlag);
+        }
+
+        return from.withFlags(newFlags.isEmpty() ? null : newFlags);
+    }
+
+    private Dockerfile.Argument createPlatformValue(String platform, Space prefix, org.openrewrite.marker.Markers markers) {
+        return new Dockerfile.Argument(
+            randomId(),
+            prefix,
+            markers,
+            singletonList(new Dockerfile.PlainText(
+                randomId(),
+                Space.EMPTY,
+                markers,
+                platform
+            ))
+        );
     }
 
     private boolean matchesGlob(String value, @Nullable String glob) {
