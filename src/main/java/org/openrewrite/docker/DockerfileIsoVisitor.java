@@ -67,6 +67,30 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile visitCopy(Dockerfile.Copy copy, P p) {
+        Dockerfile.Copy c = copy;
+        c = c.withPrefix(visitSpace(c.getPrefix(), p));
+        c = c.withMarkers(visitMarkers(c.getMarkers(), p));
+        if (c.getFlags() != null) {
+            c = c.withFlags(ListUtils.map(c.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
+        }
+        c = c.withSources(ListUtils.map(c.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        return c.withDestination((Dockerfile.Argument) visit(c.getDestination(), p));
+    }
+
+    @Override
+    public Dockerfile visitArg(Dockerfile.Arg arg, P p) {
+        Dockerfile.Arg a = arg;
+        a = a.withPrefix(visitSpace(a.getPrefix(), p));
+        a = a.withMarkers(visitMarkers(a.getMarkers(), p));
+        a = a.withName((Dockerfile.Argument) visit(a.getName(), p));
+        if (a.getValue() != null) {
+            a = a.withValue((Dockerfile.Argument) visit(a.getValue(), p));
+        }
+        return a;
+    }
+
+    @Override
     public Dockerfile visitCommandLine(Dockerfile.CommandLine commandLine, P p) {
         Dockerfile.CommandLine cl = commandLine;
         cl = cl.withPrefix(visitSpace(cl.getPrefix(), p));

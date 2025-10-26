@@ -176,6 +176,59 @@ public interface Dockerfile extends Tree {
     }
 
     /**
+     * COPY instruction - copies files from source to destination
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Copy implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        @Nullable
+        List<Flag> flags;
+
+        List<Argument> sources;
+        Argument destination;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitCopy(this, p);
+        }
+    }
+
+    /**
+     * ARG instruction - defines a build argument
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Arg implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Argument name;
+
+        @Nullable
+        Argument value;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitArg(this, p);
+        }
+    }
+
+    /**
      * Command line that can be in shell or exec form
      */
     @Value

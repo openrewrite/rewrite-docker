@@ -78,6 +78,36 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     }
 
     @Override
+    public Dockerfile visitCopy(Dockerfile.Copy copy, PrintOutputCapture<P> p) {
+        beforeSyntax(copy, p);
+        p.append(copy.getKeyword());
+        if (copy.getFlags() != null) {
+            for (Dockerfile.Flag flag : copy.getFlags()) {
+                visit(flag, p);
+            }
+        }
+        for (Dockerfile.Argument source : copy.getSources()) {
+            visit(source, p);
+        }
+        visit(copy.getDestination(), p);
+        afterSyntax(copy, p);
+        return copy;
+    }
+
+    @Override
+    public Dockerfile visitArg(Dockerfile.Arg arg, PrintOutputCapture<P> p) {
+        beforeSyntax(arg, p);
+        p.append(arg.getKeyword());
+        visit(arg.getName(), p);
+        if (arg.getValue() != null) {
+            p.append("=");
+            visit(arg.getValue(), p);
+        }
+        afterSyntax(arg, p);
+        return arg;
+    }
+
+    @Override
     public Dockerfile visitCommandLine(Dockerfile.CommandLine commandLine, PrintOutputCapture<P> p) {
         beforeSyntax(commandLine, p);
         visit(commandLine.getForm(), p);

@@ -257,6 +257,30 @@ class DockerfileParserTest implements RewriteTest {
     }
 
     @Test
+    void simpleArg() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ARG VERSION=1.0.0
+                """
+            )
+        );
+    }
+
+    @Test
+    void argWithoutValue() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ARG VERSION
+                """
+            )
+        );
+    }
+
+    @Test
     void argInstructions() {
         rewriteRun(
             dockerfile(
@@ -269,7 +293,19 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet implemented")
+    @Test
+    void simpleCopy() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                COPY app.jar /app/
+                """
+            )
+        );
+    }
+
+    @ExpectedToFail("Flags not yet working")
     @Test
     void copyInstructions() {
         rewriteRun(

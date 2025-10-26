@@ -156,6 +156,70 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         return new Dockerfile.Run(randomId(), prefix, Markers.EMPTY, runKeyword, flags, commandLine);
     }
 
+    @Override
+    public Dockerfile visitCopyInstruction(DockerfileParser.CopyInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the COPY keyword
+        String copyKeyword = ctx.COPY().getText();
+        skip(ctx.COPY().getSymbol());
+
+        List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
+
+        // Parse source list
+        List<Dockerfile.Argument> sources = new ArrayList<>();
+        for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
+            sources.add(visitArgument(sourceCtx.path()));
+        }
+
+        Dockerfile.Argument destination = visitArgument(ctx.destination().path());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                // Don't advance past the trailing comment
+                stopToken = ctx.destination().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Copy(randomId(), prefix, Markers.EMPTY, copyKeyword, flags, sources, destination);
+    }
+
+    @Override
+    public Dockerfile visitArgInstruction(DockerfileParser.ArgInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the ARG keyword
+        String argKeyword = ctx.ARG().getText();
+        skip(ctx.ARG().getSymbol());
+
+        Dockerfile.Argument name = visitArgument(ctx.argName());
+
+        Dockerfile.Argument value = null;
+        if (ctx.EQUALS() != null) {
+            skip(ctx.EQUALS().getSymbol());
+            value = visitArgument(ctx.argValue());
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                // Don't advance past the trailing comment
+                if (ctx.argValue() != null) {
+                    stopToken = ctx.argValue().getStop();
+                } else {
+                    stopToken = ctx.argName().getStop();
+                }
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Arg(randomId(), prefix, Markers.EMPTY, argKeyword, name, value);
+    }
+
     private Dockerfile.CommandLine visitCommandLine(DockerfileParser.RunInstructionContext ctx) {
         Dockerfile.CommandForm form;
         if (ctx.execForm() != null) {
