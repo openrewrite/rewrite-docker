@@ -562,4 +562,53 @@ class DockerfileParserTest implements RewriteTest {
             )
         );
     }
+
+    @ExpectedToFail("HEREDOC not yet implemented")
+    @Test
+    void runWithHeredoc() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN <<EOF
+                apt-get update
+                apt-get install -y curl
+                EOF
+                """
+            )
+        );
+    }
+
+    @ExpectedToFail("HEREDOC not yet implemented")
+    @Test
+    void runWithHeredocDash() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN <<-FILE_END
+                echo "Hello World"
+                echo "Another line"
+                FILE_END
+                """
+            )
+        );
+    }
+
+    @ExpectedToFail("HEREDOC not yet implemented")
+    @Test
+    void copyWithHeredoc() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                COPY <<EOF /app/config.txt
+                # Configuration file
+                setting1=value1
+                setting2=value2
+                EOF
+                """
+            )
+        );
+    }
 }
