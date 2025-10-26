@@ -15,8 +15,8 @@
  */
 package org.openrewrite.docker;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ExpectedToFail;
 import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.docker.Assertions.dockerfile;
@@ -34,6 +34,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
+    @ExpectedToFail("Not yet implemented")
     @Test
     void fromWithPlatform() {
         rewriteRun(
@@ -190,6 +191,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
+    @ExpectedToFail("Not yet implemented")
     @Test
     void runWithLineContinuation() {
         rewriteRun(
@@ -204,6 +206,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
+    @ExpectedToFail("Not yet implemented")
     @Test
     void runWithMultipleFlags() {
         rewriteRun(
@@ -216,7 +219,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("CMD instruction not yet implemented")
     @Test
     void cmdShellForm() {
         rewriteRun(
@@ -229,7 +231,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("CMD instruction not yet implemented")
     @Test
     void cmdExecForm() {
         rewriteRun(
@@ -242,7 +243,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("ENV instruction not yet implemented")
     @Test
     void envSingleLine() {
         rewriteRun(
@@ -256,7 +256,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("ARG instruction not yet implemented")
     @Test
     void argInstructions() {
         rewriteRun(
@@ -270,7 +269,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("COPY instruction not yet implemented")
+    @ExpectedToFail("Not yet implemented")
     @Test
     void copyInstructions() {
         rewriteRun(
@@ -284,7 +283,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @Disabled("Multiple instructions not yet implemented")
+    @ExpectedToFail("Multiple instructions not yet implemented")
     @Test
     void comprehensiveDockerfile() {
         rewriteRun(

@@ -39,4 +39,5 @@ dependencies {
     compileOnly("org.openrewrite:rewrite-test")
 
     testImplementation("org.openrewrite:rewrite-test")
+    testImplementation("org.junit-pioneer:junit-pioneer:latest.release")
 }
