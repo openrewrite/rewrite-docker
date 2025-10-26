@@ -54,7 +54,14 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
                 visit(flag, p);
             }
         }
-        visit(from.getImage(), p);
+        visit(from.getImageName(), p);
+        if (from.getTag() != null) {
+            p.append(":");
+            visit(from.getTag(), p);
+        } else if (from.getDigest() != null) {
+            p.append("@");
+            visit(from.getDigest(), p);
+        }
         if (from.getAs() != null) {
             visitSpace(from.getAs().getPrefix(), p);
             p.append(from.getAs().getKeyword());

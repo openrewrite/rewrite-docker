@@ -41,7 +41,13 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         if (f.getFlags() != null) {
             f = f.withFlags(ListUtils.map(f.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
         }
-        f = f.withImage((Dockerfile.Argument) visit(f.getImage(), p));
+        f = f.withImageName((Dockerfile.Argument) visit(f.getImageName(), p));
+        if (f.getTag() != null) {
+            f = f.withTag((Dockerfile.Argument) visit(f.getTag(), p));
+        }
+        if (f.getDigest() != null) {
+            f = f.withDigest((Dockerfile.Argument) visit(f.getDigest(), p));
+        }
         if (f.getAs() != null) {
             f = f.withAs(visitFromAs(f.getAs(), p));
         }

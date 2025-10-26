@@ -580,13 +580,22 @@ class DockerfileParserTest implements RewriteTest {
             """,
             spec -> spec.afterRecipe(doc -> {
                 Dockerfile.From from = (Dockerfile.From) doc.getInstructions().getLast();
-                List<Dockerfile.ArgumentContent> contents = from.getImage().getContents();
-                assertThat(contents).hasSize(5);
-                assertThat(contents.getFirst()).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("REGISTRY");
-                assertThat(contents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("/image");
-                assertThat(contents.get(2)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo(":");
-                assertThat(contents.get(3)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("VERSION");
-                assertThat(contents.get(4)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("-suffix");
+
+                // Check imageName contents
+                List<Dockerfile.ArgumentContent> imageNameContents = from.getImageName().getContents();
+                assertThat(imageNameContents).hasSize(2);
+                assertThat(imageNameContents.get(0)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("REGISTRY");
+                assertThat(imageNameContents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("/image");
+
+                // Check tag contents
+                assertThat(from.getTag()).isNotNull();
+                List<Dockerfile.ArgumentContent> tagContents = from.getTag().getContents();
+                assertThat(tagContents).hasSize(2);
+                assertThat(tagContents.get(0)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("VERSION");
+                assertThat(tagContents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("-suffix");
+
+                // Check no digest
+                assertThat(from.getDigest()).isNull();
             })
           )
         );

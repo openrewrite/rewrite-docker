@@ -125,7 +125,13 @@ public interface Dockerfile extends Tree {
         @Nullable
         List<Flag> flags;
 
-        Argument image;
+        Argument imageName;
+
+        @Nullable
+        Argument tag;
+
+        @Nullable
+        Argument digest;
 
         @Nullable
         As as;

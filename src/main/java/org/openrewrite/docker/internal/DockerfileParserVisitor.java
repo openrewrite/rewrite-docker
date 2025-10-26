@@ -94,7 +94,10 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         skip(ctx.FROM().getSymbol());
 
         List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
-        Dockerfile.Argument image = parseImageName(ctx.imageName());
+        Dockerfile.Argument[] imageComponents = parseImageName(ctx.imageName());
+        Dockerfile.Argument imageName = imageComponents[0];
+        Dockerfile.Argument tag = imageComponents[1];
+        Dockerfile.Argument digest = imageComponents[2];
         Dockerfile.From.As as = ctx.AS() != null ? visitFromAs(ctx) : null;
 
         // Advance cursor to end of instruction, but NOT past trailing comment
@@ -113,7 +116,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             advanceCursor(stopToken.getStopIndex() + 1);
         }
 
-        return new Dockerfile.From(randomId(), prefix, Markers.EMPTY, fromKeyword, flags, image, as);
+        return new Dockerfile.From(randomId(), prefix, Markers.EMPTY, fromKeyword, flags, imageName, tag, digest, as);
     }
 
     private Dockerfile.From.As visitFromAs(DockerfileParser.FromInstructionContext ctx) {
@@ -129,54 +132,88 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         );
     }
 
-    private Dockerfile.Argument parseImageName(DockerfileParser.ImageNameContext ctx) {
+    private Dockerfile.Argument[] parseImageName(DockerfileParser.ImageNameContext ctx) {
         return convert(ctx, (c, prefix) -> {
             // Parse the text and split out environment variables
             List<Dockerfile.ArgumentContent> contents = parseText(c.text());
 
-            // Further split any PlainText elements that contain : or @ to separate image from tag/digest
-            List<Dockerfile.ArgumentContent> splitContents = new ArrayList<>();
+            // If the entire image is a single quoted string, don't split it
+            if (contents.size() == 1 && contents.get(0) instanceof Dockerfile.QuotedString) {
+                // Single quoted string - keep it as-is
+                Dockerfile.Argument imageName = new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+                return new Dockerfile.Argument[]{imageName, null, null};
+            }
+
+            // Split contents into imageName, tag, and digest components
+            List<Dockerfile.ArgumentContent> imageNameContents = new ArrayList<>();
+            List<Dockerfile.ArgumentContent> tagContents = new ArrayList<>();
+            List<Dockerfile.ArgumentContent> digestContents = new ArrayList<>();
+
+            boolean foundColon = false;
+            boolean foundAt = false;
+
             for (Dockerfile.ArgumentContent content : contents) {
                 if (content instanceof Dockerfile.PlainText) {
-                    splitContents.addAll(splitImageComponents(((Dockerfile.PlainText) content).getText()));
+                    String text = ((Dockerfile.PlainText) content).getText();
+
+                    // Look for @ first (digest takes precedence over tag)
+                    int atIndex = text.indexOf('@');
+                    int colonIndex = text.indexOf(':');
+
+                    if (atIndex >= 0 && !foundAt) {
+                        // Split at @
+                        foundAt = true;
+                        String imagePart = text.substring(0, atIndex);
+                        String digestPart = text.substring(atIndex + 1);
+
+                        if (!imagePart.isEmpty()) {
+                            imageNameContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, imagePart));
+                        }
+                        if (!digestPart.isEmpty()) {
+                            digestContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, digestPart));
+                        }
+                    } else if (colonIndex >= 0 && !foundColon && !foundAt) {
+                        // Split at :
+                        foundColon = true;
+                        String imagePart = text.substring(0, colonIndex);
+                        String tagPart = text.substring(colonIndex + 1);
+
+                        if (!imagePart.isEmpty()) {
+                            imageNameContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, imagePart));
+                        }
+                        if (!tagPart.isEmpty()) {
+                            tagContents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, tagPart));
+                        }
+                    } else {
+                        // Add to appropriate list
+                        if (foundAt) {
+                            digestContents.add(content);
+                        } else if (foundColon) {
+                            tagContents.add(content);
+                        } else {
+                            imageNameContents.add(content);
+                        }
+                    }
                 } else {
-                    splitContents.add(content);
+                    // Environment variables or quoted strings
+                    if (foundAt) {
+                        digestContents.add(content);
+                    } else if (foundColon) {
+                        tagContents.add(content);
+                    } else {
+                        imageNameContents.add(content);
+                    }
                 }
             }
 
-            return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, splitContents);
+            Dockerfile.Argument imageName = new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, imageNameContents);
+            Dockerfile.Argument tag = tagContents.isEmpty() ? null :
+                new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, tagContents);
+            Dockerfile.Argument digest = digestContents.isEmpty() ? null :
+                new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, digestContents);
+
+            return new Dockerfile.Argument[]{imageName, tag, digest};
         });
-    }
-
-    private List<Dockerfile.ArgumentContent> splitImageComponents(String text) {
-        List<Dockerfile.ArgumentContent> result = new ArrayList<>();
-
-        // Find the last occurrence of : or @ (for tag or digest)
-        int colonIndex = text.lastIndexOf(':');
-        int atIndex = text.lastIndexOf('@');
-
-        // Use whichever comes last (if any)
-        int splitIndex = Math.max(colonIndex, atIndex);
-
-        if (splitIndex > 0) {
-            // Split into image, separator, and tag/digest
-            String imagePart = text.substring(0, splitIndex);
-            String separator = text.substring(splitIndex, splitIndex + 1);
-            String tagOrDigest = text.substring(splitIndex + 1);
-
-            if (!imagePart.isEmpty()) {
-                result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, imagePart));
-            }
-            result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, separator));
-            if (!tagOrDigest.isEmpty()) {
-                result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, tagOrDigest));
-            }
-        } else {
-            // No split needed
-            result.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
-        }
-
-        return result;
     }
 
     private List<Dockerfile.ArgumentContent> parseText(DockerfileParser.TextContext textCtx) {

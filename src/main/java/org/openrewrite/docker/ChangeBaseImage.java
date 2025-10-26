@@ -80,9 +80,11 @@ public class ChangeBaseImage extends Recipe {
                 // Visit children first
                 Dockerfile.From f = super.visitFrom(from, ctx);
 
-                // Reconstruct the full image name from all contents
+                // Reconstruct the full image name from imageName, tag, and digest
                 StringBuilder imageTextBuilder = new StringBuilder();
-                for (Dockerfile.ArgumentContent content : f.getImage().getContents()) {
+
+                // Add image name
+                for (Dockerfile.ArgumentContent content : f.getImageName().getContents()) {
                     if (content instanceof Dockerfile.PlainText) {
                         imageTextBuilder.append(((Dockerfile.PlainText) content).getText());
                     } else if (content instanceof Dockerfile.QuotedString) {
@@ -92,6 +94,32 @@ public class ChangeBaseImage extends Recipe {
                         return f;
                     }
                 }
+
+                // Add tag or digest
+                if (f.getTag() != null) {
+                    imageTextBuilder.append(":");
+                    for (Dockerfile.ArgumentContent content : f.getTag().getContents()) {
+                        if (content instanceof Dockerfile.PlainText) {
+                            imageTextBuilder.append(((Dockerfile.PlainText) content).getText());
+                        } else if (content instanceof Dockerfile.QuotedString) {
+                            imageTextBuilder.append(((Dockerfile.QuotedString) content).getValue());
+                        } else if (content instanceof Dockerfile.EnvironmentVariable) {
+                            return f;
+                        }
+                    }
+                } else if (f.getDigest() != null) {
+                    imageTextBuilder.append("@");
+                    for (Dockerfile.ArgumentContent content : f.getDigest().getContents()) {
+                        if (content instanceof Dockerfile.PlainText) {
+                            imageTextBuilder.append(((Dockerfile.PlainText) content).getText());
+                        } else if (content instanceof Dockerfile.QuotedString) {
+                            imageTextBuilder.append(((Dockerfile.QuotedString) content).getValue());
+                        } else if (content instanceof Dockerfile.EnvironmentVariable) {
+                            return f;
+                        }
+                    }
+                }
+
                 String imageText = imageTextBuilder.toString();
 
                 if (!StringUtils.matchesGlob(imageText, oldImageName)) {
@@ -118,31 +146,44 @@ public class ChangeBaseImage extends Recipe {
                 // Update image if needed
                 Dockerfile.From result = f;
                 if (imageChanged) {
-                    // Check if the original used quotes
-                    boolean wasQuoted = f.getImage().getContents().stream()
-                            .anyMatch(content -> content instanceof Dockerfile.QuotedString);
+                    // Check if the original was a single content item (e.g., a single quoted string)
+                    boolean wasSingleContent = f.getImageName().getContents().size() == 1 &&
+                            f.getTag() == null && f.getDigest() == null;
 
-                    // Create new content with the same style (quoted or unquoted)
-                    Dockerfile.ArgumentContent newContent;
-                    if (wasQuoted) {
-                        // Preserve the quoted style from the original
-                        Dockerfile.QuotedString originalQuoted = (Dockerfile.QuotedString) f.getImage().getContents().stream()
-                                .filter(content -> content instanceof Dockerfile.QuotedString)
-                                .findFirst()
-                                .orElse(null);
-                        newContent = new Dockerfile.QuotedString(
-                                randomId(),
-                                Space.EMPTY,
-                                org.openrewrite.marker.Markers.EMPTY,
-                                newImageName,
-                                originalQuoted != null ? originalQuoted.getQuoteStyle() : Dockerfile.QuotedString.QuoteStyle.DOUBLE
-                        );
+                    if (wasSingleContent) {
+                        // Keep as a single content item (don't split)
+                        boolean wasQuoted = hasQuotedString(f.getImageName());
+                        Dockerfile.ArgumentContent newContent = createContent(newImageName, wasQuoted, f.getImageName());
+                        Dockerfile.Argument newImageArg = f.getImageName().withContents(singletonList(newContent));
+                        result = result.withImageName(newImageArg);
                     } else {
-                        // Create plain text that will be split into components by the printer if needed
-                        newContent = new Dockerfile.PlainText(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, newImageName);
+                        // Split into components
+                        String[] parts = parseNewImageName(newImageName);
+                        String newImage = parts[0];
+                        String newTag = parts[1];
+                        String newDigest = parts[2];
+
+                        // Check if the original used quotes
+                        boolean wasQuoted = hasQuotedString(f.getImageName());
+
+                        // Create new image name argument
+                        Dockerfile.ArgumentContent newImageContent = createContent(newImage, wasQuoted, f.getImageName());
+                        Dockerfile.Argument newImageArg = f.getImageName().withContents(singletonList(newImageContent));
+                        result = result.withImageName(newImageArg);
+
+                        // Create new tag argument if present
+                        if (newTag != null) {
+                            Dockerfile.ArgumentContent newTagContent = createContent(newTag, wasQuoted, f.getTag());
+                            Dockerfile.Argument newTagArg = new Dockerfile.Argument(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, singletonList(newTagContent));
+                            result = result.withTag(newTagArg).withDigest(null);
+                        } else if (newDigest != null) {
+                            Dockerfile.ArgumentContent newDigestContent = createContent(newDigest, wasQuoted, f.getDigest());
+                            Dockerfile.Argument newDigestArg = new Dockerfile.Argument(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, singletonList(newDigestContent));
+                            result = result.withDigest(newDigestArg).withTag(null);
+                        } else {
+                            result = result.withTag(null).withDigest(null);
+                        }
                     }
-                    Dockerfile.Argument newImageArg = f.getImage().withContents(singletonList(newContent));
-                    result = result.withImage(newImageArg);
                 }
 
                 // Update platform flag if needed
@@ -153,6 +194,53 @@ public class ChangeBaseImage extends Recipe {
                 return result;
             }
         };
+    }
+
+    private String[] parseNewImageName(String fullImageName) {
+        String imageName;
+        String tag = null;
+        String digest = null;
+
+        // Check for digest first (takes precedence)
+        int atIndex = fullImageName.indexOf('@');
+        if (atIndex > 0) {
+            imageName = fullImageName.substring(0, atIndex);
+            digest = fullImageName.substring(atIndex + 1);
+        } else {
+            // Check for tag
+            int colonIndex = fullImageName.lastIndexOf(':');
+            if (colonIndex > 0) {
+                imageName = fullImageName.substring(0, colonIndex);
+                tag = fullImageName.substring(colonIndex + 1);
+            } else {
+                imageName = fullImageName;
+            }
+        }
+
+        return new String[]{imageName, tag, digest};
+    }
+
+    private boolean hasQuotedString(Dockerfile.Argument arg) {
+        return arg.getContents().stream()
+                .anyMatch(content -> content instanceof Dockerfile.QuotedString);
+    }
+
+    private Dockerfile.ArgumentContent createContent(String text, boolean quoted, Dockerfile.@Nullable Argument original) {
+        if (quoted) {
+            // Preserve the quote style from the original
+            Dockerfile.QuotedString.QuoteStyle quoteStyle = Dockerfile.QuotedString.QuoteStyle.DOUBLE;
+            if (original != null) {
+                for (Dockerfile.ArgumentContent content : original.getContents()) {
+                    if (content instanceof Dockerfile.QuotedString) {
+                        quoteStyle = ((Dockerfile.QuotedString) content).getQuoteStyle();
+                        break;
+                    }
+                }
+            }
+            return new Dockerfile.QuotedString(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text, quoteStyle);
+        } else {
+            return new Dockerfile.PlainText(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, text);
+        }
     }
 
     private @Nullable String getPlatformFlag(Dockerfile.From from) {
