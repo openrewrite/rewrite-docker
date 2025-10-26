@@ -522,7 +522,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             for (int i = 0; i < jsonStrings.size(); i++) {
                 Dockerfile.Argument arg = convertJsonString(jsonStrings.get(i));
                 // Add bracket prefix to first argument
-                if (i == 0 && bracketPrefix != null && !bracketPrefix.getWhitespace().isEmpty()) {
+                if (i == 0 && !bracketPrefix.getWhitespace().isEmpty()) {
                     arg = arg.withPrefix(bracketPrefix);
                 }
                 arguments.add(arg);
@@ -607,7 +607,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             for (int i = 0; i < jsonStrings.size(); i++) {
                 Dockerfile.Argument arg = convertJsonString(jsonStrings.get(i));
                 // Add bracket prefix to first argument
-                if (i == 0 && bracketPrefix != null && !bracketPrefix.getWhitespace().isEmpty()) {
+                if (i == 0 && !bracketPrefix.getWhitespace().isEmpty()) {
                     arg = arg.withPrefix(bracketPrefix);
                 }
                 arguments.add(arg);
@@ -980,7 +980,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         });
     }
 
-    private Dockerfile.Argument visitArgument(ParserRuleContext ctx) {
+    private Dockerfile.Argument visitArgument(@Nullable ParserRuleContext ctx) {
         if (ctx == null) {
             return new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
         }
@@ -1026,7 +1026,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         return cursor;
     }
 
-    private void skip(Token token) {
+    private void skip(@Nullable Token token) {
         if (token != null) {
             advanceCursor(token.getStopIndex() + 1);
         }

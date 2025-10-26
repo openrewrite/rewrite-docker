@@ -202,6 +202,7 @@ public interface Dockerfile extends Tree {
         @Nullable
         List<Argument> sources;
 
+        @Nullable
         Argument destination;
 
         @Override
@@ -237,6 +238,7 @@ public interface Dockerfile extends Tree {
         @Nullable
         List<Argument> sources;
 
+        @Nullable
         Argument destination;
 
         @Override
