@@ -13,6 +13,22 @@
 # limitations under the License.
 ---
 type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.docker.ChangeBaseImage
+examples:
+- description: '`ChangeBaseImageTest#changeSimpleBaseImage`'
+  parameters:
+  - ubuntu:20.04
+  - ubuntu:22.04
+  sources:
+  - before: |
+      FROM ubuntu:20.04
+      RUN apt-get update
+    after: |
+      FROM ubuntu:22.04
+      RUN apt-get update
+    language: dockerfile
+---
+type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.docker.DockerfileIsoVisitorTest$ReplaceFromImage
 examples:
 - description: '`DockerfileIsoVisitorTest#replaceFromImage`'
