@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Generated from ~/git/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
+// Generated from /home/tim/Documents/workspace/openrewrite/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
 package org.openrewrite.docker.internal.grammar;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -202,6 +202,13 @@ public class DockerfileParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitFlagValue(DockerfileParser.FlagValueContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFlagValueElement(DockerfileParser.FlagValueElementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

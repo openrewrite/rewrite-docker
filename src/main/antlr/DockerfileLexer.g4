@@ -48,7 +48,6 @@ MAINTAINER : [Mm][Aa][Ii][Nn][Tt][Aa][Ii][Nn][Ee][Rr];
 
 // Special keywords
 AS         : [Aa][Ss];
-NONE       : [Nn][Oo][Nn][Ee];
 
 // Heredoc start - captures <<EOF or <<-EOF and switches to HEREDOC mode
 HEREDOC_START : '<<' '-'? [A-Za-z_][A-Za-z0-9_]* -> pushMode(HEREDOC_MODE);

@@ -114,7 +114,7 @@ stopsignalInstruction
     ;
 
 healthcheckInstruction
-    : HEALTHCHECK WS+ ( NONE | ( flags WS+ )? cmdInstruction ) trailingComment?
+    : HEALTHCHECK WS+ ( UNQUOTED_TEXT | ( flags WS+ )? cmdInstruction ) trailingComment?
     ;
 
 shellInstruction
@@ -139,7 +139,15 @@ flagName
     ;
 
 flagValue
-    : UNQUOTED_TEXT | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+    : flagValueElement+
+    ;
+
+flagValueElement
+    : UNQUOTED_TEXT
+    | DOUBLE_QUOTED_STRING
+    | SINGLE_QUOTED_STRING
+    | COMMA  // Allow commas in flag values (e.g., --mount=type=cache,target=/cache)
+    | EQUALS  // Allow equals in flag values
     ;
 
 execForm

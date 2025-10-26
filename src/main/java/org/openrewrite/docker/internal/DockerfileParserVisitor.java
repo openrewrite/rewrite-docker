@@ -714,14 +714,16 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         String healthcheckKeyword = ctx.HEALTHCHECK().getText();
         skip(ctx.HEALTHCHECK().getSymbol());
 
-        boolean isNone = ctx.NONE() != null;
+        // Check if UNQUOTED_TEXT is "NONE" (case-insensitive)
+        boolean isNone = ctx.UNQUOTED_TEXT() != null &&
+                         ctx.UNQUOTED_TEXT().getText().equalsIgnoreCase("NONE");
         List<Dockerfile.Flag> flags = null;
         Dockerfile.Cmd cmd = null;
 
         if (isNone) {
             // Capture the space before NONE and create a dummy CMD to hold it
-            Space nonePrefix = prefix(ctx.NONE().getSymbol());
-            skip(ctx.NONE().getSymbol());
+            Space nonePrefix = prefix(ctx.UNQUOTED_TEXT().getSymbol());
+            skip(ctx.UNQUOTED_TEXT().getSymbol());
             // Create a dummy CMD with the prefix to preserve whitespace
             cmd = new Dockerfile.Cmd(
                 randomId(),
@@ -751,8 +753,8 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         if (ctx.getStop() != null) {
             Token stopToken = ctx.getStop();
             if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
-                if (ctx.NONE() != null) {
-                    stopToken = ctx.NONE().getSymbol();
+                if (isNone && ctx.UNQUOTED_TEXT() != null) {
+                    stopToken = ctx.UNQUOTED_TEXT().getSymbol();
                 } else if (ctx.cmdInstruction() != null) {
                     stopToken = ctx.cmdInstruction().getStop();
                 }
@@ -853,7 +855,40 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             Dockerfile.Argument flagValue = null;
             if (flagCtx.EQUALS() != null) {
                 skip(flagCtx.EQUALS().getSymbol());
-                flagValue = visitArgument(flagCtx.flagValue());
+                // Build argument from flag value elements
+                if (flagCtx.flagValue() != null) {
+                    List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+                    for (DockerfileParser.FlagValueElementContext elemCtx : flagCtx.flagValue().flagValueElement()) {
+                        if (elemCtx.UNQUOTED_TEXT() != null) {
+                            String text = elemCtx.UNQUOTED_TEXT().getText();
+                            advanceCursor(elemCtx.UNQUOTED_TEXT().getSymbol().getStopIndex() + 1);
+                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
+                        } else if (elemCtx.DOUBLE_QUOTED_STRING() != null) {
+                            String text = elemCtx.DOUBLE_QUOTED_STRING().getText();
+                            // Remove quotes
+                            if (text.startsWith("\"") && text.endsWith("\"")) {
+                                text = text.substring(1, text.length() - 1);
+                            }
+                            advanceCursor(elemCtx.DOUBLE_QUOTED_STRING().getSymbol().getStopIndex() + 1);
+                            contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, text, Dockerfile.QuotedString.QuoteStyle.DOUBLE));
+                        } else if (elemCtx.SINGLE_QUOTED_STRING() != null) {
+                            String text = elemCtx.SINGLE_QUOTED_STRING().getText();
+                            // Remove quotes
+                            if (text.startsWith("'") && text.endsWith("'")) {
+                                text = text.substring(1, text.length() - 1);
+                            }
+                            advanceCursor(elemCtx.SINGLE_QUOTED_STRING().getSymbol().getStopIndex() + 1);
+                            contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, text, Dockerfile.QuotedString.QuoteStyle.SINGLE));
+                        } else if (elemCtx.COMMA() != null) {
+                            advanceCursor(elemCtx.COMMA().getSymbol().getStopIndex() + 1);
+                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, ","));
+                        } else if (elemCtx.EQUALS() != null) {
+                            advanceCursor(elemCtx.EQUALS().getSymbol().getStopIndex() + 1);
+                            contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, "="));
+                        }
+                    }
+                    flagValue = new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, contents);
+                }
             }
 
             flags.add(new Dockerfile.Flag(randomId(), flagPrefix, Markers.EMPTY, flagName, flagValue));

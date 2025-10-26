@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Generated from ~/git/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
+// Generated from /home/tim/Documents/workspace/openrewrite/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
 package org.openrewrite.docker.internal.grammar;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -327,6 +327,18 @@ public class DockerfileParserBaseListener implements DockerfileParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFlagValue(DockerfileParser.FlagValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFlagValueElement(DockerfileParser.FlagValueElementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFlagValueElement(DockerfileParser.FlagValueElementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

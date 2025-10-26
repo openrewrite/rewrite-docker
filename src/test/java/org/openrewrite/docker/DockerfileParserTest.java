@@ -158,7 +158,32 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Keyword 'none' conflicts with HEALTHCHECK NONE - needs lexer fix")
+    @Test
+    void runWithSimpleFlag() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN --network=none apt-get update
+                """
+            )
+        );
+    }
+
+    @ExpectedToFail("Flag values with commas need additional parser work - comma tokenization issue")
+    @Test
+    void runWithFlagContainingComma() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                RUN --mount=type=cache,target=/cache apt-get update
+                """
+            )
+        );
+    }
+
+    @ExpectedToFail("Flag values with commas need additional parser work - comma tokenization issue")
     @Test
     void runWithMultipleFlags() {
         rewriteRun(
