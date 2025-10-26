@@ -24,6 +24,7 @@ import org.openrewrite.marker.Marker;
 
 public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P>> {
 
+    @Override
     public Space visitSpace(Space space, PrintOutputCapture<P> p) {
         for (Comment comment : space.getComments()) {
             p.append(comment.getPrefix());

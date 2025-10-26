@@ -730,7 +730,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
         // Check if UNQUOTED_TEXT is "NONE" (case-insensitive)
         boolean isNone = ctx.UNQUOTED_TEXT() != null &&
-                         ctx.UNQUOTED_TEXT().getText().equalsIgnoreCase("NONE");
+                         "NONE".equalsIgnoreCase(ctx.UNQUOTED_TEXT().getText());
         List<Dockerfile.Flag> flags = null;
         Dockerfile.Cmd cmd = null;
 
