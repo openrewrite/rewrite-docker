@@ -151,6 +151,30 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile visitExpose(Dockerfile.Expose expose, P p) {
+        Dockerfile.Expose e = expose;
+        e = e.withPrefix(visitSpace(e.getPrefix(), p));
+        e = e.withMarkers(visitMarkers(e.getMarkers(), p));
+        return e.withPorts(ListUtils.map(e.getPorts(), port -> (Dockerfile.Argument) visit(port, p)));
+    }
+
+    @Override
+    public Dockerfile visitVolume(Dockerfile.Volume volume, P p) {
+        Dockerfile.Volume v = volume;
+        v = v.withPrefix(visitSpace(v.getPrefix(), p));
+        v = v.withMarkers(visitMarkers(v.getMarkers(), p));
+        return v.withValues(ListUtils.map(v.getValues(), value -> (Dockerfile.Argument) visit(value, p)));
+    }
+
+    @Override
+    public Dockerfile visitShell(Dockerfile.Shell shell, P p) {
+        Dockerfile.Shell s = shell;
+        s = s.withPrefix(visitSpace(s.getPrefix(), p));
+        s = s.withMarkers(visitMarkers(s.getMarkers(), p));
+        return s.withArguments(ListUtils.map(s.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
+    }
+
+    @Override
     public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, P p) {
         Dockerfile.Workdir w = workdir;
         w = w.withPrefix(visitSpace(w.getPrefix(), p));

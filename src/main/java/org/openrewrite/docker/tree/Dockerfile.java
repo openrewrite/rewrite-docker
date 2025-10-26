@@ -376,6 +376,76 @@ public interface Dockerfile extends Tree {
     }
 
     /**
+     * EXPOSE instruction - documents ports that the container listens on
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Expose implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        List<Argument> ports;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitExpose(this, p);
+        }
+    }
+
+    /**
+     * VOLUME instruction - creates a mount point
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Volume implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        boolean jsonForm;  // true for ["path1", "path2"], false for path1 path2
+        List<Argument> values;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitVolume(this, p);
+        }
+    }
+
+    /**
+     * SHELL instruction - sets the default shell
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Shell implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        List<Argument> arguments;  // JSON array elements
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitShell(this, p);
+        }
+    }
+
+    /**
      * WORKDIR instruction - sets the working directory
      */
     @Value

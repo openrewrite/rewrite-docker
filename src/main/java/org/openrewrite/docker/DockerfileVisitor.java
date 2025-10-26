@@ -60,6 +60,18 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         return entrypoint;
     }
 
+    public Dockerfile visitExpose(Dockerfile.Expose expose, P p) {
+        return expose;
+    }
+
+    public Dockerfile visitVolume(Dockerfile.Volume volume, P p) {
+        return volume;
+    }
+
+    public Dockerfile visitShell(Dockerfile.Shell shell, P p) {
+        return shell;
+    }
+
     public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, P p) {
         return workdir;
     }

@@ -461,6 +461,66 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
+    @Test
+    void exposeInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                EXPOSE 8080
+                """
+            )
+        );
+    }
+
+    @Test
+    void exposeMultiplePorts() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                EXPOSE 8080 8443
+                """
+            )
+        );
+    }
+
+    @Test
+    void volumeWithJsonArray() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                VOLUME ["/data", "/logs"]
+                """
+            )
+        );
+    }
+
+    @Test
+    void volumeWithPathList() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                VOLUME /data /logs
+                """
+            )
+        );
+    }
+
+    @Test
+    void shellInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                SHELL ["/bin/bash", "-c"]
+                """
+            )
+        );
+    }
+
     @ExpectedToFail("Flags not yet working")
     @Test
     void copyInstructions() {

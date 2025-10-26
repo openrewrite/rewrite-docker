@@ -173,6 +173,77 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     }
 
     @Override
+    public Dockerfile visitExpose(Dockerfile.Expose expose, PrintOutputCapture<P> p) {
+        beforeSyntax(expose, p);
+        p.append(expose.getKeyword());
+        for (Dockerfile.Argument port : expose.getPorts()) {
+            visit(port, p);
+        }
+        afterSyntax(expose, p);
+        return expose;
+    }
+
+    @Override
+    public Dockerfile visitVolume(Dockerfile.Volume volume, PrintOutputCapture<P> p) {
+        beforeSyntax(volume, p);
+        p.append(volume.getKeyword());
+        if (volume.isJsonForm()) {
+            // Print space and opening bracket
+            if (!volume.getValues().isEmpty()) {
+                visitSpace(volume.getValues().get(0).getPrefix(), p);
+            }
+            p.append("[");
+            for (int i = 0; i < volume.getValues().size(); i++) {
+                Dockerfile.Argument arg = volume.getValues().get(i);
+                // For first element, we already printed its prefix above
+                // For subsequent elements, print comma then prefix
+                if (i > 0) {
+                    p.append(",");
+                    visitSpace(arg.getPrefix(), p);
+                }
+                // Visit the argument content without its prefix
+                for (Dockerfile.ArgumentContent content : arg.getContents()) {
+                    visit(content, p);
+                }
+            }
+            p.append("]");
+        } else {
+            for (Dockerfile.Argument value : volume.getValues()) {
+                visit(value, p);
+            }
+        }
+        afterSyntax(volume, p);
+        return volume;
+    }
+
+    @Override
+    public Dockerfile visitShell(Dockerfile.Shell shell, PrintOutputCapture<P> p) {
+        beforeSyntax(shell, p);
+        p.append(shell.getKeyword());
+        // Print space and opening bracket
+        if (!shell.getArguments().isEmpty()) {
+            visitSpace(shell.getArguments().get(0).getPrefix(), p);
+        }
+        p.append("[");
+        for (int i = 0; i < shell.getArguments().size(); i++) {
+            Dockerfile.Argument arg = shell.getArguments().get(i);
+            // For first element, we already printed its prefix above
+            // For subsequent elements, print comma then prefix
+            if (i > 0) {
+                p.append(",");
+                visitSpace(arg.getPrefix(), p);
+            }
+            // Visit the argument content without its prefix
+            for (Dockerfile.ArgumentContent content : arg.getContents()) {
+                visit(content, p);
+            }
+        }
+        p.append("]");
+        afterSyntax(shell, p);
+        return shell;
+    }
+
+    @Override
     public Dockerfile visitWorkdir(Dockerfile.Workdir workdir, PrintOutputCapture<P> p) {
         beforeSyntax(workdir, p);
         p.append(workdir.getKeyword());

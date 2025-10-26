@@ -408,6 +408,207 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
     }
 
     @Override
+    public Dockerfile visitExposeInstruction(DockerfileParser.ExposeInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the EXPOSE keyword
+        String exposeKeyword = ctx.EXPOSE().getText();
+        skip(ctx.EXPOSE().getSymbol());
+
+        // Parse port list
+        List<Dockerfile.Argument> ports = new ArrayList<>();
+        for (DockerfileParser.PortContext portCtx : ctx.portList().port()) {
+            ports.add(convertPort(portCtx));
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.portList().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Expose(randomId(), prefix, Markers.EMPTY, exposeKeyword, ports);
+    }
+
+    private Dockerfile.Argument convertPort(DockerfileParser.PortContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+        Token token = ctx.UNQUOTED_TEXT().getSymbol();
+        String text = token.getText();
+        skip(token);
+
+        List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+        contents.add(new Dockerfile.PlainText(randomId(), Space.EMPTY, Markers.EMPTY, text));
+        return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+    }
+
+    @Override
+    public Dockerfile visitVolumeInstruction(DockerfileParser.VolumeInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the VOLUME keyword
+        String volumeKeyword = ctx.VOLUME().getText();
+        skip(ctx.VOLUME().getSymbol());
+
+        boolean jsonForm = ctx.jsonArray() != null;
+        List<Dockerfile.Argument> values = new ArrayList<>();
+
+        if (jsonForm) {
+            // Parse JSON array
+            values = visitJsonArrayForVolume(ctx.jsonArray());
+        } else {
+            // Parse path list
+            for (DockerfileParser.PathContext pathCtx : ctx.pathList().path()) {
+                values.add(visitArgument(pathCtx));
+            }
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                if (ctx.jsonArray() != null) {
+                    stopToken = ctx.jsonArray().getStop();
+                } else {
+                    stopToken = ctx.pathList().getStop();
+                }
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Volume(randomId(), prefix, Markers.EMPTY, volumeKeyword, jsonForm, values);
+    }
+
+    private List<Dockerfile.Argument> visitJsonArrayForVolume(DockerfileParser.JsonArrayContext ctx) {
+        // Capture whitespace before opening bracket and store it as prefix of first argument
+        Space bracketPrefix = prefix(ctx.LBRACKET().getSymbol());
+        skip(ctx.LBRACKET().getSymbol());
+
+        List<Dockerfile.Argument> arguments = new ArrayList<>();
+        if (ctx.jsonArrayElements() != null) {
+            DockerfileParser.JsonArrayElementsContext elementsCtx = ctx.jsonArrayElements();
+            List<DockerfileParser.JsonStringContext> jsonStrings = elementsCtx.jsonString();
+
+            for (int i = 0; i < jsonStrings.size(); i++) {
+                Dockerfile.Argument arg = convertJsonString(jsonStrings.get(i));
+                // Add bracket prefix to first argument
+                if (i == 0 && bracketPrefix != null && !bracketPrefix.getWhitespace().isEmpty()) {
+                    arg = arg.withPrefix(bracketPrefix);
+                }
+                arguments.add(arg);
+
+                // Skip comma after this element if it's not the last one
+                // The grammar is: jsonString ( WS? COMMA WS? jsonString )*
+                // So we need to skip the COMMA tokens
+                if (i < jsonStrings.size() - 1) {
+                    // Find and skip the COMMA token between this element and the next
+                    for (int j = 0; j < elementsCtx.getChildCount(); j++) {
+                        if (elementsCtx.getChild(j) instanceof TerminalNode) {
+                            TerminalNode terminal = (TerminalNode) elementsCtx.getChild(j);
+                            if (terminal.getSymbol().getType() == DockerfileLexer.COMMA &&
+                                terminal.getSymbol().getStartIndex() > jsonStrings.get(i).getStop().getStopIndex() &&
+                                terminal.getSymbol().getStartIndex() < jsonStrings.get(i + 1).getStart().getStartIndex()) {
+                                skip(terminal.getSymbol());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Skip the closing bracket
+        skip(ctx.RBRACKET().getSymbol());
+
+        return arguments;
+    }
+
+    private Dockerfile.Argument convertJsonString(DockerfileParser.JsonStringContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+        Token token = ctx.DOUBLE_QUOTED_STRING().getSymbol();
+        String text = token.getText();
+
+        // Remove quotes
+        String value = text.substring(1, text.length() - 1);
+        skip(token);
+
+        // Also need to skip any COMMA token that follows (if this is not the last element)
+        // The COMMA is part of jsonArrayElements, so we need to handle it there
+        // Actually, we'll handle commas in the calling method
+
+        List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
+        contents.add(new Dockerfile.QuotedString(randomId(), Space.EMPTY, Markers.EMPTY, value, Dockerfile.QuotedString.QuoteStyle.DOUBLE));
+        return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+    }
+
+    @Override
+    public Dockerfile visitShellInstruction(DockerfileParser.ShellInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Extract and skip the SHELL keyword
+        String shellKeyword = ctx.SHELL().getText();
+        skip(ctx.SHELL().getSymbol());
+
+        // Parse JSON array
+        List<Dockerfile.Argument> arguments = visitJsonArrayForShell(ctx.jsonArray());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.jsonArray().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Shell(randomId(), prefix, Markers.EMPTY, shellKeyword, arguments);
+    }
+
+    private List<Dockerfile.Argument> visitJsonArrayForShell(DockerfileParser.JsonArrayContext ctx) {
+        // Capture whitespace before opening bracket and store it as prefix of first argument
+        Space bracketPrefix = prefix(ctx.LBRACKET().getSymbol());
+        skip(ctx.LBRACKET().getSymbol());
+
+        List<Dockerfile.Argument> arguments = new ArrayList<>();
+        if (ctx.jsonArrayElements() != null) {
+            DockerfileParser.JsonArrayElementsContext elementsCtx = ctx.jsonArrayElements();
+            List<DockerfileParser.JsonStringContext> jsonStrings = elementsCtx.jsonString();
+
+            for (int i = 0; i < jsonStrings.size(); i++) {
+                Dockerfile.Argument arg = convertJsonString(jsonStrings.get(i));
+                // Add bracket prefix to first argument
+                if (i == 0 && bracketPrefix != null && !bracketPrefix.getWhitespace().isEmpty()) {
+                    arg = arg.withPrefix(bracketPrefix);
+                }
+                arguments.add(arg);
+
+                // Skip comma after this element if it's not the last one
+                if (i < jsonStrings.size() - 1) {
+                    // Find and skip the COMMA token between this element and the next
+                    for (int j = 0; j < elementsCtx.getChildCount(); j++) {
+                        if (elementsCtx.getChild(j) instanceof TerminalNode) {
+                            TerminalNode terminal = (TerminalNode) elementsCtx.getChild(j);
+                            if (terminal.getSymbol().getType() == DockerfileLexer.COMMA &&
+                                terminal.getSymbol().getStartIndex() > jsonStrings.get(i).getStop().getStopIndex() &&
+                                terminal.getSymbol().getStartIndex() < jsonStrings.get(i + 1).getStart().getStartIndex()) {
+                                skip(terminal.getSymbol());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Skip the closing bracket
+        skip(ctx.RBRACKET().getSymbol());
+
+        return arguments;
+    }
+
+    @Override
     public Dockerfile visitWorkdirInstruction(DockerfileParser.WorkdirInstructionContext ctx) {
         Space prefix = prefix(ctx.getStart());
 
