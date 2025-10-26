@@ -19,28 +19,14 @@ examples:
   parameters:
   - ubuntu:20.04
   - ubuntu:22.04
-  - null
-  - null
+  - 'null'
+  - 'null'
   sources:
   - before: |
       FROM ubuntu:20.04
       RUN apt-get update
     after: |
       FROM ubuntu:22.04
-      RUN apt-get update
-    language: dockerfile
-- description: '`ChangeBaseImageTest#changeImageAndPlatform`'
-  parameters:
-  - ubuntu:20.04
-  - ubuntu:22.04
-  - null
-  - linux/arm64
-  sources:
-  - before: |
-      FROM --platform=linux/amd64 ubuntu:20.04
-      RUN apt-get update
-    after: |
-      FROM --platform=linux/arm64 ubuntu:22.04
       RUN apt-get update
     language: dockerfile
 ---

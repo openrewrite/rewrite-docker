@@ -15,8 +15,6 @@
  */
 package org.openrewrite.docker;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
@@ -153,8 +151,7 @@ public class ChangeBaseImage extends Recipe {
         };
     }
 
-    @Nullable
-    private String getPlatformFlag(Dockerfile.From from) {
+	private @Nullable String getPlatformFlag(Dockerfile.From from) {
         if (from.getFlags() == null) {
             return null;
         }
@@ -162,12 +159,13 @@ public class ChangeBaseImage extends Recipe {
         for (Dockerfile.Flag flag : from.getFlags()) {
             if ("platform".equals(flag.getName()) && flag.getValue() != null) {
                 for (Dockerfile.ArgumentContent content : flag.getValue().getContents()) {
-                    if (content instanceof Dockerfile.PlainText) {
-                        return ((Dockerfile.PlainText) content).getText();
-                    } else if (content instanceof Dockerfile.QuotedString) {
-                        return ((Dockerfile.QuotedString) content).getValue();
-                    }
-                }
+					if (content instanceof Dockerfile.PlainText) {
+						return ((Dockerfile.PlainText)content).getText();
+					}
+					if (content instanceof Dockerfile.QuotedString) {
+						return ((Dockerfile.QuotedString)content).getValue();
+					}
+				}
             }
         }
         return null;
