@@ -144,8 +144,14 @@ public class ChangeBaseImage extends Recipe {
                     return f;
                 }
 
-                // Update image if needed
                 Dockerfile.From result = f;
+
+                // Update platform flag if needed
+                if (platformChanged) {
+                    result = updatePlatformFlag(result, newPlatform);
+                }
+
+                // Update image if needed
                 if (imageChanged) {
                     // Check if the original was a single content item (e.g., a single quoted string)
                     boolean wasSingleContent = f.getImageName().getContents().size() == 1 &&
@@ -156,40 +162,35 @@ public class ChangeBaseImage extends Recipe {
                         boolean wasQuoted = hasQuotedString(f.getImageName());
                         Dockerfile.ArgumentContent newContent = createContent(newImageName, wasQuoted, f.getImageName());
                         Dockerfile.Argument newImageArg = f.getImageName().withContents(singletonList(newContent));
-                        result = result.withImageName(newImageArg);
-                    } else {
-                        // Split into components
-                        @Nullable String[] parts = parseNewImageName(newImageName);
-                        String newImage = requireNonNull(parts[0]);
-                        String newTag = parts[1];
-                        String newDigest = parts[2];
-
-                        // Check if the original used quotes
-                        boolean wasQuoted = hasQuotedString(f.getImageName());
-
-                        // Create new image name argument
-                        Dockerfile.ArgumentContent newImageContent = createContent(newImage, wasQuoted, f.getImageName());
-                        Dockerfile.Argument newImageArg = f.getImageName().withContents(singletonList(newImageContent));
-                        result = result.withImageName(newImageArg);
-
-                        // Create new tag argument if present
-                        if (newTag != null) {
-                            Dockerfile.ArgumentContent newTagContent = createContent(newTag, wasQuoted, f.getTag());
-                            Dockerfile.Argument newTagArg = new Dockerfile.Argument(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, singletonList(newTagContent));
-                            result = result.withTag(newTagArg).withDigest(null);
-                        } else if (newDigest != null) {
-                            Dockerfile.ArgumentContent newDigestContent = createContent(newDigest, wasQuoted, f.getDigest());
-                            Dockerfile.Argument newDigestArg = new Dockerfile.Argument(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, singletonList(newDigestContent));
-                            result = result.withDigest(newDigestArg).withTag(null);
-                        } else {
-                            result = result.withTag(null).withDigest(null);
-                        }
+                        return result.withImageName(newImageArg);
                     }
-                }
 
-                // Update platform flag if needed
-                if (platformChanged) {
-                    result = updatePlatformFlag(result, newPlatform);
+                    // Split into components
+                    @Nullable String[] parts = parseNewImageName(newImageName);
+                    String newImage = requireNonNull(parts[0]);
+                    String newTag = parts[1];
+                    String newDigest = parts[2];
+
+                    // Check if the original used quotes
+                    boolean wasQuoted = hasQuotedString(f.getImageName());
+
+                    // Create new image name argument
+                    Dockerfile.ArgumentContent newImageContent = createContent(newImage, wasQuoted, f.getImageName());
+                    Dockerfile.Argument newImageArg = f.getImageName().withContents(singletonList(newImageContent));
+                    result = result.withImageName(newImageArg);
+
+                    // Create new tag argument if present
+                    if (newTag != null) {
+                        Dockerfile.ArgumentContent newTagContent = createContent(newTag, wasQuoted, f.getTag());
+                        Dockerfile.Argument newTagArg = new Dockerfile.Argument(randomId(), Space.EMPTY, org.openrewrite.marker.Markers.EMPTY, singletonList(newTagContent));
+                        return result.withTag(newTagArg).withDigest(null);
+                    }
+                    if (newDigest != null) {
+                        Dockerfile.ArgumentContent newDigestContent = createContent(newDigest, wasQuoted, f.getDigest());
+                        Dockerfile.Argument newDigestArg = new Dockerfile.Argument(randomId(), Space.EMPTY, Markers.EMPTY, singletonList(newDigestContent));
+                        return result.withDigest(newDigestArg).withTag(null);
+                    }
+                    return result.withTag(null).withDigest(null);
                 }
 
                 return result;
