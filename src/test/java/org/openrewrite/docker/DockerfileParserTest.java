@@ -144,7 +144,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet implemented")
     @Test
     void runWithLineContinuation() {
         rewriteRun(
@@ -159,7 +158,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet implemented")
+    @ExpectedToFail("Keyword 'none' conflicts with HEALTHCHECK NONE - needs lexer fix")
     @Test
     void runWithMultipleFlags() {
         rewriteRun(
@@ -563,7 +562,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("HEREDOC not yet implemented")
     @Test
     void runWithHeredoc() {
         rewriteRun(
@@ -579,7 +577,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("HEREDOC not yet implemented")
     @Test
     void runWithHeredocDash() {
         rewriteRun(
@@ -595,7 +592,7 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("HEREDOC not yet implemented")
+    @ExpectedToFail("COPY with heredoc has complex syntax with destination on same line - not yet supported")
     @Test
     void copyWithHeredoc() {
         rewriteRun(

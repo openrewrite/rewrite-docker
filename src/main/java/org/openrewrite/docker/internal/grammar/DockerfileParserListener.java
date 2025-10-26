@@ -303,16 +303,6 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 */
 	void exitHeredoc(DockerfileParser.HeredocContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DockerfileParser#heredocContent}.
-	 * @param ctx the parse tree
-	 */
-	void enterHeredocContent(DockerfileParser.HeredocContentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DockerfileParser#heredocContent}.
-	 * @param ctx the parse tree
-	 */
-	void exitHeredocContent(DockerfileParser.HeredocContentContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#jsonArray}.
 	 * @param ctx the parse tree
 	 */

@@ -108,6 +108,10 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         return execForm;
     }
 
+    public Dockerfile visitHeredocForm(Dockerfile.HeredocForm heredocForm, P p) {
+        return heredocForm;
+    }
+
     public Dockerfile visitFlag(Dockerfile.Flag flag, P p) {
         return flag;
     }

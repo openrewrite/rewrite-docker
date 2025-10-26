@@ -50,8 +50,8 @@ MAINTAINER : [Mm][Aa][Ii][Nn][Tt][Aa][Ii][Nn][Ee][Rr];
 AS         : [Aa][Ss];
 NONE       : [Nn][Oo][Nn][Ee];
 
-// Heredoc start
-HEREDOC_MARKER : '<<' '-'? [A-Za-z_][A-Za-z0-9_]*;
+// Heredoc start - captures <<EOF or <<-EOF and switches to HEREDOC mode
+HEREDOC_START : '<<' '-'? [A-Za-z_][A-Za-z0-9_]* -> pushMode(HEREDOC_MODE);
 
 // Line continuation
 LINE_CONTINUATION : '\\' [ \t]* NEWLINE_CHAR;
@@ -93,3 +93,15 @@ fragment WS_CHAR : [ \t];
 NEWLINE : NEWLINE_CHAR+;
 
 fragment NEWLINE_CHAR : [\r\n];
+
+// HEREDOC mode - captures content until closing marker
+mode HEREDOC_MODE;
+
+// Initial newline after opening marker
+HEREDOC_NEWLINE : NEWLINE_CHAR+ ;
+
+// Closing marker on its own line - must match identifier alone on a line
+HEREDOC_END : [A-Za-z_][A-Za-z0-9_]* -> popMode;
+
+// Content line in heredoc (anything except newline)
+HEREDOC_CONTENT : ~[\r\n]+ ;

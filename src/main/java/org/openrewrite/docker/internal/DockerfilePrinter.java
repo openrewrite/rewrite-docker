@@ -86,8 +86,12 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
                 visit(flag, p);
             }
         }
-        for (Dockerfile.Argument source : add.getSources()) {
-            visit(source, p);
+        if (add.getHeredoc() != null) {
+            visit(add.getHeredoc(), p);
+        } else if (add.getSources() != null) {
+            for (Dockerfile.Argument source : add.getSources()) {
+                visit(source, p);
+            }
         }
         visit(add.getDestination(), p);
         afterSyntax(add, p);
@@ -103,8 +107,12 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
                 visit(flag, p);
             }
         }
-        for (Dockerfile.Argument source : copy.getSources()) {
-            visit(source, p);
+        if (copy.getHeredoc() != null) {
+            visit(copy.getHeredoc(), p);
+        } else if (copy.getSources() != null) {
+            for (Dockerfile.Argument source : copy.getSources()) {
+                visit(source, p);
+            }
         }
         visit(copy.getDestination(), p);
         afterSyntax(copy, p);
@@ -340,6 +348,18 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
         p.append("]");
         afterSyntax(execForm, p);
         return execForm;
+    }
+
+    @Override
+    public Dockerfile visitHeredocForm(Dockerfile.HeredocForm heredocForm, PrintOutputCapture<P> p) {
+        beforeSyntax(heredocForm, p);
+        p.append(heredocForm.getOpening());
+        for (String contentLine : heredocForm.getContentLines()) {
+            p.append(contentLine);
+        }
+        p.append(heredocForm.getClosing());
+        afterSyntax(heredocForm, p);
+        return heredocForm;
     }
 
     @Override

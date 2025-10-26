@@ -78,11 +78,11 @@ envInstruction
     ;
 
 addInstruction
-    : ADD WS+ ( flags WS+ )? sourceList WS+ destination trailingComment?
+    : ADD WS+ ( flags WS+ )? ( heredoc WS+ destination | sourceList WS+ destination ) trailingComment?
     ;
 
 copyInstruction
-    : COPY WS+ ( flags WS+ )? sourceList WS+ destination trailingComment?
+    : COPY WS+ ( flags WS+ )? ( heredoc WS+ destination | sourceList WS+ destination ) trailingComment?
     ;
 
 entrypointInstruction
@@ -151,11 +151,7 @@ shellForm
     ;
 
 heredoc
-    : HEREDOC_MARKER NEWLINE heredocContent HEREDOC_MARKER
-    ;
-
-heredocContent
-    : ( ~HEREDOC_MARKER )*
+    : HEREDOC_START HEREDOC_NEWLINE (HEREDOC_CONTENT HEREDOC_NEWLINE)* HEREDOC_END
     ;
 
 jsonArray
@@ -264,6 +260,7 @@ textElement
     | SINGLE_QUOTED_STRING
     | ENV_VAR
     | EQUALS  // Allow = in shell form text (e.g., ENV_VAR=value in RUN commands)
+    | LINE_CONTINUATION  // Allow line continuations in shell commands
     | WS
     ;
 

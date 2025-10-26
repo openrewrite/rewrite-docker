@@ -194,12 +194,6 @@ public interface DockerfileParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitHeredoc(DockerfileParser.HeredocContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DockerfileParser#heredocContent}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitHeredocContent(DockerfileParser.HeredocContentContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#jsonArray}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -368,18 +368,6 @@ public class DockerfileParserBaseListener implements DockerfileParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterHeredocContent(DockerfileParser.HeredocContentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitHeredocContent(DockerfileParser.HeredocContentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterJsonArray(DockerfileParser.JsonArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}

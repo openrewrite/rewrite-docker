@@ -169,10 +169,17 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
         List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
 
-        // Parse source list
-        List<Dockerfile.Argument> sources = new ArrayList<>();
-        for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
-            sources.add(visitArgument(sourceCtx.path()));
+        Dockerfile.HeredocForm heredoc = null;
+        List<Dockerfile.Argument> sources = null;
+
+        // Check if heredoc or sourceList is present
+        if (ctx.heredoc() != null) {
+            heredoc = visitHeredocContext(ctx.heredoc());
+        } else if (ctx.sourceList() != null) {
+            sources = new ArrayList<>();
+            for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
+                sources.add(visitArgument(sourceCtx.path()));
+            }
         }
 
         Dockerfile.Argument destination = visitArgument(ctx.destination().path());
@@ -187,7 +194,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             advanceCursor(stopToken.getStopIndex() + 1);
         }
 
-        return new Dockerfile.Add(randomId(), prefix, Markers.EMPTY, addKeyword, flags, sources, destination);
+        return new Dockerfile.Add(randomId(), prefix, Markers.EMPTY, addKeyword, flags, heredoc, sources, destination);
     }
 
     @Override
@@ -200,10 +207,17 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
 
         List<Dockerfile.Flag> flags = ctx.flags() != null ? convertFlags(ctx.flags()) : null;
 
-        // Parse source list
-        List<Dockerfile.Argument> sources = new ArrayList<>();
-        for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
-            sources.add(visitArgument(sourceCtx.path()));
+        Dockerfile.HeredocForm heredoc = null;
+        List<Dockerfile.Argument> sources = null;
+
+        // Check if heredoc or sourceList is present
+        if (ctx.heredoc() != null) {
+            heredoc = visitHeredocContext(ctx.heredoc());
+        } else if (ctx.sourceList() != null) {
+            sources = new ArrayList<>();
+            for (DockerfileParser.SourceContext sourceCtx : ctx.sourceList().source()) {
+                sources.add(visitArgument(sourceCtx.path()));
+            }
         }
 
         Dockerfile.Argument destination = visitArgument(ctx.destination().path());
@@ -218,7 +232,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             advanceCursor(stopToken.getStopIndex() + 1);
         }
 
-        return new Dockerfile.Copy(randomId(), prefix, Markers.EMPTY, copyKeyword, flags, sources, destination);
+        return new Dockerfile.Copy(randomId(), prefix, Markers.EMPTY, copyKeyword, flags, heredoc, sources, destination);
     }
 
     @Override
@@ -776,8 +790,10 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             form = visitExecFormContext(ctx.execForm());
         } else if (ctx.shellForm() != null) {
             form = visitShellFormContext(ctx.shellForm());
+        } else if (ctx.heredoc() != null) {
+            form = visitHeredocContext(ctx.heredoc());
         } else {
-            // heredoc - not implemented yet, treat as shell form
+            // Fallback to empty shell form
             form = new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList());
         }
 
@@ -892,6 +908,46 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
             skip(jsonArray.RBRACKET().getSymbol());
 
             return new Dockerfile.ExecForm(randomId(), prefix, Markers.EMPTY, args);
+        });
+    }
+
+    private Dockerfile.HeredocForm visitHeredocContext(DockerfileParser.HeredocContext ctx) {
+        return convert(ctx, (c, prefix) -> {
+            // Get opening marker (<<EOF or <<-EOF)
+            String opening = c.HEREDOC_START().getText();
+            skip(c.HEREDOC_START().getSymbol());
+
+            // Collect all content including newlines for reconstruction
+            List<String> contentLines = new ArrayList<>();
+
+            // Skip opening newline and capture it
+            if (!c.HEREDOC_NEWLINE().isEmpty()) {
+                String openingNewline = c.HEREDOC_NEWLINE().get(0).getText();
+                skip(c.HEREDOC_NEWLINE().get(0).getSymbol());
+                contentLines.add(openingNewline);
+            }
+
+            // Collect content lines with their newlines
+            List<TerminalNode> contentNodes = c.HEREDOC_CONTENT();
+            List<TerminalNode> newlineNodes = c.HEREDOC_NEWLINE();
+
+            for (int i = 0; i < contentNodes.size(); i++) {
+                // Add content
+                contentLines.add(contentNodes.get(i).getText());
+                skip(contentNodes.get(i).getSymbol());
+
+                // Add newline after content (offset by 1 because first newline is opening)
+                if (i + 1 < newlineNodes.size()) {
+                    contentLines.add(newlineNodes.get(i + 1).getText());
+                    skip(newlineNodes.get(i + 1).getSymbol());
+                }
+            }
+
+            // Get closing marker (just the marker name)
+            String closing = c.HEREDOC_END().getText();
+            skip(c.HEREDOC_END().getSymbol());
+
+            return new Dockerfile.HeredocForm(randomId(), prefix, Markers.EMPTY, opening, contentLines, closing);
         });
     }
 

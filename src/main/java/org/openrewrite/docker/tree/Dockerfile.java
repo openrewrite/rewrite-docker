@@ -193,7 +193,15 @@ public interface Dockerfile extends Tree {
         @Nullable
         List<Flag> flags;
 
+        /**
+         * Either a heredoc or a list of source paths (mutually exclusive)
+         */
+        @Nullable
+        HeredocForm heredoc;
+
+        @Nullable
         List<Argument> sources;
+
         Argument destination;
 
         @Override
@@ -220,7 +228,15 @@ public interface Dockerfile extends Tree {
         @Nullable
         List<Flag> flags;
 
+        /**
+         * Either a heredoc or a list of source paths (mutually exclusive)
+         */
+        @Nullable
+        HeredocForm heredoc;
+
+        @Nullable
         List<Argument> sources;
+
         Argument destination;
 
         @Override
@@ -658,6 +674,40 @@ public interface Dockerfile extends Tree {
         @Override
         public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
             return v.visitExecForm(this, p);
+        }
+    }
+
+    /**
+     * Heredoc form: RUN <<EOF\ncommands\nEOF
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class HeredocForm implements CommandForm {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        /**
+         * The opening marker including << and optional dash (e.g., "<<EOF" or "<<-EOF")
+         */
+        String opening;
+
+        /**
+         * Content lines between opening and closing markers
+         */
+        List<String> contentLines;
+
+        /**
+         * The closing marker (e.g., "EOF")
+         */
+        String closing;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitHeredocForm(this, p);
         }
     }
 

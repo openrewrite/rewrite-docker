@@ -74,7 +74,11 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         if (a.getFlags() != null) {
             a = a.withFlags(ListUtils.map(a.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
         }
-        a = a.withSources(ListUtils.map(a.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        if (a.getHeredoc() != null) {
+            a = a.withHeredoc((Dockerfile.HeredocForm) visit(a.getHeredoc(), p));
+        } else if (a.getSources() != null) {
+            a = a.withSources(ListUtils.map(a.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        }
         return a.withDestination((Dockerfile.Argument) visit(a.getDestination(), p));
     }
 
@@ -86,7 +90,11 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         if (c.getFlags() != null) {
             c = c.withFlags(ListUtils.map(c.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
         }
-        c = c.withSources(ListUtils.map(c.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        if (c.getHeredoc() != null) {
+            c = c.withHeredoc((Dockerfile.HeredocForm) visit(c.getHeredoc(), p));
+        } else if (c.getSources() != null) {
+            c = c.withSources(ListUtils.map(c.getSources(), source -> (Dockerfile.Argument) visit(source, p)));
+        }
         return c.withDestination((Dockerfile.Argument) visit(c.getDestination(), p));
     }
 
@@ -250,6 +258,14 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
         ef = ef.withPrefix(visitSpace(ef.getPrefix(), p));
         ef = ef.withMarkers(visitMarkers(ef.getMarkers(), p));
         return ef.withArguments(ListUtils.map(ef.getArguments(), arg -> (Dockerfile.Argument) visit(arg, p)));
+    }
+
+    @Override
+    public Dockerfile visitHeredocForm(Dockerfile.HeredocForm heredocForm, P p) {
+        Dockerfile.HeredocForm hf = heredocForm;
+        hf = hf.withPrefix(visitSpace(hf.getPrefix(), p));
+        hf = hf.withMarkers(visitMarkers(hf.getMarkers(), p));
+        return hf;
     }
 
     @Override
