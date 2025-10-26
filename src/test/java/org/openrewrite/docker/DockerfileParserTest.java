@@ -16,8 +16,13 @@
 package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.ExpectedToFail;
+import org.openrewrite.docker.tree.Dockerfile;
 import org.openrewrite.test.RewriteTest;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.docker.Assertions.dockerfile;
 
 class DockerfileParserTest implements RewriteTest {
@@ -546,13 +551,35 @@ class DockerfileParserTest implements RewriteTest {
     @Test
     void copyInstructions() {
         rewriteRun(
-            dockerfile(
-                """
-                FROM ubuntu:20.04
-                COPY --chown=app:app app.jar /app/
-                COPY --from=builder /build/output /app/
-                """
-            )
+          dockerfile(
+            """
+            FROM ubuntu:20.04
+            COPY --chown=app:app app.jar /app/
+            COPY --from=builder /build/output /app/
+            """
+          )
+        );
+    }
+
+    @ExpectedToFail("Not yet parsed separately")
+    @Test
+    void complexExpression() {
+        rewriteRun(
+          dockerfile(
+            """
+            ARG VERSION=25
+            FROM $REGISTRY/image:${VERSION}-suffix
+            """,
+            spec -> spec.afterRecipe(doc -> {
+                Dockerfile.From from = (Dockerfile.From) doc.getInstructions().getLast();
+                List<Dockerfile.ArgumentContent> contents = from.getImage().getContents();
+                assertThat(contents).hasSize(4);
+                assertThat(contents.get(0)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("REGISTRY");
+                assertThat(contents.get(1)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("/image:");
+                assertThat(contents.get(2)).extracting(arg -> ((Dockerfile.EnvironmentVariable)arg).getName()).isEqualTo("VERSION");
+                assertThat(contents.get(3)).extracting(arg -> ((Dockerfile.PlainText)arg).getText()).isEqualTo("-suffix");
+            })
+          )
         );
     }
 
