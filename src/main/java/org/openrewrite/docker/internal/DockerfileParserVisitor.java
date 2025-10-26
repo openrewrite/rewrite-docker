@@ -672,6 +672,84 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
     }
 
     @Override
+    public Dockerfile visitOnbuildInstruction(DockerfileParser.OnbuildInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String onbuildKeyword = ctx.ONBUILD().getText();
+        skip(ctx.ONBUILD().getSymbol());
+
+        // Visit the wrapped instruction
+        Dockerfile.Instruction instruction = (Dockerfile.Instruction) visit(ctx.instruction());
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                stopToken = ctx.instruction().getStop();
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Onbuild(randomId(), prefix, Markers.EMPTY, onbuildKeyword, instruction);
+    }
+
+    @Override
+    public Dockerfile visitHealthcheckInstruction(DockerfileParser.HealthcheckInstructionContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        String healthcheckKeyword = ctx.HEALTHCHECK().getText();
+        skip(ctx.HEALTHCHECK().getSymbol());
+
+        boolean isNone = ctx.NONE() != null;
+        List<Dockerfile.Flag> flags = null;
+        Dockerfile.Cmd cmd = null;
+
+        if (isNone) {
+            // Capture the space before NONE and create a dummy CMD to hold it
+            Space nonePrefix = prefix(ctx.NONE().getSymbol());
+            skip(ctx.NONE().getSymbol());
+            // Create a dummy CMD with the prefix to preserve whitespace
+            cmd = new Dockerfile.Cmd(
+                randomId(),
+                nonePrefix,
+                Markers.EMPTY,
+                "",
+                new Dockerfile.CommandLine(
+                    randomId(),
+                    Space.EMPTY,
+                    Markers.EMPTY,
+                    new Dockerfile.ShellForm(randomId(), Space.EMPTY, Markers.EMPTY, emptyList())
+                )
+            );
+        } else {
+            // Parse flags if present
+            if (ctx.flags() != null) {
+                flags = convertFlags(ctx.flags());
+            }
+
+            // Parse CMD instruction
+            if (ctx.cmdInstruction() != null) {
+                cmd = (Dockerfile.Cmd) visit(ctx.cmdInstruction());
+            }
+        }
+
+        // Advance cursor to end of instruction, but NOT past trailing comment
+        if (ctx.getStop() != null) {
+            Token stopToken = ctx.getStop();
+            if (ctx.trailingComment() != null && stopToken == ctx.trailingComment().getStop()) {
+                if (ctx.NONE() != null) {
+                    stopToken = ctx.NONE().getSymbol();
+                } else if (ctx.cmdInstruction() != null) {
+                    stopToken = ctx.cmdInstruction().getStop();
+                }
+            }
+            advanceCursor(stopToken.getStopIndex() + 1);
+        }
+
+        return new Dockerfile.Healthcheck(randomId(), prefix, Markers.EMPTY, healthcheckKeyword, isNone, flags, cmd);
+    }
+
+    @Override
     public Dockerfile visitMaintainerInstruction(DockerfileParser.MaintainerInstructionContext ctx) {
         Space prefix = prefix(ctx.getStart());
 

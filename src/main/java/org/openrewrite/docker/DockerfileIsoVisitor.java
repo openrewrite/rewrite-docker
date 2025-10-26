@@ -199,6 +199,28 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile visitOnbuild(Dockerfile.Onbuild onbuild, P p) {
+        Dockerfile.Onbuild o = onbuild;
+        o = o.withPrefix(visitSpace(o.getPrefix(), p));
+        o = o.withMarkers(visitMarkers(o.getMarkers(), p));
+        return o.withInstruction((Dockerfile.Instruction) visit(o.getInstruction(), p));
+    }
+
+    @Override
+    public Dockerfile visitHealthcheck(Dockerfile.Healthcheck healthcheck, P p) {
+        Dockerfile.Healthcheck h = healthcheck;
+        h = h.withPrefix(visitSpace(h.getPrefix(), p));
+        h = h.withMarkers(visitMarkers(h.getMarkers(), p));
+        if (h.getFlags() != null) {
+            h = h.withFlags(ListUtils.map(h.getFlags(), flag -> (Dockerfile.Flag) visit(flag, p)));
+        }
+        if (h.getCmd() != null) {
+            h = h.withCmd((Dockerfile.Cmd) visit(h.getCmd(), p));
+        }
+        return h;
+    }
+
+    @Override
     public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, P p) {
         Dockerfile.Maintainer m = maintainer;
         m = m.withPrefix(visitSpace(m.getPrefix(), p));

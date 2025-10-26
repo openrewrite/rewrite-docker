@@ -521,6 +521,54 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
+    @Test
+    void onbuildInstruction() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ONBUILD RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void onbuildWithCopy() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                ONBUILD COPY app.jar /app/
+                """
+            )
+        );
+    }
+
+    @Test
+    void healthcheckNone() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                HEALTHCHECK NONE
+                """
+            )
+        );
+    }
+
+    @Test
+    void healthcheckWithCmd() {
+        rewriteRun(
+            dockerfile(
+                """
+                FROM ubuntu:20.04
+                HEALTHCHECK CMD curl -f http://localhost/ || exit 1
+                """
+            )
+        );
+    }
+
     @ExpectedToFail("Flags not yet working")
     @Test
     void copyInstructions() {

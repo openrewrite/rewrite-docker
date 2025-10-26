@@ -84,6 +84,14 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         return stopsignal;
     }
 
+    public Dockerfile visitOnbuild(Dockerfile.Onbuild onbuild, P p) {
+        return onbuild;
+    }
+
+    public Dockerfile visitHealthcheck(Dockerfile.Healthcheck healthcheck, P p) {
+        return healthcheck;
+    }
+
     public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, P p) {
         return maintainer;
     }

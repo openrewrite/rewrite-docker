@@ -271,6 +271,39 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     }
 
     @Override
+    public Dockerfile visitOnbuild(Dockerfile.Onbuild onbuild, PrintOutputCapture<P> p) {
+        beforeSyntax(onbuild, p);
+        p.append(onbuild.getKeyword());
+        visit(onbuild.getInstruction(), p);
+        afterSyntax(onbuild, p);
+        return onbuild;
+    }
+
+    @Override
+    public Dockerfile visitHealthcheck(Dockerfile.Healthcheck healthcheck, PrintOutputCapture<P> p) {
+        beforeSyntax(healthcheck, p);
+        p.append(healthcheck.getKeyword());
+        if (healthcheck.isNone()) {
+            // Need to print the space and NONE keyword
+            if (healthcheck.getCmd() != null && healthcheck.getCmd().getPrefix() != null) {
+                visitSpace(healthcheck.getCmd().getPrefix(), p);
+            }
+            p.append("NONE");
+        } else {
+            if (healthcheck.getFlags() != null) {
+                for (Dockerfile.Flag flag : healthcheck.getFlags()) {
+                    visit(flag, p);
+                }
+            }
+            if (healthcheck.getCmd() != null) {
+                visit(healthcheck.getCmd(), p);
+            }
+        }
+        afterSyntax(healthcheck, p);
+        return healthcheck;
+    }
+
+    @Override
     public Dockerfile visitMaintainer(Dockerfile.Maintainer maintainer, PrintOutputCapture<P> p) {
         beforeSyntax(maintainer, p);
         p.append(maintainer.getKeyword());

@@ -515,6 +515,58 @@ public interface Dockerfile extends Tree {
     }
 
     /**
+     * ONBUILD instruction - prefixes another instruction to be executed later
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Onbuild implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        Instruction instruction;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitOnbuild(this, p);
+        }
+    }
+
+    /**
+     * HEALTHCHECK instruction - tells Docker how to test container health
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Healthcheck implements Instruction {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        String keyword;
+
+        boolean isNone;  // true for HEALTHCHECK NONE
+
+        @Nullable
+        List<Flag> flags;
+
+        @Nullable
+        Cmd cmd;  // null when isNone is true
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitHealthcheck(this, p);
+        }
+    }
+
+    /**
      * MAINTAINER instruction - sets the author field (deprecated but still supported)
      */
     @Value
