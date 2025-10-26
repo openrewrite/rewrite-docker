@@ -289,4 +289,38 @@ class ChangeBaseImageTest implements RewriteTest {
             )
         );
     }
+
+    @Test
+    void changeBaseImageWithDoubleQuotedString() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", null, null)),
+            dockerfile(
+                """
+                FROM "ubuntu:20.04"
+                RUN apt-get update
+                """,
+                """
+                FROM "ubuntu:22.04"
+                RUN apt-get update
+                """
+            )
+        );
+    }
+
+    @Test
+    void changeBaseImageWithSingleQuotedString() {
+        rewriteRun(
+            spec -> spec.recipe(new ChangeBaseImage("ubuntu:20.04", "ubuntu:22.04", null, null)),
+            dockerfile(
+                """
+                FROM 'ubuntu:20.04'
+                RUN apt-get update
+                """,
+                """
+                FROM 'ubuntu:22.04'
+                RUN apt-get update
+                """
+            )
+        );
+    }
 }

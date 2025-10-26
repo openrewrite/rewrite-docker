@@ -29,6 +29,7 @@ import org.openrewrite.docker.tree.Space;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.singletonList;
 import static org.openrewrite.Tree.randomId;
@@ -79,14 +80,23 @@ public class ChangeBaseImage extends Recipe {
                 // Visit children first
                 Dockerfile.From f = super.visitFrom(from, ctx);
 
-                // Find the PlainText content containing the image name
-                Dockerfile.PlainText originalPlainText = f.getImage().getContents().stream()
-                    .filter(content -> content instanceof Dockerfile.PlainText)
-                    .map(content -> (Dockerfile.PlainText) content)
+                // Find the content containing the image name (PlainText or QuotedString)
+                Dockerfile.ArgumentContent originalContent = f.getImage().getContents().stream()
+                    .filter(content -> content instanceof Dockerfile.PlainText || content instanceof Dockerfile.QuotedString)
                     .findFirst()
                     .orElse(null);
 
-                if (originalPlainText == null || !matchesGlob(originalPlainText.getText(), oldImageName)) {
+                // Extract the text value from either PlainText or QuotedString
+                String imageText;
+                if (originalContent instanceof Dockerfile.PlainText) {
+                    imageText = ((Dockerfile.PlainText) originalContent).getText();
+                } else if (originalContent instanceof Dockerfile.QuotedString) {
+                    imageText = ((Dockerfile.QuotedString) originalContent).getValue();
+                } else {
+                    return f;
+                }
+
+                if (!matchesGlob(imageText, oldImageName)) {
                     return f;
                 }
 
@@ -98,10 +108,10 @@ public class ChangeBaseImage extends Recipe {
                     return f;
                 }
 
-                boolean imageChanged = !originalPlainText.getText().equals(newImageName);
+                boolean imageChanged = !imageText.equals(newImageName);
                 // Only consider platform changed if oldPlatform or newPlatform was explicitly set
                 boolean shouldChangePlatform = oldPlatform != null || newPlatform != null;
-                boolean platformChanged = shouldChangePlatform && !java.util.Objects.equals(currentPlatform, newPlatform);
+                boolean platformChanged = shouldChangePlatform && !Objects.equals(currentPlatform, newPlatform);
 
                 if (!imageChanged && !platformChanged) {
                     return f;
@@ -110,16 +120,26 @@ public class ChangeBaseImage extends Recipe {
                 // Update image if needed
                 Dockerfile.From result = f;
                 if (imageChanged) {
-                    Dockerfile.Argument newImageArg = f.getImage().withContents(
-                        singletonList(
-                            new Dockerfile.PlainText(
-                                randomId(),
-                                originalPlainText.getPrefix(),
-                                originalPlainText.getMarkers(),
-                                newImageName
-                            )
-                        )
-                    );
+                    Dockerfile.ArgumentContent newContent;
+                    if (originalContent instanceof Dockerfile.PlainText) {
+                        Dockerfile.PlainText pt = (Dockerfile.PlainText) originalContent;
+                        newContent = new Dockerfile.PlainText(
+                            randomId(),
+                            pt.getPrefix(),
+                            pt.getMarkers(),
+                            newImageName
+                        );
+                    } else {
+                        Dockerfile.QuotedString qs = (Dockerfile.QuotedString) originalContent;
+                        newContent = new Dockerfile.QuotedString(
+                            randomId(),
+                            qs.getPrefix(),
+                            qs.getMarkers(),
+                            newImageName,
+                            qs.getQuoteStyle()
+                        );
+                    }
+                    Dockerfile.Argument newImageArg = f.getImage().withContents(singletonList(newContent));
                     result = result.withImage(newImageArg);
                 }
 
@@ -141,11 +161,13 @@ public class ChangeBaseImage extends Recipe {
 
         for (Dockerfile.Flag flag : from.getFlags()) {
             if ("platform".equals(flag.getName()) && flag.getValue() != null) {
-                return flag.getValue().getContents().stream()
-                    .filter(content -> content instanceof Dockerfile.PlainText)
-                    .map(content -> ((Dockerfile.PlainText) content).getText())
-                    .findFirst()
-                    .orElse(null);
+                for (Dockerfile.ArgumentContent content : flag.getValue().getContents()) {
+                    if (content instanceof Dockerfile.PlainText) {
+                        return ((Dockerfile.PlainText) content).getText();
+                    } else if (content instanceof Dockerfile.QuotedString) {
+                        return ((Dockerfile.QuotedString) content).getValue();
+                    }
+                }
             }
         }
         return null;
@@ -205,7 +227,7 @@ public class ChangeBaseImage extends Recipe {
     }
 
     private boolean matchesGlob(String value, @Nullable String glob) {
-        if (glob == null || value == null) {
+        if (glob == null) {
             return false;
         }
 
