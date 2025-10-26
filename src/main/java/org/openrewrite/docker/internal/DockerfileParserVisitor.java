@@ -986,31 +986,27 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         }
 
         return convert(ctx, (c, prefix) -> {
-            List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
-
-            // Only use detailed parsing for ImageNameContext that contains quoted strings
-            // For everything else (including unquoted image names), use simple plain text approach
+            // Only use detailed parsing for ImageNameContext that contains quoted strings or environment variables
+            // For everything else (including simple unquoted image names), use simple plain text approach
             String fullText = c.getText();
             boolean hasQuotedString = fullText.contains("\"") || fullText.contains("'");
-            ParserRuleContext textCtx = null;
+            boolean hasEnvironmentVariable = fullText.contains("$");
 
-            if (c instanceof DockerfileParser.ImageNameContext && hasQuotedString) {
-                textCtx = ((DockerfileParser.ImageNameContext) c).text();
-            }
-
-            if (textCtx == null) {
+            if (!(c instanceof DockerfileParser.ImageNameContext) || (!hasQuotedString && !hasEnvironmentVariable)) {
                 // Simple implementation - works for most cases and preserves trailing comments
-                contents.add(new Dockerfile.PlainText(
+                Dockerfile.PlainText plainText = new Dockerfile.PlainText(
                         randomId(),
                         Space.EMPTY,
                         Markers.EMPTY,
                         fullText
-                ));
-                return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, contents);
+                );
+                return new Dockerfile.Argument(randomId(), prefix, Markers.EMPTY, singletonList(plainText));
             }
 
             // Process each textElement child
             // Grammar structure: text -> textElement+ -> terminal
+            ParserRuleContext textCtx = ((DockerfileParser.ImageNameContext) c).text();
+            List<Dockerfile.ArgumentContent> contents = new ArrayList<>();
             for (int i = 0; i < textCtx.getChildCount(); i++) {
                 ParseTree child = textCtx.getChild(i);
 

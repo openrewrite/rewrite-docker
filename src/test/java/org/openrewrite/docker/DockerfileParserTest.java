@@ -16,7 +16,6 @@
 package org.openrewrite.docker;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ExpectedToFail;
 import org.openrewrite.docker.tree.Dockerfile;
 import org.openrewrite.test.RewriteTest;
 
@@ -561,7 +560,6 @@ class DockerfileParserTest implements RewriteTest {
         );
     }
 
-    @ExpectedToFail("Not yet parsed separately")
     @Test
     void complexExpression() {
         rewriteRun(
