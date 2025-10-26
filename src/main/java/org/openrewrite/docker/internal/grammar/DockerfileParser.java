@@ -1,4 +1,19 @@
-// Generated from /home/tim/Documents/workspace/openrewrite/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
+/*
+ * Copyright 2025 the original author or authors.
+ * <p>
+ * Licensed under the Moderne Source Available License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://docs.moderne.io/licensing/moderne-source-available-license
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Generated from ~/git/rewrite-docker/src/main/antlr/DockerfileParser.g4 by ANTLR 4.13.2
 package org.openrewrite.docker.internal.grammar;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -17,41 +32,41 @@ public class DockerfileParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7, 
-		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14, 
-		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20, 
-		AS=21, NONE=22, HEREDOC_MARKER=23, LINE_CONTINUATION=24, LBRACKET=25, 
-		RBRACKET=26, COMMA=27, EQUALS=28, DASH_DASH=29, DOUBLE_QUOTED_STRING=30, 
+		PARSER_DIRECTIVE=1, COMMENT=2, FROM=3, RUN=4, CMD=5, LABEL=6, EXPOSE=7,
+		ENV=8, ADD=9, COPY=10, ENTRYPOINT=11, VOLUME=12, USER=13, WORKDIR=14,
+		ARG=15, ONBUILD=16, STOPSIGNAL=17, HEALTHCHECK=18, SHELL=19, MAINTAINER=20,
+		AS=21, NONE=22, HEREDOC_MARKER=23, LINE_CONTINUATION=24, LBRACKET=25,
+		RBRACKET=26, COMMA=27, EQUALS=28, DASH_DASH=29, DOUBLE_QUOTED_STRING=30,
 		SINGLE_QUOTED_STRING=31, ENV_VAR=32, UNQUOTED_TEXT=33, WS=34, NEWLINE=35;
 	public static final int
-		RULE_dockerfile = 0, RULE_parserDirective = 1, RULE_instruction = 2, RULE_fromInstruction = 3, 
-		RULE_runInstruction = 4, RULE_cmdInstruction = 5, RULE_labelInstruction = 6, 
-		RULE_exposeInstruction = 7, RULE_envInstruction = 8, RULE_addInstruction = 9, 
-		RULE_copyInstruction = 10, RULE_entrypointInstruction = 11, RULE_volumeInstruction = 12, 
-		RULE_userInstruction = 13, RULE_workdirInstruction = 14, RULE_argInstruction = 15, 
-		RULE_onbuildInstruction = 16, RULE_stopsignalInstruction = 17, RULE_healthcheckInstruction = 18, 
-		RULE_shellInstruction = 19, RULE_maintainerInstruction = 20, RULE_flags = 21, 
-		RULE_flag = 22, RULE_flagName = 23, RULE_flagValue = 24, RULE_execForm = 25, 
-		RULE_shellForm = 26, RULE_heredoc = 27, RULE_heredocContent = 28, RULE_jsonArray = 29, 
-		RULE_jsonArrayElements = 30, RULE_jsonString = 31, RULE_imageName = 32, 
-		RULE_stageName = 33, RULE_labelPairs = 34, RULE_labelPair = 35, RULE_labelKey = 36, 
-		RULE_labelValue = 37, RULE_portList = 38, RULE_port = 39, RULE_envPairs = 40, 
-		RULE_envPair = 41, RULE_envKey = 42, RULE_envValue = 43, RULE_sourceList = 44, 
-		RULE_source = 45, RULE_destination = 46, RULE_path = 47, RULE_pathList = 48, 
-		RULE_userSpec = 49, RULE_argName = 50, RULE_argValue = 51, RULE_signal = 52, 
+		RULE_dockerfile = 0, RULE_parserDirective = 1, RULE_instruction = 2, RULE_fromInstruction = 3,
+		RULE_runInstruction = 4, RULE_cmdInstruction = 5, RULE_labelInstruction = 6,
+		RULE_exposeInstruction = 7, RULE_envInstruction = 8, RULE_addInstruction = 9,
+		RULE_copyInstruction = 10, RULE_entrypointInstruction = 11, RULE_volumeInstruction = 12,
+		RULE_userInstruction = 13, RULE_workdirInstruction = 14, RULE_argInstruction = 15,
+		RULE_onbuildInstruction = 16, RULE_stopsignalInstruction = 17, RULE_healthcheckInstruction = 18,
+		RULE_shellInstruction = 19, RULE_maintainerInstruction = 20, RULE_flags = 21,
+		RULE_flag = 22, RULE_flagName = 23, RULE_flagValue = 24, RULE_execForm = 25,
+		RULE_shellForm = 26, RULE_heredoc = 27, RULE_heredocContent = 28, RULE_jsonArray = 29,
+		RULE_jsonArrayElements = 30, RULE_jsonString = 31, RULE_imageName = 32,
+		RULE_stageName = 33, RULE_labelPairs = 34, RULE_labelPair = 35, RULE_labelKey = 36,
+		RULE_labelValue = 37, RULE_portList = 38, RULE_port = 39, RULE_envPairs = 40,
+		RULE_envPair = 41, RULE_envKey = 42, RULE_envValue = 43, RULE_sourceList = 44,
+		RULE_source = 45, RULE_destination = 46, RULE_path = 47, RULE_pathList = 48,
+		RULE_userSpec = 49, RULE_argName = 50, RULE_argValue = 51, RULE_signal = 52,
 		RULE_text = 53, RULE_textElement = 54, RULE_trailingComment = 55;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"dockerfile", "parserDirective", "instruction", "fromInstruction", "runInstruction", 
-			"cmdInstruction", "labelInstruction", "exposeInstruction", "envInstruction", 
-			"addInstruction", "copyInstruction", "entrypointInstruction", "volumeInstruction", 
-			"userInstruction", "workdirInstruction", "argInstruction", "onbuildInstruction", 
-			"stopsignalInstruction", "healthcheckInstruction", "shellInstruction", 
-			"maintainerInstruction", "flags", "flag", "flagName", "flagValue", "execForm", 
-			"shellForm", "heredoc", "heredocContent", "jsonArray", "jsonArrayElements", 
-			"jsonString", "imageName", "stageName", "labelPairs", "labelPair", "labelKey", 
-			"labelValue", "portList", "port", "envPairs", "envPair", "envKey", "envValue", 
-			"sourceList", "source", "destination", "path", "pathList", "userSpec", 
+			"dockerfile", "parserDirective", "instruction", "fromInstruction", "runInstruction",
+			"cmdInstruction", "labelInstruction", "exposeInstruction", "envInstruction",
+			"addInstruction", "copyInstruction", "entrypointInstruction", "volumeInstruction",
+			"userInstruction", "workdirInstruction", "argInstruction", "onbuildInstruction",
+			"stopsignalInstruction", "healthcheckInstruction", "shellInstruction",
+			"maintainerInstruction", "flags", "flag", "flagName", "flagValue", "execForm",
+			"shellForm", "heredoc", "heredocContent", "jsonArray", "jsonArrayElements",
+			"jsonString", "imageName", "stageName", "labelPairs", "labelPair", "labelKey",
+			"labelValue", "portList", "port", "envPairs", "envPair", "envKey", "envValue",
+			"sourceList", "source", "destination", "path", "pathList", "userSpec",
 			"argName", "argValue", "signal", "text", "textElement", "trailingComment"
 		};
 	}
@@ -59,19 +74,19 @@ public class DockerfileParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null,
+			null, null, null, null, null, null, null, null, null, null, null, null,
 			null, "'['", "']'", "','", "'='", "'--'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE", 
-			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG", 
-			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS", 
-			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET", 
-			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING", 
+			null, "PARSER_DIRECTIVE", "COMMENT", "FROM", "RUN", "CMD", "LABEL", "EXPOSE",
+			"ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG",
+			"ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL", "MAINTAINER", "AS",
+			"NONE", "HEREDOC_MARKER", "LINE_CONTINUATION", "LBRACKET", "RBRACKET",
+			"COMMA", "EQUALS", "DASH_DASH", "DOUBLE_QUOTED_STRING", "SINGLE_QUOTED_STRING",
 			"ENV_VAR", "UNQUOTED_TEXT", "WS", "NEWLINE"
 		};
 	}
@@ -232,7 +247,7 @@ public class DockerfileParser extends Parser {
 					switch (_input.LA(1)) {
 					case NEWLINE:
 						{
-						setState(122); 
+						setState(122);
 						_errHandler.sync(this);
 						_alt = 1;
 						do {
@@ -248,7 +263,7 @@ public class DockerfileParser extends Parser {
 							default:
 								throw new NoViableAltException(this);
 							}
-							setState(124); 
+							setState(124);
 							_errHandler.sync(this);
 							_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 						} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -610,7 +625,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(162);
 			match(FROM);
-			setState(164); 
+			setState(164);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -626,7 +641,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(166); 
+				setState(166);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -637,7 +652,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(168);
 				flags();
-				setState(170); 
+				setState(170);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -653,7 +668,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(172); 
+					setState(172);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -667,7 +682,7 @@ public class DockerfileParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				{
-				setState(178); 
+				setState(178);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -677,13 +692,13 @@ public class DockerfileParser extends Parser {
 					match(WS);
 					}
 					}
-					setState(180); 
+					setState(180);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==WS );
 				setState(182);
 				match(AS);
-				setState(184); 
+				setState(184);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -693,7 +708,7 @@ public class DockerfileParser extends Parser {
 					match(WS);
 					}
 					}
-					setState(186); 
+					setState(186);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==WS );
@@ -776,7 +791,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(194);
 			match(RUN);
-			setState(196); 
+			setState(196);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -792,7 +807,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(198); 
+				setState(198);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -803,7 +818,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(200);
 				flags();
-				setState(202); 
+				setState(202);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -819,7 +834,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(204); 
+					setState(204);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -922,7 +937,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(216);
 			match(CMD);
-			setState(218); 
+			setState(218);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -938,7 +953,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(220); 
+				setState(220);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1029,7 +1044,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(229);
 			match(LABEL);
-			setState(231); 
+			setState(231);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1039,7 +1054,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(233); 
+				setState(233);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1109,7 +1124,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(239);
 			match(EXPOSE);
-			setState(241); 
+			setState(241);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1119,7 +1134,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(243); 
+				setState(243);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1189,7 +1204,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(249);
 			match(ENV);
-			setState(251); 
+			setState(251);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1199,7 +1214,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(253); 
+				setState(253);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1276,7 +1291,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(259);
 			match(ADD);
-			setState(261); 
+			setState(261);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1292,7 +1307,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(263); 
+				setState(263);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1303,7 +1318,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(265);
 				flags();
-				setState(267); 
+				setState(267);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1319,7 +1334,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(269); 
+					setState(269);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1328,7 +1343,7 @@ public class DockerfileParser extends Parser {
 
 			setState(273);
 			sourceList();
-			setState(275); 
+			setState(275);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1344,7 +1359,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(277); 
+				setState(277);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1421,7 +1436,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(283);
 			match(COPY);
-			setState(285); 
+			setState(285);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1437,7 +1452,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(287); 
+				setState(287);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,33,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1448,7 +1463,7 @@ public class DockerfileParser extends Parser {
 				{
 				setState(289);
 				flags();
-				setState(291); 
+				setState(291);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -1464,7 +1479,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(293); 
+					setState(293);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,34,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1473,7 +1488,7 @@ public class DockerfileParser extends Parser {
 
 			setState(297);
 			sourceList();
-			setState(299); 
+			setState(299);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1489,7 +1504,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(301); 
+				setState(301);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,36,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1562,7 +1577,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(307);
 			match(ENTRYPOINT);
-			setState(309); 
+			setState(309);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1578,7 +1593,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(311); 
+				setState(311);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,38,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1672,7 +1687,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(320);
 			match(VOLUME);
-			setState(322); 
+			setState(322);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1688,7 +1703,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(324); 
+				setState(324);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,41,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1779,7 +1794,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(333);
 			match(USER);
-			setState(335); 
+			setState(335);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1789,7 +1804,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(337); 
+				setState(337);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -1859,7 +1874,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(343);
 			match(WORKDIR);
-			setState(345); 
+			setState(345);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1875,7 +1890,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(347); 
+				setState(347);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,46,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -1949,7 +1964,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(353);
 			match(ARG);
-			setState(355); 
+			setState(355);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -1959,7 +1974,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(357); 
+				setState(357);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2041,7 +2056,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(367);
 			match(ONBUILD);
-			setState(369); 
+			setState(369);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2051,7 +2066,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(371); 
+				setState(371);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2121,7 +2136,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(377);
 			match(STOPSIGNAL);
-			setState(379); 
+			setState(379);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2131,7 +2146,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(381); 
+				setState(381);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2205,7 +2220,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(387);
 			match(HEALTHCHECK);
-			setState(389); 
+			setState(389);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2215,7 +2230,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(391); 
+				setState(391);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2238,7 +2253,7 @@ public class DockerfileParser extends Parser {
 					{
 					setState(394);
 					flags();
-					setState(396); 
+					setState(396);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -2248,7 +2263,7 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(398); 
+						setState(398);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
@@ -2326,7 +2341,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(408);
 			match(SHELL);
-			setState(410); 
+			setState(410);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -2336,7 +2351,7 @@ public class DockerfileParser extends Parser {
 				match(WS);
 				}
 				}
-				setState(412); 
+				setState(412);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WS );
@@ -2406,7 +2421,7 @@ public class DockerfileParser extends Parser {
 			{
 			setState(418);
 			match(MAINTAINER);
-			setState(420); 
+			setState(420);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -2422,7 +2437,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(422); 
+				setState(422);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,62,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -2499,7 +2514,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(430); 
+					setState(430);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -2509,14 +2524,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(432); 
+						setState(432);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(434);
 					flag();
 					}
-					} 
+					}
 				}
 				setState(439);
 				_errHandler.sync(this);
@@ -3071,7 +3086,7 @@ public class DockerfileParser extends Parser {
 					setState(485);
 					jsonString();
 					}
-					} 
+					}
 				}
 				setState(490);
 				_errHandler.sync(this);
@@ -3269,7 +3284,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(499); 
+					setState(499);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3279,14 +3294,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(501); 
+						setState(501);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(503);
 					labelPair();
 					}
-					} 
+					}
 				}
 				setState(508);
 				_errHandler.sync(this);
@@ -3514,7 +3529,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(519); 
+					setState(519);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3524,14 +3539,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(521); 
+						setState(521);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(523);
 					port();
 					}
-					} 
+					}
 				}
 				setState(528);
 				_errHandler.sync(this);
@@ -3641,7 +3656,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(533); 
+					setState(533);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
@@ -3651,14 +3666,14 @@ public class DockerfileParser extends Parser {
 						match(WS);
 						}
 						}
-						setState(535); 
+						setState(535);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==WS );
 					setState(537);
 					envPair();
 					}
-					} 
+					}
 				}
 				setState(542);
 				_errHandler.sync(this);
@@ -3731,7 +3746,7 @@ public class DockerfileParser extends Parser {
 				break;
 			case WS:
 				{
-				setState(547); 
+				setState(547);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -3747,7 +3762,7 @@ public class DockerfileParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(549); 
+					setState(549);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,80,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -3906,7 +3921,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(560); 
+					setState(560);
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -3922,14 +3937,14 @@ public class DockerfileParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(562); 
+						setState(562);
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,82,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 					setState(564);
 					source();
 					}
-					} 
+					}
 				}
 				setState(569);
 				_errHandler.sync(this);
@@ -4130,7 +4145,7 @@ public class DockerfileParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(578); 
+					setState(578);
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -4146,14 +4161,14 @@ public class DockerfileParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(580); 
+						setState(580);
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,84,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 					setState(582);
 					path();
 					}
-					} 
+					}
 				}
 				setState(587);
 				_errHandler.sync(this);
@@ -4380,7 +4395,7 @@ public class DockerfileParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(597); 
+			setState(597);
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -4396,7 +4411,7 @@ public class DockerfileParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(599); 
+				setState(599);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,86,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
