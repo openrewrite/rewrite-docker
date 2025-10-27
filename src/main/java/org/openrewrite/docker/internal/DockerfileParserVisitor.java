@@ -98,7 +98,7 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
         );
     }
 
-    public Dockerfile.Stage visitStage(DockerfileParser.StageContext ctx) {
+	@Override public Dockerfile.Stage visitStage(DockerfileParser.StageContext ctx) {
         Space prefix = prefix(ctx.getStart());
 
         // Parse the FROM instruction that starts this stage
