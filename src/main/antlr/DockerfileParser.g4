@@ -25,16 +25,26 @@ options {
 
 // Root rule
 dockerfile
-    : ( parserDirective | NEWLINE | COMMENT )* ( instruction ( NEWLINE+ | LINE_CONTINUATION | COMMENT )* )* EOF
+    : ( parserDirective | NEWLINE | COMMENT )* globalArgs stage+ EOF
     ;
 
 parserDirective
     : PARSER_DIRECTIVE
     ;
 
-instruction
-    : fromInstruction
-    | runInstruction
+// Global ARG instructions before first FROM
+globalArgs
+    : ( argInstruction ( NEWLINE+ | LINE_CONTINUATION | COMMENT )* )*
+    ;
+
+// A build stage starting with FROM
+stage
+    : fromInstruction ( NEWLINE+ | LINE_CONTINUATION | COMMENT )* ( stageInstruction ( NEWLINE+ | LINE_CONTINUATION | COMMENT )* )*
+    ;
+
+// Instructions allowed within a stage (everything except FROM and global ARG)
+stageInstruction
+    : runInstruction
     | cmdInstruction
     | labelInstruction
     | exposeInstruction
@@ -51,6 +61,12 @@ instruction
     | healthcheckInstruction
     | shellInstruction
     | maintainerInstruction
+    ;
+
+// Legacy: kept for backward compatibility if needed elsewhere
+instruction
+    : fromInstruction
+    | stageInstruction
     ;
 
 fromInstruction

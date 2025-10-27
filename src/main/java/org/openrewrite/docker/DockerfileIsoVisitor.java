@@ -26,6 +26,11 @@ public class DockerfileIsoVisitor<P> extends DockerfileVisitor<P> {
     }
 
     @Override
+    public Dockerfile.Stage visitStage(Dockerfile.Stage stage, P p) {
+        return (Dockerfile.Stage) super.visitStage(stage, p);
+    }
+
+    @Override
     public Dockerfile.From visitFrom(Dockerfile.From from, P p) {
         return (Dockerfile.From) super.visitFrom(from, p);
     }

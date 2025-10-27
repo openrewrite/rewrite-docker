@@ -31,7 +31,16 @@ public class DockerfileVisitor<P> extends TreeVisitor<Dockerfile, P> {
         Dockerfile.Document d = document;
         d = d.withPrefix(visitSpace(d.getPrefix(), p));
         d = d.withMarkers(visitMarkers(d.getMarkers(), p));
-        return d.withInstructions(ListUtils.map(d.getInstructions(), inst -> (Dockerfile.Instruction) visit(inst, p)));
+        d = d.withGlobalArgs(ListUtils.map(d.getGlobalArgs(), arg -> (Dockerfile.Arg) visit(arg, p)));
+        return d.withStages(ListUtils.map(d.getStages(), stage -> (Dockerfile.Stage) visit(stage, p)));
+    }
+
+    public Dockerfile visitStage(Dockerfile.Stage stage, P p) {
+        Dockerfile.Stage s = stage;
+        s = s.withPrefix(visitSpace(s.getPrefix(), p));
+        s = s.withMarkers(visitMarkers(s.getMarkers(), p));
+        s = s.withFrom((Dockerfile.From) visit(s.getFrom(), p));
+        return s.withInstructions(ListUtils.map(s.getInstructions(), inst -> (Dockerfile.Instruction) visit(inst, p)));
     }
 
     public Dockerfile visitFrom(Dockerfile.From from, P p) {

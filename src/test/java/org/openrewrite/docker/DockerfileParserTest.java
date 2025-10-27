@@ -376,7 +376,7 @@ class DockerfileParserTest implements RewriteTest {
                 USER nobody
                 """,
               spec -> spec.afterRecipe(doc -> {
-                  Dockerfile.User user = (Dockerfile.User) doc.getInstructions().getLast();
+                  Dockerfile.User user = (Dockerfile.User) doc.getStages().getFirst().getInstructions().getLast();
                   assertThat(((Dockerfile.PlainText) user.getUser().getContents().getFirst()).getText()).isEqualTo("nobody");
                   assertThat(user.getGroup()).isNull();
               })
@@ -393,7 +393,7 @@ class DockerfileParserTest implements RewriteTest {
                 USER app:group
                 """,
               spec -> spec.afterRecipe(doc -> {
-                  Dockerfile.User user = (Dockerfile.User) doc.getInstructions().getLast();
+                  Dockerfile.User user = (Dockerfile.User) doc.getStages().getFirst().getInstructions().getLast();
                   assertThat(((Dockerfile.PlainText) user.getUser().getContents().getFirst()).getText()).isEqualTo("app");
                   assertThat(((Dockerfile.PlainText) user.getGroup().getContents().getFirst()).getText()).isEqualTo("group");
               })
@@ -579,7 +579,7 @@ class DockerfileParserTest implements RewriteTest {
             FROM $REGISTRY/image:${VERSION}-suffix
             """,
             spec -> spec.afterRecipe(doc -> {
-                Dockerfile.From from = (Dockerfile.From) doc.getInstructions().getLast();
+                Dockerfile.From from = doc.getStages().getLast().getFrom();
 
                 // Check imageName contents
                 List<Dockerfile.ArgumentContent> imageNameContents = from.getImageName().getContents();

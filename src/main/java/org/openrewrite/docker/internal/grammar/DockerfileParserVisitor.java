@@ -38,6 +38,24 @@ public interface DockerfileParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParserDirective(DockerfileParser.ParserDirectiveContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#globalArgs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGlobalArgs(DockerfileParser.GlobalArgsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#stage}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStage(DockerfileParser.StageContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DockerfileParser#stageInstruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStageInstruction(DockerfileParser.StageInstructionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link DockerfileParser#instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

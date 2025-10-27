@@ -87,7 +87,18 @@ public interface Dockerfile extends Tree {
             return withCharsetName(charset.name());
         }
 
-        List<Instruction> instructions;
+        /**
+         * Global ARG instructions that appear before the first FROM instruction.
+         * These have global scope and can be referenced in FROM instructions.
+         */
+        List<Arg> globalArgs;
+
+        /**
+         * Build stages, each starting with a FROM instruction.
+         * Even single-stage Dockerfiles will have one Stage.
+         */
+        List<Stage> stages;
+
         Space eof;
 
         @Override
@@ -98,6 +109,38 @@ public interface Dockerfile extends Tree {
         @Override
         public <P> TreeVisitor<?, PrintOutputCapture<P>> printer(Cursor cursor) {
             return new DockerfilePrinter<>();
+        }
+    }
+
+    /**
+     * A build stage in a multi-stage Dockerfile.
+     * Each stage begins with a FROM instruction and contains subsequent instructions
+     * until the next FROM or end of file.
+     */
+    @Value
+    @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+    @With
+    class Stage implements Dockerfile {
+        @EqualsAndHashCode.Include
+        UUID id;
+
+        Space prefix;
+        Markers markers;
+
+        /**
+         * The FROM instruction that starts this stage
+         */
+        From from;
+
+        /**
+         * Instructions in this stage (RUN, COPY, etc.)
+         * Does not include the FROM instruction or global ARGs
+         */
+        List<Instruction> instructions;
+
+        @Override
+        public <P> Dockerfile acceptDockerfile(DockerfileVisitor<P> v, P p) {
+            return v.visitStage(this, p);
         }
     }
 

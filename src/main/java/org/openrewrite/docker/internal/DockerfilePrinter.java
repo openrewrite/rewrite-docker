@@ -37,12 +37,36 @@ public class DockerfilePrinter<P> extends DockerfileVisitor<PrintOutputCapture<P
     @Override
     public Dockerfile visitDocument(Dockerfile.Document document, PrintOutputCapture<P> p) {
         beforeSyntax(document, p);
-        for (Dockerfile.Instruction instruction : document.getInstructions()) {
-            visit(instruction, p);
+
+        // Print global ARG instructions
+        for (Dockerfile.Arg arg : document.getGlobalArgs()) {
+            visit(arg, p);
         }
+
+        // Print build stages
+        for (Dockerfile.Stage stage : document.getStages()) {
+            visit(stage, p);
+        }
+
         visitSpace(document.getEof(), p);
         afterSyntax(document, p);
         return document;
+    }
+
+    @Override
+    public Dockerfile visitStage(Dockerfile.Stage stage, PrintOutputCapture<P> p) {
+        beforeSyntax(stage, p);
+
+        // Print FROM instruction
+        visit(stage.getFrom(), p);
+
+        // Print stage instructions
+        for (Dockerfile.Instruction instruction : stage.getInstructions()) {
+            visit(instruction, p);
+        }
+
+        afterSyntax(stage, p);
+        return stage;
     }
 
     @Override

@@ -62,12 +62,24 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
     @Override
     public Dockerfile.Document visitDockerfile(DockerfileParser.DockerfileContext ctx) {
         Space prefix = prefix(ctx.getStart());
-        List<Dockerfile.Instruction> instructions = new ArrayList<>();
 
-        for (DockerfileParser.InstructionContext instructionCtx : ctx.instruction()) {
-            Dockerfile.Instruction instruction = (Dockerfile.Instruction) visit(instructionCtx);
-            if (instruction != null) {
-                instructions.add(instruction);
+        // Parse global ARG instructions (before first FROM)
+        List<Dockerfile.Arg> globalArgs = new ArrayList<>();
+        if (ctx.globalArgs() != null) {
+            for (DockerfileParser.ArgInstructionContext argCtx : ctx.globalArgs().argInstruction()) {
+                Dockerfile.Arg arg = (Dockerfile.Arg) visit(argCtx);
+                if (arg != null) {
+                    globalArgs.add(arg);
+                }
+            }
+        }
+
+        // Parse build stages
+        List<Dockerfile.Stage> stages = new ArrayList<>();
+        for (DockerfileParser.StageContext stageCtx : ctx.stage()) {
+            Dockerfile.Stage stage = visitStage(stageCtx);
+            if (stage != null) {
+                stages.add(stage);
             }
         }
 
@@ -80,8 +92,33 @@ public class DockerfileParserVisitor extends DockerfileParserBaseVisitor<Dockerf
                 charsetBomMarked,
                 null,
                 fileAttributes,
-                instructions,
+                globalArgs,
+                stages,
                 Space.format(source, cursor, source.length())
+        );
+    }
+
+    public Dockerfile.Stage visitStage(DockerfileParser.StageContext ctx) {
+        Space prefix = prefix(ctx.getStart());
+
+        // Parse the FROM instruction that starts this stage
+        Dockerfile.From from = (Dockerfile.From) visit(ctx.fromInstruction());
+
+        // Parse stage instructions
+        List<Dockerfile.Instruction> instructions = new ArrayList<>();
+        for (DockerfileParser.StageInstructionContext instructionCtx : ctx.stageInstruction()) {
+            Dockerfile.Instruction instruction = (Dockerfile.Instruction) visit(instructionCtx);
+            if (instruction != null) {
+                instructions.add(instruction);
+            }
+        }
+
+        return new Dockerfile.Stage(
+                randomId(),
+                prefix,
+                Markers.EMPTY,
+                from,
+                instructions
         );
     }
 

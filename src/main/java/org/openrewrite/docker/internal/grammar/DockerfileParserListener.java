@@ -43,6 +43,36 @@ public interface DockerfileParserListener extends ParseTreeListener {
 	 */
 	void exitParserDirective(DockerfileParser.ParserDirectiveContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#globalArgs}.
+	 * @param ctx the parse tree
+	 */
+	void enterGlobalArgs(DockerfileParser.GlobalArgsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#globalArgs}.
+	 * @param ctx the parse tree
+	 */
+	void exitGlobalArgs(DockerfileParser.GlobalArgsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#stage}.
+	 * @param ctx the parse tree
+	 */
+	void enterStage(DockerfileParser.StageContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#stage}.
+	 * @param ctx the parse tree
+	 */
+	void exitStage(DockerfileParser.StageContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DockerfileParser#stageInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterStageInstruction(DockerfileParser.StageInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DockerfileParser#stageInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitStageInstruction(DockerfileParser.StageInstructionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link DockerfileParser#instruction}.
 	 * @param ctx the parse tree
 	 */
