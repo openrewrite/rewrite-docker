@@ -16,6 +16,7 @@
 package org.openrewrite.docker.search;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
@@ -35,15 +36,11 @@ import static java.util.stream.Collectors.joining;
 public class FindDockerImageUses extends Recipe {
     transient DockerBaseImages dockerBaseImages = new DockerBaseImages(this);
 
-    @Override
-    public String getDisplayName() {
-        return "Find uses of docker base images";
-    }
+    @Getter
+    final String displayName = "Find uses of docker base images";
 
-    @Override
-    public String getDescription() {
-        return "Produce an impact analysis of base images used in Dockerfiles, .gitlab-ci files, Kubernetes Deployment file, etc.";
-    }
+    @Getter
+    final String description = "Produce an impact analysis of base images used in Dockerfiles, .gitlab-ci files, Kubernetes Deployment file, etc.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
